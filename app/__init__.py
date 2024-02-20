@@ -7,6 +7,8 @@ app.config.from_object('config')
 
 # Creating database
 db =  SQLAlchemy(app)
+
+# Creating migration
 migrate = Migrate(app, db, render_as_batch=True)
 
-from app import app, db
+from app import views

@@ -1,6 +1,6 @@
 # Include imports here
 from app import db, login_manager
-from sqalchemy.sql import func
+from sqlalchemy.sql import func
 from flask_login import UserMixin
 
 # Database models here

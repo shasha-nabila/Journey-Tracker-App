@@ -1,4 +1,4 @@
-from config import SQALCHEMY_DATABASE_URI
+from config import SQLALCHEMY_DATABASE_URI
 from app import db
 import os.path
 
