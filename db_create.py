@@ -1,5 +1,7 @@
-from config import SQLALCHEMY_DATABASE_URI
-from app import db
-import os.path
+from app import create_app, db
 
-db.create_all()
+app = create_app()
+
+# create db table within the app
+with app.app_context():
+    db.create_all()

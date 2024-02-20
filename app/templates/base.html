@@ -5,15 +5,34 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width-device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Test</title>
-    </head>
+        <title>{% block title %}My App{% endblock %}</title>
+    <!-- add css here -->
+</head>
+<body>
+    <header>
+        <!-- navbar or header -->
+    </header>
 
-    <body>
-        <!-- to be edited-->
-    </body>
-
-    <div class="container">
-        {% block content %}
-        {% endblock %}
+    <div class="flash-message">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
+
+    <main>
+        {% block content %}
+        <!-- main content for each extended template -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <!-- can put footer here -->
+    </footer>
+
+    <!-- can add .js here -->
+</body>
 </html>
