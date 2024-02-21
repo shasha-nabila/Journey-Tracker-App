@@ -2,7 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from .models import db, login_manager
+from .models import db, login_manager, User
 from .views import main_blueprint
 
 db = SQLAlchemy()
@@ -24,3 +24,9 @@ def create_app():
     app.register_blueprint(main_blueprint)
 
     return app
+
+# load a user from db
+@login_manager.user_loader
+def load_user(user_id):
+    # will return user object based on user id
+    return User.query.get(int(user_id))

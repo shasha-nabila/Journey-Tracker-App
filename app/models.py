@@ -23,8 +23,4 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-# load a user from db
-@login_manager.user_loader
-def load_user(user_id):
-    # will return user object based on user id
-    return User.query.get(int(user_id))
+
