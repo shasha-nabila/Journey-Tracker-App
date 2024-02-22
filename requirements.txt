@@ -11,3 +11,5 @@ flask-admin
 
 Flask
 Gunicorn
+
+python-dotenv
