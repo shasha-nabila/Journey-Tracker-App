@@ -8,6 +8,7 @@ flask-wtf
 flask-babel
 coverage
 flask-admin
+email-validator
 
 Flask
 Gunicorn
