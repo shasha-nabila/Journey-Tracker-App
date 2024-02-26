@@ -5,8 +5,17 @@ from .forms import LoginForm, RegistrationForm
 from .models import db, User
 from sqlalchemy.exc import IntegrityError
 from .utils import is_valid_password
+import stripe
+import os
 
 main_blueprint = Blueprint('main', __name__)
+
+# Price IDs for different subscription plans
+price_ids = {
+    'weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
+    'monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
+    'yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
+}
 
 # route for homepage
 @main_blueprint.route('/')
@@ -71,6 +80,50 @@ def dashboard():
 def logout():
     logout_user()
     return redirect(url_for('.main'))
+
+@main_blueprint.route('/subscription')
+def subscription():
+    return render_template('subscription.html', stripe_publishable_key=os.getenv('STRIPE_PUBLISHABLE_KEY'))
+
+# route for subscription
+@main_blueprint.route('/subscribe', methods=['POST'])
+def subscribe():
+    name = request.form['name']
+    email = request.form['email']
+    plan = request.form['plan']
+    
+    try:
+        # Create a customer
+        customer = stripe.Customer.create(
+            name=name,
+            email=email
+        )
+
+        # Subscribe the customer to the selected plan
+        subscription = stripe.Subscription.create(
+            customer=customer.id,
+            items=[{'price': price_ids[plan]}],
+            payment_behavior='default_incomplete'
+        )
+
+        # Assuming subscription creation was successful, redirect to success page
+        return redirect(url_for('main.subscription_success'))
+
+    except Exception as e:
+        # Log the error and/or send it back to the template
+        print(e)  # Consider using logging instead of print for production applications
+
+        # Optionally, use flash messages to show errors on the current page
+        flash('There was an error processing your subscription. Please try again.', 'error')
+
+        # Stay on the current page, potentially showing an error message
+        # Make sure your form or subscription page can display flash messages or handle errors
+        return redirect(url_for('main.subscription'))  # Adjust 'main.index' as necessary for your app structure
+
+# route for success subscription
+@main_blueprint.route('/success')
+def subscription_success():
+    return render_template('success.html')
 
 # register the blueprint with the app
 def configure_routes(app):
