@@ -8,8 +8,8 @@ flask-wtf
 flask-babel
 coverage
 flask-admin
+email-validator
+python-dotenv
 
 Flask
 Gunicorn
-
-python-dotenv
