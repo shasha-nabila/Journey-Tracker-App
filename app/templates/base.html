@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <!-- html boilerplate and metadata -->
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width-device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>{% block title %}My App{% endblock %}</title>
-        <script src="https://js.stripe.com/v3/"></script>
+
+<head>
+    <!-- html boilerplate and metadata -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width-device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}My App{% endblock %}</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- add css here -->
 </head>
+
 <body>
     <header>
         <!-- navbar or header -->
@@ -16,11 +18,11 @@
 
     <div class="flash-message">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
@@ -36,4 +38,5 @@
 
     <!-- can add .js here -->
 </body>
+
 </html>
