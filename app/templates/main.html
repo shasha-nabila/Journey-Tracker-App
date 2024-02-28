@@ -6,6 +6,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,8 +31,10 @@
             align-items: center;
         }
 
-        .logo, .nav-buttons a {
-            color: #FAFB63; /* Yellow color */
+        .logo,
+        .nav-buttons a {
+            color: #FAFB63;
+            /* Yellow color */
         }
 
         .logo {
@@ -67,7 +70,8 @@
         }
 
         h1 {
-            color: #FAFB63; /* Yellow color */
+            color: #FAFB63;
+            /* Yellow color */
         }
 
         .login-register {
@@ -75,29 +79,39 @@
         }
 
         .login-register a {
-            color: #000000; /* Black color */
-            background-color: #FAFB63; /* Yellow color */
+            color: #000000;
+            /* Black color */
+            background-color: #FAFB63;
+            /* Yellow color */
             text-decoration: none;
             margin: 10px;
-            padding: 10px 20px; /* Adjust padding for better size */
-            border-radius: 10px; /* Rounded corners */
-            font-size: 18px; /* Increase font size */
-            transition: all 0.3s ease; /* Smooth transition */
-            border: 2px solid transparent; /* Add border */
+            padding: 10px 20px;
+            /* Adjust padding for better size */
+            border-radius: 10px;
+            /* Rounded corners */
+            font-size: 18px;
+            /* Increase font size */
+            transition: all 0.3s ease;
+            /* Smooth transition */
+            border: 2px solid transparent;
+            /* Add border */
         }
 
         .login-register a:hover {
             text-decoration: underline;
-            background-color: #FFD700; /* Lighter yellow on hover */
-            border-color: #000000; /* Black border on hover */
+            background-color: #FFD700;
+            /* Lighter yellow on hover */
+            border-color: #000000;
+            /* Black border on hover */
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="logo">Logo</div>
         <div class="nav-buttons">
-            <a href="{{ url_for('main.logout') }}">Dashboard</a>
+            <!-- <a href="{{ url_for('main.logout') }}">Dashboard</a> -->
             <a href="{{ url_for('main.subscription') }}#">Membership Plan</a>
         </div>
     </header>
@@ -106,11 +120,13 @@
         <h1>Welcome to My App</h1>
         <p id="homepage-text"></p>
         <div class="login-register">
-            <a href="{{ url_for('main.login') }}" id="login-link">Login</a> | <a href="{{ url_for('main.register') }}" id="register-link">Register</a>
+            <a href="{{ url_for('main.login') }}" id="login-link">Login</a> | <a href="{{ url_for('main.register') }}"
+                id="register-link">Register</a>
         </div>
     </div>
 
 </body>
+
 </html>
 
 
