@@ -79,7 +79,7 @@ def dashboard():
 @main_blueprint.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('.main'))
+    return redirect(url_for('main.index'))
 
 @main_blueprint.route('/subscription')
 def subscription():
