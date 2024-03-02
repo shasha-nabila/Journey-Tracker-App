@@ -18,15 +18,12 @@
         <div class="logo">Logo</div>
         <div class="nav-buttons">
             <a href="{{ url_for('main.subscription') }}#">Membership Plan</a>
+            <a href="{{ url_for('main.logout') }}">Logout</a>
         </div>
     </header>
 
-    <div class="welcome-section">
-        <h1>My Dashboard</h1>
-        <p id="homepage-text"></p>
-        <div class="login-register">
-            <a href="{{ url_for('main.logout') }}">Logout</a>
-        </div>
+    <div class="dashboard-header mt-5 ms-5">
+        <h1><span class="highlighted">Dashboard</span></h1>
     </div>
 
 </body>
