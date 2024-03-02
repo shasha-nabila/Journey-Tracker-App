@@ -10,7 +10,7 @@ body {
 }
 
 header {
-    background-color: #333333;
+    background-color: #142922;
     padding: 5px 10px;
     display: flex;
     justify-content: space-between;
@@ -37,11 +37,10 @@ header {
     text-decoration: none;
     padding: 5px 10px;
     border-radius: 5px;
-    background-color: #6BFFF;
 }
 
 .nav-buttons a:hover {
-    background-color: #4DDBFF;
+    background-color: #22463a;
 }
 
 
