@@ -1,16 +1,12 @@
 /* Stylesheet */
 
-/* Landing Page */
+/* Base */
 
 body {
-    background-color: #000000;
-    color: #FFFFFF;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    margin: 0;
-    text-align: center;
+    background-color: #000000 !important;
+    /* Use !important to override Bootstrap's styles */
+    color: #ffffff !important;
+
 }
 
 header {
@@ -48,6 +44,9 @@ header {
     background-color: #4DDBFF;
 }
 
+
+/* Landing Page */
+
 .welcome-section {
     position: absolute;
     top: 50%;
@@ -60,7 +59,7 @@ header {
 }
 
 h1 {
-    color: #FAFB63;
+    color: #FAFB63 !important;
     /* Yellow color */
 }
 
@@ -94,3 +93,9 @@ h1 {
     border-color: #000000;
     /* Black border on hover */
 }
+
+/* Register Page */
+
+/* User Dashboard Page */
+
+/* Payment Subscription Page */
