@@ -1,1 +1,96 @@
 /* Stylesheet */
+
+/* Landing Page */
+
+body {
+    background-color: #000000;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+}
+
+header {
+    background-color: #333333;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo,
+.nav-buttons a {
+    color: #FAFB63;
+    /* Yellow color */
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-buttons a {
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #6BFFF;
+}
+
+.nav-buttons a:hover {
+    background-color: #4DDBFF;
+}
+
+.welcome-section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    color: #FAFB63;
+    /* Yellow color */
+}
+
+.login-register {
+    margin-top: 10px;
+}
+
+.login-register a {
+    color: #000000;
+    /* Black color */
+    background-color: #FAFB63;
+    /* Yellow color */
+    text-decoration: none;
+    margin: 10px;
+    padding: 10px 20px;
+    /* Adjust padding for better size */
+    border-radius: 10px;
+    /* Rounded corners */
+    font-size: 18px;
+    /* Increase font size */
+    transition: all 0.3s ease;
+    /* Smooth transition */
+    border: 2px solid transparent;
+    /* Add border */
+}
+
+.login-register a:hover {
+    text-decoration: underline;
+    background-color: #FFD700;
+    /* Lighter yellow on hover */
+    border-color: #000000;
+    /* Black border on hover */
+}
