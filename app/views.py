@@ -60,7 +60,7 @@ def register():
             db.session.add(new_user) 
             try:
                 db.session.commit() # add new user to db
-                flash('Your account has been created! You are now able to log in', 'danger')
+                flash('Your account has been created! You are now able to log in', 'success')
                 return redirect(url_for('main.login'))
             except IntegrityError:
                 db.session.rollback() # rollback the session in case of error
