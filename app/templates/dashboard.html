@@ -17,13 +17,48 @@
     <header>
         <div class="logo">Logo</div>
         <div class="nav-buttons">
+            <a href="#">Friends</a>
             <a href="{{ url_for('main.subscription') }}#">Membership Plan</a>
             <a href="{{ url_for('main.logout') }}">Logout</a>
         </div>
     </header>
 
-    <div class="dashboard-header mt-5 ms-5">
-        <h1><span class="highlighted">Dashboard</span></h1>
+    <div class="background">
+        <div class="dashboard-header mt-5 ms-5">
+            <h1><span class="highlighted">Dashboard</span></h1>
+        </div>
+
+        <section class="dashboard">
+            <div class="dashboard-section" id="section1">
+                <div class="section-title">
+                    <h2 class="title-word">LATEST</h2>
+                    <h2 class="title-word">VISITED</h2>
+                    <h2 class="title-word">LOCATION</h2>
+                </div>
+                <div class="section-content">
+                    <p>Pure Gym, Leeds City Centre</p>
+                </div>
+            </div>
+            <div class="dashboard-section" id="section2">
+                <div class="section-title">
+                    <h2 class="title-word">TOTAL</h2>
+                    <h2 class="title-word">DISTANCE</h2>
+                    <h2 class="title-word">TRAVELLED</h2>
+                </div>
+                <div class="section-content">
+                    <p>5,034 KM</p>
+                </div>
+            </div>
+            <div class="dashboard-section" id="section3">
+                <div class="section-title">
+                    <h2 class="title-word">FAVOURITE</h2>
+                    <h2 class="title-word">LOCATION</h2>
+                </div>
+                <div class="section-content">
+                    <p>Edward Boyle Library</p>
+                </div>
+            </div>
+        </section>
     </div>
 
 </body>

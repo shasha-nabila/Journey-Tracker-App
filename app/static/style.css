@@ -133,6 +133,14 @@ h1 {
 
 /* User Dashboard Page */
 
+.background {
+    background-image: url('/static/wave.png');
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: 100% auto;
+    min-height: 85vh;
+}
+
 .dashboard-header h1 {
     color: #000000 !important;
     font-family: monospace !important;
@@ -148,5 +156,49 @@ h1 {
     /* Makes the div only as wide as its content */
 }
 
+.dashboard {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    position: relative;
+}
+
+.dashboard-section {
+    width: 30%;
+    /* Set a fixed percentage width for each section */
+}
+
+.title-word {
+    display: block;
+    text-align: right;
+}
+
+.section-content {
+    text-align: right;
+}
+
+h2 {
+    font-family: monospace;
+    font-weight: bold !important;
+    color: #FAFB63 !important;
+    font-style: italic;
+    margin: 0 !important;
+}
+
+#section1 {
+    margin-top: 0;
+    /* First box at the top */
+}
+
+#section2 {
+    margin-top: 80px;
+    /* Second box slightly lower */
+}
+
+#section3 {
+    margin-top: 180px;
+    /* Third box even lower */
+}
 
 /* Payment Subscription Page */
