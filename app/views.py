@@ -39,7 +39,7 @@ def login():
             # redirect to next page if exist, otherwise dashboard
             return redirect(next_page) if next_page else redirect(url_for('.dashboard'))
         else:
-            flash('Invalid username or password')
+            flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
 
 # route for registration
@@ -49,7 +49,7 @@ def register():
     if form.validate_on_submit():
         if not is_valid_password(form.password.data):
             # If the password is not valid, flash a message to the user
-            flash('Password must have at least 1 capital letter, 1 numeric, and be at least 8 characters long', 'error')
+            flash('Password must have at least 1 capital letter, 1 numeric, and be at least 8 characters long', 'danger')
             return render_template('register.html', form=form)
         
         existing_user = User.query.filter_by(email=form.email.data).first()
@@ -64,9 +64,9 @@ def register():
                 return redirect(url_for('main.login'))
             except IntegrityError:
                 db.session.rollback() # rollback the session in case of error
-                flash('This email already exists.', 'error')
+                flash('This email already exists.', 'danger')
         else:
-            flash('A user with that email already exists.', 'error')
+            flash('A user with that email already exists.', 'danger')
     return render_template('register.html', form=form)
 
 # route to dashboard
@@ -79,7 +79,7 @@ def dashboard():
 @main_blueprint.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('.main'))
+    return redirect(url_for('main.index'))
 
 @main_blueprint.route('/subscription')
 def subscription():
@@ -114,7 +114,7 @@ def subscribe():
         print(e)  # Consider using logging instead of print for production applications
 
         # Optionally, use flash messages to show errors on the current page
-        flash('There was an error processing your subscription. Please try again.', 'error')
+        flash('There was an error processing your subscription. Please try again.', 'danger')
 
         # Stay on the current page, potentially showing an error message
         # Make sure your form or subscription page can display flash messages or handle errors

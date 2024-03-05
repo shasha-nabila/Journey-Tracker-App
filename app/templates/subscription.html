@@ -3,33 +3,45 @@
 {% block title %}Subsscription - My Flask App{% endblock %}
 
 {% block content %}
-    <h1>Subscribe to our service</h1>
-    <form action="/subscribe" method="post" id="payment-form">
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email"><br><br>
-        
-        <label for="plan">Choose a Plan:</label><br>
-        <select id="plan" name="plan">
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-        </select><br><br>
 
-        <label for="name">Name on Card:</label><br>
-        <input type="text" id="name" name="name"><br><br>
-        
-        <div id="card-element">
-        <!-- A Stripe Element will be inserted here. -->
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+    <div class="card w-100" style="max-width: 400px; border-radius: 15px;">
+        <div class="card-body">
+            <h1 class="text-center mb-3">Subscribe to our service</h1>
+            <form action="/subscribe" method="post" id="payment-form">
+                <div class="form-group mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="plan" class="form-label">Choose a Plan:</label>
+                    <select class="form-control" id="plan" name="plan">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="name" class="form-label">Name on Card:</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+                
+                <div id="card-element" class="form-group mb-3">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+                
+                <!-- Used to display form errors. -->
+                <div id="card-errors" class="text-danger"></div>
+                
+                <br>
+                
+                <button type="submit" class="btn btn-custom-color w-100">Submit Payment</button>
+            </form>
         </div>
-        
-        <!-- Used to display form errors. -->
-        <div id="card-errors" role="alert"></div>
-        
-        <br>
-        
-        <button>Submit Payment</button>
-    </form>
-
+    </div>
+</div>
     <script>
     var stripe = Stripe('{{ stripe_publishable_key }}');
     var elements = stripe.elements();
@@ -90,4 +102,5 @@
         form.submit();
     }
     </script>
+    </div>
 {% endblock %}

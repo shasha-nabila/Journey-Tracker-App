@@ -1,12 +1,6 @@
-# database model
-from flask_sqlalchemy import SQLAlchemy
+from . import db
 from flask_login import LoginManager, UserMixin # for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash
-
-# init with no parameters (will configured with the app later)
-db = SQLAlchemy()
-login_manager = LoginManager() #to handle user authentication
-login_manager.login_view = 'main.login'  # endpoint for login page
 
 # user data-model will extends the base for database models with user authentication
 class User(UserMixin, db.Model):
