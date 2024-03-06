@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
-from .models import db, User
+from .models import db, User, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
 from .utils import is_valid_password
 import stripe
@@ -88,37 +88,49 @@ def subscription():
 # route for subscription
 @main_blueprint.route('/subscribe', methods=['POST'])
 def subscribe():
+    if not current_user.is_authenticated:
+        flash('Please log in to subscribe.', 'danger')
+        return redirect(url_for('main.login'))
+
     name = request.form['name']
     email = request.form['email']
     plan = request.form['plan']
-    
-    try:
-        # Create a customer
-        customer = stripe.Customer.create(
-            name=name,
-            email=email
-        )
 
-        # Subscribe the customer to the selected plan
+    try:
+        # Create a customer in Stripe
+        customer = stripe.Customer.create(name=name, email=email)
+
+        # Subscribe the customer to the selected plan in Stripe
         subscription = stripe.Subscription.create(
             customer=customer.id,
             items=[{'price': price_ids[plan]}],
             payment_behavior='default_incomplete'
         )
 
-        # Assuming subscription creation was successful, redirect to success page
+        # After successfully creating a Stripe subscription, save details in your database
+        # Ensure that the StripeCustomer is either found or created successfully
+        stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
+        if not stripe_customer:
+            stripe_customer = StripeCustomer(user_id=current_user.id, stripe_customer_id=customer.id)
+            db.session.add(stripe_customer)
+            db.session.commit()
+
+        # Now create the StripeSubscription instance
+        stripe_subscription = StripeSubscription(
+            stripe_customer_id=stripe_customer.id,
+            stripe_subscription_id=subscription.id,
+            plan=plan,
+            active=True
+        )
+        db.session.add(stripe_subscription)
+        db.session.commit()
+
         return redirect(url_for('main.subscription_success'))
 
     except Exception as e:
-        # Log the error and/or send it back to the template
-        print(e)  # Consider using logging instead of print for production applications
-
-        # Optionally, use flash messages to show errors on the current page
-        flash('There was an error processing your subscription. Please try again.', 'danger')
-
-        # Stay on the current page, potentially showing an error message
-        # Make sure your form or subscription page can display flash messages or handle errors
-        return redirect(url_for('main.subscription'))  # Adjust 'main.index' as necessary for your app structure
+        current_app.logger.error(f'Error creating Stripe subscription: {e}')
+        flash(f'There was an error processing your subscription: {str(e)}', 'danger')
+        return redirect(url_for('main.subscription'))
 
 # route for success subscription
 @main_blueprint.route('/success')
