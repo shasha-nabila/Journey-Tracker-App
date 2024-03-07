@@ -3,7 +3,31 @@
 {% block title %}Home - My App{% endblock %}
 
 {% block content %}
-    <h1>Welcome to My App</h1>
-    <p>This is the homepage.</p>
-    <a href="{{ url_for('main.login') }}">Login</a> | <a href="{{ url_for('main.register') }}">Register</a>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to My App</title>
+</head>
+
+<body>
+
+    <div class="welcome-section">
+        <h1>Welcome to My App</h1>
+        <p id="homepage-text"></p>
+        <div class="login-register">
+            <a href="{{ url_for('main.login') }}" id="login-link">Login</a> | <a href="{{ url_for('main.register') }}"
+                id="register-link">Register</a>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+
+
 {% endblock %}

@@ -9,6 +9,8 @@ flask-babel
 coverage
 flask-admin
 email-validator
+python-dotenv
+stripe
 
 Flask
 Gunicorn
