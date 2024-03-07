@@ -29,19 +29,23 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('.dashboard'))
     
+    # edit to specify invalid username or password
     # create instance for login form
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user and user.check_password(form.password.data):
+        if user is None:
+            form.username.errors.append('Invalid username')
+        elif not user.check_password(form.password.data):
+            form.password.errors.append('Invalid password')
+        else:
             login_user(user)
             next_page = request.args.get('next') # for post login redirection
             # redirect to next page if exist, otherwise dashboard
             return redirect(next_page) if next_page else redirect(url_for('.dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
 
+# make sure the username is unique
 # route for registration
 @main_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
