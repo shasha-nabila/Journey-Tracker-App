@@ -44,18 +44,23 @@ def create_app():
     @click.argument("email")
     @click.argument("password")
     def create_admin(username, email, password):
-        from .models import User, db  # Import here to avoid circular dependencies
-        user = User(username=username, email=email, is_admin=True)
-        user.set_password(password)
-        db.session.add(user)
+        from .models import Admin, db  # Import here to avoid circular dependencies
+        admin = Admin(username=username, email=email)
+        admin.set_password(password)
+        db.session.add(admin)
         db.session.commit()
         print(f"Admin user {username} created successfully.")
 
     return app
 
-# load a user from db
+# load a user/admin from db
 @login_manager.user_loader
 def load_user(user_id):
-    from .models import User
-    # will return user object based on user id
-    return User.query.get(int(user_id))
+    from .models import User, Admin
+    # will return user/admin object based on user id
+    admin = Admin.query.get(int(user_id))
+    if admin:
+        return admin
+    else:
+        user = User.query.get(int(user_id))
+        return user

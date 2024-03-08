@@ -7,5 +7,5 @@ from flask_babel import Babel
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
-admin = Admin()
+admin = Admin(template_mode='Bootstrap4')
 babel = Babel()

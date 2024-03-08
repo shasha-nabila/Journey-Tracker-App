@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
-from .models import db, User
+from .models import db, User, Admin
 from sqlalchemy.exc import IntegrityError
 from .utils import is_valid_password
 import stripe
@@ -27,28 +27,25 @@ def index():
 def login():
     # return to dashboard if user has been authenticated
     if current_user.is_authenticated:
-        # Check if the current user is an admin and redirect accordingly
-        if current_user.is_admin:
-            return redirect(url_for('admin.index'))
-        else:
-            return redirect(url_for('main.dashboard'))
+        return redirect(url_for('main.dashboard'))
     
     # create instance for login form
     form = LoginForm()
     if form.validate_on_submit():
+        # Attempt to authenticate as a user first
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
-            next_page = request.args.get('next') # for post login redirection
-            # If the user is admin, redirect to the admin dashboard instead of the user dashboard
-            if user.is_admin:
-                # Redirect to an admin-specific page if the user is an admin
-                return redirect(next_page) if next_page else redirect(url_for('admin.index'))
-            else:
-                # Redirect to next page if exists, otherwise dashboard
-                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
         else:
-            flash('Invalid username or password', 'danger')
+            # If not a user, attempt to authenticate as an admin
+            admin = Admin.query.filter_by(username=form.username.data).first()
+            if admin and admin.check_password(form.password.data):
+                login_user(admin)
+                return redirect(url_for('admin.index'))
+            else:
+                flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
 
 # route for registration

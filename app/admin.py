@@ -2,15 +2,17 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import redirect, url_for, request
 from werkzeug.exceptions import HTTPException
+from .models import Admin
 
 class UserAdmin(ModelView):
-    column_list = ('username', 'member_since')
+    column_list = ('username',)
     column_searchable_list = ['username']
     list_template = 'admin/model/numbered_list.html'
 
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
-
+        # Example check if current_user is an instance of an Admin model
+        return current_user.is_authenticated and isinstance(current_user, Admin)
+    
     def inaccessible_callback(self, name, **kwargs):
         # redirect to login page if user doesn't have access
         if not current_user.is_authenticated:
