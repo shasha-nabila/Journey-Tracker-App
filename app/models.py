@@ -31,4 +31,3 @@ class StripeSubscription(db.Model):
     plan = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True, nullable=False)
     stripe_customer = db.relationship('StripeCustomer', backref=db.backref('subscriptions', lazy=True))
-
