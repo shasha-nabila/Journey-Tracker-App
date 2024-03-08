@@ -56,8 +56,14 @@ def register():
             flash('Password must have at least 1 capital letter, 1 numeric, and be at least 8 characters long', 'danger')
             return render_template('register.html', form=form)
         
-        existing_user = User.query.filter_by(email=form.email.data).first()
-        if existing_user is None:
+        existing_email = User.query.filter_by(email=form.email.data).first()
+        existing_user = User.query.filter_by(username=form.username.data).first()
+
+        if existing_email:
+            form.email.errors.append('An account with this email already exists')
+        elif existing_user:
+            form.username.errors.append('This username is taken. Please choose a different one')
+        else:
             # hash the provided pw with strong hash func (in progress)
             hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
             new_user = User(username=form.username.data, email=form.email.data, password_hash=hashed_password)
@@ -68,9 +74,8 @@ def register():
                 return redirect(url_for('main.login'))
             except IntegrityError:
                 db.session.rollback() # rollback the session in case of error
-                flash('This email already exists.', 'danger')
-        else:
-            flash('A user with that email already exists.', 'danger')
+                flash('An error occurred while creating the account', 'danger')
+
     return render_template('register.html', form=form)
 
 # route to dashboard
