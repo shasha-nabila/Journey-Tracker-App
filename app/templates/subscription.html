@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Subsscription - My Flask App{% endblock %}
+{% block title %}Subscription{% endblock %}
 
 {% block content %}
 
@@ -17,9 +17,9 @@
                 <div class="form-group mb-3">
                     <label for="plan" class="form-label">Choose a Plan:</label>
                     <select class="form-control" id="plan" name="plan">
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
+                        <option value="weekly" {% if plan == 'weekly' %}selected{% endif %}>Weekly</option>
+                        <option value="monthly" {% if plan == 'monthly' %}selected{% endif %}>Monthly</option>
+                        <option value="yearly" {% if plan == 'yearly' %}selected{% endif %}>Yearly</option>                        
                     </select>
                 </div>
 
