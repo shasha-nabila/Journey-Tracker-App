@@ -1,15 +1,10 @@
 from flask import Flask
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from dotenv import load_dotenv
+from .extensions import db, login_manager, migrate, babel
 
 import stripe
 import os
-from dotenv import load_dotenv
-
-db = SQLAlchemy()
-login_manager = LoginManager()
-migrate = Migrate()
+import click
 
 def create_app():
     # Load environment variables from .env file
@@ -22,16 +17,39 @@ def create_app():
 
     app.config.from_object('config.ConfigClass')  # refer the class in config.py
 
-    # init extensions
+    from .extensions import admin
+    from .admin import UserAdmin # MyAdminIndexView
+
+    # initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
+    admin.init_app(app)
+    babel.init_app(app)
 
     login_manager.login_view = 'main.login'  # endpoint for login page
+
+    # import admin views
+    from .models import User
+    admin.add_view(UserAdmin(User, db.session))
 
     # import and register blueprints
     from .views import main_blueprint
     app.register_blueprint(main_blueprint)
+
+    # command line syntax to create admin user:
+    # flask create-admin [username] [email] [password]
+    @app.cli.command("create-admin")
+    @click.argument("username")
+    @click.argument("email")
+    @click.argument("password")
+    def create_admin(username, email, password):
+        from .models import User, db  # Import here to avoid circular dependencies
+        user = User(username=username, email=email, is_admin=True)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        print(f"Admin user {username} created successfully.")
 
     return app
 

@@ -27,7 +27,11 @@ def index():
 def login():
     # return to dashboard if user has been authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('.dashboard'))
+        # Check if the current user is an admin and redirect accordingly
+        if current_user.is_admin:
+            return redirect(url_for('admin.index'))
+        else:
+            return redirect(url_for('main.dashboard'))
     
     # create instance for login form
     form = LoginForm()
@@ -36,8 +40,13 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user)
             next_page = request.args.get('next') # for post login redirection
-            # redirect to next page if exist, otherwise dashboard
-            return redirect(next_page) if next_page else redirect(url_for('.dashboard'))
+            # If the user is admin, redirect to the admin dashboard instead of the user dashboard
+            if user.is_admin:
+                # Redirect to an admin-specific page if the user is an admin
+                return redirect(next_page) if next_page else redirect(url_for('admin.index'))
+            else:
+                # Redirect to next page if exists, otherwise dashboard
+                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
