@@ -1,6 +1,6 @@
-from . import db
-from flask_login import LoginManager, UserMixin # for user authentication
+from flask_login import UserMixin # for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash
+from . import db
 
 # user data-model will extends the base for database models with user authentication
 class User(UserMixin, db.Model):
