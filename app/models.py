@@ -18,7 +18,21 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-# admin data model
+# stripe database
+class StripeCustomer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    stripe_customer_id = db.Column(db.String(255), unique=True, nullable=False)
+    user = db.relationship('User', backref=db.backref('stripe_customer', lazy=True))
+
+class StripeSubscription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    stripe_customer_id = db.Column(db.Integer, db.ForeignKey('stripe_customer.id'), nullable=False)
+    stripe_subscription_id = db.Column(db.String(255), unique=True, nullable=False)
+    plan = db.Column(db.String(255), nullable=False)
+    active = db.Column(db.Boolean, default=True, nullable=False)
+    stripe_customer = db.relationship('StripeCustomer', backref=db.backref('subscriptions', lazy=True))# admin data model
+
 class Admin(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
