@@ -1,6 +1,7 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import redirect, url_for, request
+from flask_admin import AdminIndexView, expose
 from werkzeug.exceptions import HTTPException
 from .models import Admin, StripeSubscription, StripeCustomer
 from sqlalchemy.orm import aliased
@@ -84,3 +85,9 @@ class UserAdmin(ModelView):
             return redirect(url_for('main.login', next=request.url))
         # or show a custom 403 error page
         raise HTTPException('You do not have permission to view this page.', 403)
+
+class MyAdminIndexView(AdminIndexView):
+
+    @expose('/')
+    def index(self):
+        return self.render('admin/index.html')

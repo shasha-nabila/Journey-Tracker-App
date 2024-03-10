@@ -27,9 +27,13 @@ def index():
 # route for login page
 @main_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    # return to dashboard if user has been authenticated
+    # Return to appropriate dashboard if user has been authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('main.dashboard'))
+        # Check if the authenticated user is an admin
+        if isinstance(current_user, Admin):
+            return redirect(url_for('admin.index'))  # Redirect to admin dashboard
+        else:
+            return redirect(url_for('main.dashboard'))  # Redirect to user dashboard
     
     # create instance for login form
     form = LoginForm()

@@ -18,13 +18,13 @@ def create_app():
     app.config.from_object('config.ConfigClass')  # refer the class in config.py
 
     from .extensions import admin
-    from .admin import UserAdmin # MyAdminIndexView
+    from .admin import UserAdmin, MyAdminIndexView
 
     # initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
-    admin.init_app(app)
+    admin.init_app(app, index_view=MyAdminIndexView())
     babel.init_app(app)
 
     login_manager.login_view = 'main.login'  # endpoint for login page
