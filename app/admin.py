@@ -2,7 +2,8 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import redirect, url_for, request
 from werkzeug.exceptions import HTTPException
-from .models import Admin
+from .models import Admin, StripeSubscription, StripeCustomer
+from sqlalchemy.orm import aliased
 
 class UserAdmin(ModelView):
     column_list = (
@@ -23,10 +24,55 @@ class UserAdmin(ModelView):
 
     # Format the 'active' column to show meaningful text instead of True/False
     column_formatters = {
-        'subscription.plan': lambda v, c, m, p: m.subscription.plan if m.subscription else 'No Subscription',
-        'subscription.active': lambda v, c, m, p: 'Active' if m.subscription and m.subscription.active else 'Inactive',
-        'subscription.start_date': lambda v, c, m, p: m.subscription.start_date.strftime('%Y-%m-%d') if m.subscription else 'N/A'
+        'subscription.plan': lambda view, context, model, p: UserAdmin._format_plan(model),
+        'subscription.active': lambda view, context, model, p: UserAdmin._format_active(model),
+        'subscription.start_date': lambda view, context, model, p: UserAdmin._format_start_date(model)
     }
+
+    # Find active subscription
+    @staticmethod
+    def _format_plan(user):
+        # Alias for StripeCustomer to use in our subquery
+        stripe_customer_alias = aliased(StripeCustomer)
+        
+        # Find the active subscription for this user
+        active_subscription = StripeSubscription.query.join(
+            stripe_customer_alias, 
+            stripe_customer_alias.id == StripeSubscription.stripe_customer_id
+        ).filter(
+            stripe_customer_alias.user_id == user.id,
+            StripeSubscription.active == True
+        ).order_by(StripeSubscription.start_date.desc()).first()  # Assuming you want the latest subscription
+        
+        return active_subscription.plan if active_subscription else 'No Subscription'
+
+    @staticmethod
+    def _format_active(user):
+        # Use the same logic as in _format_plan
+        stripe_customer_alias = aliased(StripeCustomer)
+        active_subscription = StripeSubscription.query.join(
+            stripe_customer_alias, 
+            stripe_customer_alias.id == StripeSubscription.stripe_customer_id
+        ).filter(
+            stripe_customer_alias.user_id == user.id,
+            StripeSubscription.active == True
+        ).order_by(StripeSubscription.start_date.desc()).first()
+        
+        return 'Active' if active_subscription else 'Inactive'
+
+    @staticmethod
+    def _format_start_date(user):
+        # Use the same logic as in _format_plan
+        stripe_customer_alias = aliased(StripeCustomer)
+        active_subscription = StripeSubscription.query.join(
+            stripe_customer_alias, 
+            stripe_customer_alias.id == StripeSubscription.stripe_customer_id
+        ).filter(
+            stripe_customer_alias.user_id == user.id,
+            StripeSubscription.active == True
+        ).order_by(StripeSubscription.start_date.desc()).first()
+    
+        return active_subscription.start_date.strftime('%d-%m-%Y') if active_subscription else 'N/A'
 
     def is_accessible(self):
         # Example check if current_user is an instance of an Admin model

@@ -14,9 +14,9 @@ main_blueprint = Blueprint('main', __name__)
 
 # Price IDs for different subscription plans
 price_ids = {
-    'weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
-    'monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
-    'yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
+    'Weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
+    'Monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
+    'Yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
 }
 
 # route for homepage
@@ -104,7 +104,7 @@ def logout():
 # route for subscription plan
 @main_blueprint.route('/subscription')
 def subscription():
-    plan = request.args.get('plan', default='monthly', type=str)  # Get the plan from query parameter
+    plan = request.args.get('plan', default='Monthly', type=str)  # Get the plan from query parameter
     return render_template('subscription.html', plan=plan, stripe_publishable_key=os.getenv('STRIPE_PUBLISHABLE_KEY'))
 
 # route for membership
