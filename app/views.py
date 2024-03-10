@@ -5,6 +5,8 @@ from .forms import LoginForm, RegistrationForm
 from .models import db, User, Admin, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
 from .utils import is_valid_password
+from datetime import datetime
+
 import stripe
 import os
 
@@ -29,28 +31,29 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
     
-    # edit to specify invalid username or password
     # create instance for login form
     form = LoginForm()
     if form.validate_on_submit():
-        # Attempt to authenticate as a user first
         user = User.query.filter_by(username=form.username.data).first()
-        if user is None:
-            form.username.errors.append('Invalid username')
-        elif not user.check_password(form.password.data):
-            form.password.errors.append('Invalid password')
-        else:
-            login_user(user)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
-    else:
-        # If not a user, attempt to authenticate as an admin
         admin = Admin.query.filter_by(username=form.username.data).first()
-        if admin and admin.check_password(form.password.data):
-            login_user(admin)
-            return redirect(url_for('admin.index'))
+
+        # Check if the username exists either as a user or an admin
+        if user:
+            if not user.check_password(form.password.data):
+                form.password.errors.append('Invalid password')
+            else:
+                login_user(user)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+        elif admin:
+            if not admin.check_password(form.password.data):
+                form.password.errors.append('Invalid password')
+            else:
+                login_user(admin)
+                return redirect(url_for('admin.index'))
         else:
-            flash('Invalid username or password', 'danger')
+            # Username doesn't exist in both User and Admin tables
+            flash('Invalid username', 'danger')
     return render_template('login.html', form=form)
 
 # make sure the username is unique
@@ -98,7 +101,7 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-# route for subscription
+# route for subscription plan
 @main_blueprint.route('/subscription')
 def subscription():
     plan = request.args.get('plan', default='monthly', type=str)  # Get the plan from query parameter
@@ -158,7 +161,8 @@ def subscribe():
             stripe_customer_id=stripe_customer.id,
             stripe_subscription_id=subscription.id,
             plan=plan,
-            active=True
+            active=True,
+            start_date=datetime.utcnow().date()
         )
         db.session.add(stripe_subscription)
         db.session.commit()
