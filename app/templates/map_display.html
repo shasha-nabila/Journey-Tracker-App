@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Map Display - My App{% endblock %}
+
+{% block content %}
+    <iframe id="map_frame" src="" width="100%" height="400"></iframe>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        function updateMap() {
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+            if (!file) {
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var mapFrame = document.getElementById('map_frame');
+                mapFrame.src = data.map_url;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+{% endblock %}

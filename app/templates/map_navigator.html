@@ -1,0 +1,31 @@
+<div id="navigator">
+    <h3>Navigator</h3>
+    <!-- Zoom in to departure button -->
+    <button onclick="zoomToDeparture()">Departure</button>
+    <!-- Zoom in to arrival button -->
+    <button onclick="zoomToArrival()">Arrival</button>
+    <!-- Go back to previous page button -->
+    <a href="#" onclick="goBack()">Close</a>
+</div>
+
+<style>
+    #navigator {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background-color: white;
+        padding: 10px;
+        z-index: 9999;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+
+    // 이전 페이지로 이동하는 함수
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+
