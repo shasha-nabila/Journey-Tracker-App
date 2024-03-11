@@ -2,9 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
-from .models import db, User, StripeCustomer, StripeSubscription
+from .models import db, User, Admin, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
 from .utils import is_valid_password
+from datetime import datetime
+
 import stripe
 import os
 
@@ -12,9 +14,9 @@ main_blueprint = Blueprint('main', __name__)
 
 # Price IDs for different subscription plans
 price_ids = {
-    'weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
-    'monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
-    'yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
+    'Weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
+    'Monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
+    'Yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
 }
 
 # route for homepage
@@ -25,24 +27,37 @@ def index():
 # route for login page
 @main_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    # return to dashboard if user has been authenticated
+    # Return to appropriate dashboard if user has been authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('.dashboard'))
+        # Check if the authenticated user is an admin
+        if isinstance(current_user, Admin):
+            return redirect(url_for('admin.index'))  # Redirect to admin dashboard
+        else:
+            return redirect(url_for('main.dashboard'))  # Redirect to user dashboard
     
-    # edit to specify invalid username or password
     # create instance for login form
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user is None:
-            form.username.errors.append('Invalid username')
-        elif not user.check_password(form.password.data):
-            form.password.errors.append('Invalid password')
+        admin = Admin.query.filter_by(username=form.username.data).first()
+
+        # Check if the username exists either as a user or an admin
+        if user:
+            if not user.check_password(form.password.data):
+                form.password.errors.append('Invalid password')
+            else:
+                login_user(user)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+        elif admin:
+            if not admin.check_password(form.password.data):
+                form.password.errors.append('Invalid password')
+            else:
+                login_user(admin)
+                return redirect(url_for('admin.index'))
         else:
-            login_user(user)
-            next_page = request.args.get('next') # for post login redirection
-            # redirect to next page if exist, otherwise dashboard
-            return redirect(next_page) if next_page else redirect(url_for('.dashboard'))
+            # Username doesn't exist in both User and Admin tables
+            flash('Invalid username', 'danger')
     return render_template('login.html', form=form)
 
 # make sure the username is unique
@@ -90,10 +105,10 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-# route for subscription
+# route for subscription plan
 @main_blueprint.route('/subscription')
 def subscription():
-    plan = request.args.get('plan', default='monthly', type=str)  # Get the plan from query parameter
+    plan = request.args.get('plan', default='Monthly', type=str)  # Get the plan from query parameter
     return render_template('subscription.html', plan=plan, stripe_publishable_key=os.getenv('STRIPE_PUBLISHABLE_KEY'))
 
 # route for membership
@@ -150,7 +165,8 @@ def subscribe():
             stripe_customer_id=stripe_customer.id,
             stripe_subscription_id=subscription.id,
             plan=plan,
-            active=True
+            active=True,
+            start_date=datetime.utcnow().date()
         )
         db.session.add(stripe_subscription)
         db.session.commit()
