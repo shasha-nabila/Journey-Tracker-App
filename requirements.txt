@@ -11,7 +11,8 @@ flask-admin
 email-validator
 python-dotenv
 stripe
-
-
+gpxpy
+folium
+geopy
 Flask
 Gunicorn

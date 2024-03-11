@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Plan Change{% endblock %}
+
+{% block content %}
+<div class="confirm-plan-change">
+    <h1>Confirm Plan Change</h1>
+    <p>Are you sure you want to cancel your current plan and change to a new one?</p>
+    <form action="{{ url_for('main.change_plan') }}" method="post">
+        <input type="hidden" name="new_plan" value="{{ plan }}">
+        <input type="hidden" name="current_plan" value="{{ current_plan }}">
+        <button type="submit" name="confirm" value="yes">Yes, change my plan</button>
+    </form>    
+    <form action="{{ url_for('main.membership') }}">
+        <button type="submit">No, keep my current plan</button>
+    </form>
+</div>
+{% endblock %}
