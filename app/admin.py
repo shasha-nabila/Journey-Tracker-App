@@ -5,6 +5,8 @@ from flask_admin import AdminIndexView, expose
 from werkzeug.exceptions import HTTPException
 from .models import Admin, StripeSubscription, StripeCustomer
 from sqlalchemy.orm import aliased
+from .extensions import db
+from .utils import calculate_projected_revenue
 
 class UserAdmin(ModelView):
     column_list = (
@@ -90,4 +92,7 @@ class MyAdminIndexView(AdminIndexView):
 
     @expose('/')
     def index(self):
-        return self.render('admin/index.html')
+        projected_revenue = calculate_projected_revenue(db)
+        # Convert weekly data into cumulative revenue for visualization
+        cumulative_revenue = [sum(projected_revenue[:i+1]) for i in range(len(projected_revenue))]
+        return self.render('admin/index.html', cumulative_revenue=cumulative_revenue)
