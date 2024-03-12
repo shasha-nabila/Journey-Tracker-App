@@ -4,9 +4,14 @@ from werkzeug.security import generate_password_hash # for security purpose when
 from .forms import LoginForm, RegistrationForm
 from .models import db, User, Admin, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
-from .utils import is_valid_password
 from datetime import datetime
+from werkzeug.utils import secure_filename
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html
+from config import ConfigClass
 
+import pandas as pd
+import folium
+import gpxpy
 import stripe
 import os
 
@@ -257,6 +262,55 @@ def change_plan():
     else:
         # Redirect back to the membership page if the user does not confirm
         return redirect(url_for('main.membership'))
+
+@main_blueprint.route('/map', methods=['GET', 'POST'])
+def map():
+    if request.method == 'POST':
+
+        if not os.path.exists(ConfigClass.UPLOAD_FOLDER):
+            os.makedirs(ConfigClass.UPLOAD_FOLDER)
+
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        
+        file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        
+        if  file and allowed_file(file.filename):
+            file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
+            
+            coordinates = parse_gpx(file_path)
+            info = info_parse_gpx(file_path)
+
+            # Create CSV for points
+            points_csv_file = 'points.csv'
+            create_and_append_csv(points_csv_file, ConfigClass.HEADER_INFO, [[point['name'], point['latitude'], point['longitude'], point['address']] for point in info])
+            
+            # Create CSV for distance
+            distance_csv_file = 'distance.csv'
+            distances = [calculate_distance(info[i], info[i+1]) for i in range(len(info)-1)]
+            create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances])
+
+            m = folium.Map(location=coordinates[0], zoom_start=17)
+            
+            initial_coordinate = coordinates[0]
+            goal_coordinate = coordinates[-1]
+            initial_marker = folium.Marker(initial_coordinate, tooltip='Departure', icon=folium.Icon(color='green')).add_to(m)
+            goal_marker = folium.Marker(goal_coordinate, tooltip='Arrival', icon=folium.Icon(color='green')).add_to(m)
+             
+            # Create and get map HTML
+            map_html_content = create_map_html(coordinates)
+                    
+            return render_template('map_api.html', map_html_content=map_html_content, distances = distances,)
+
+        else:
+            return redirect(request.url)
+    
+    return render_template('map.html')
 
 # register the blueprint with the app
 def configure_routes(app):

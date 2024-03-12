@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Chart Generation
-
 document.addEventListener('DOMContentLoaded', function () {
     if (window.cumulativeRevenue) {
         const ctx = document.getElementById('revenueChart').getContext('2d');
