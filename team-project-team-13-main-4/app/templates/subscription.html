@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Subscription{% endblock %}
+
+{% block content %}
+
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+    <div class="card w-100" style="max-width: 400px; border-radius: 15px;">
+        <div class="card-body">
+            <h1 class="text-center mb-3">Subscribe to our service</h1>
+            <form action="/subscribe" method="post" id="payment-form">
+                <div class="form-group mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="plan" class="form-label">Choose a Plan:</label>
+                    <select class="form-control" id="plan" name="plan">
+                        <option value="Weekly" {% if plan=='Weekly' %}selected{% endif %}>Weekly</option>
+                        <option value="Monthly" {% if plan=='Monthly' %}selected{% endif %}>Monthly</option>
+                        <option value="Yearly" {% if plan=='Yearly' %}selected{% endif %}>Yearly</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="name" class="form-label">Name on Card:</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+
+                <div id="card-element" class="form-group mb-3">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+
+                <!-- Used to display form errors. -->
+                <div id="card-errors" class="text-danger"></div>
+
+                <br>
+
+                <button type="submit" class="btn btn-custom-color w-100">Submit Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var stripe = Stripe('{{ stripe_publishable_key }}');
+    var elements = stripe.elements();
+
+    // Custom styling can be passed to options when creating an Element.
+    var style = {
+        base: {
+            // Base input styles will be here.
+            fontSize: '16px',
+            color: '#32325d',
+        },
+    };
+
+    // Create an instance of the card Element.
+    var card = elements.create('card', { style: style });
+
+    // Add an instance of the card Element into the `card-element` div.
+    card.mount('#card-element');
+
+    // Handle real-time validation errors from the card Element.
+    card.addEventListener('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Handle form submission.
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        stripe.createToken(card).then(function (result) {
+            if (result.error) {
+                // Inform the user if there was an error.
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+            } else {
+                // Send the token to your server.
+                stripeTokenHandler(result.token);
+            }
+        });
+    });
+
+    // Submit the form with the token ID.
+    function stripeTokenHandler(token) {
+        // Insert the token ID into the form so it gets submitted to the server
+        var form = document.getElementById('payment-form');
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'stripeToken');
+        hiddenInput.setAttribute('value', token.id);
+        form.appendChild(hiddenInput);
+
+        // Submit the form
+        form.submit();
+    }
+</script>
+{% endblock %}

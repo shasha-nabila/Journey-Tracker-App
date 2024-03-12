@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - My Flask App{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg sticky-top navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Logo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.map') }}">Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Log Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="background">
+        <div class="dashboard-header mt-5 ms-5">
+            <h1><span class="highlighted">DASHBOARD</span></h1>
+        </div>
+
+        <section class="dashboard">
+            <div class="dashboard-section" id="section1">
+                <div class="section-title">
+                    <h2 class="title-word">LATEST</h2>
+                    <h2 class="title-word">VISITED</h2>
+                    <h2 class="title-word">LOCATION</h2>
+                </div>
+                <div class="section-content">
+                    <p>Pure Gym, Leeds City Centre</p>
+                </div>
+            </div>
+            <div class="dashboard-section" id="section2">
+                <div class="section-title">
+                    <h2 class="title-word">TOTAL</h2>
+                    <h2 class="title-word">DISTANCE</h2>
+                    <h2 class="title-word">TRAVELLED</h2>
+                </div>
+                <div class="section-content">
+                    <p>5,034 KM</p>
+                </div>
+            </div>
+            <div class="dashboard-section" id="section3">
+                <div class="section-title">
+                    <h2 class="title-word">FAVOURITE</h2>
+                    <h2 class="title-word">LOCATION</h2>
+                </div>
+                <div class="section-content">
+                    <p>Edward Boyle Library</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</body>
+
+</html>
+
+{% endblock %}

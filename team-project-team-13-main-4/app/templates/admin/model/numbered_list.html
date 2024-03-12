@@ -1,0 +1,15 @@
+{% extends 'admin/model/list.html' %}
+
+{% block list_header %}
+<tr>
+    <th>No.</th> <!-- This is the new header for the number column -->
+    {{ super() }}
+</tr>
+{% endblock %}
+
+{% block list_row %}
+<tr>
+    <td>{{ loop.index }}</td> <!-- This is the new number column -->
+    {{ super() }}
+</tr>
+{% endblock %}
