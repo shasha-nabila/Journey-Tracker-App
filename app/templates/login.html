@@ -12,22 +12,12 @@
                 <div class="form-group mb-3">
                     {{ form.username.label(class="form-label") }}
                     {{ form.username(class="form-control", size=20) }}
-                    {% if form.username.errors %}
-                    {% for error in form.username.errors %}
-                    <span style="color: red;">{{error}} </span>
-                    {% endfor %}
-                    {% endif %}
                 </div>
                 <div class="form-group mb-1">
                     {{ form.password.label(class="form-label") }}
                     <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="right"
                         title="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, and a number."></i>
                     {{ form.password(class="form-control", size=20) }}
-                    {% if form.password.errors %}
-                    {% for error in form.password.errors %}
-                    <span style="color: red;">{{error}} </span>
-                    {% endfor %}
-                    {% endif %}
                 </div>
                 Don't have an account? <a href="{{ url_for('main.register') }}">Join now</a>
                 <div class="form-group mt-4">

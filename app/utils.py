@@ -1,10 +1,23 @@
-import re, gpxpy, csv
+import re, gpxpy, csv, os, folium
 from geopy.distance import geodesic
 from config import ConfigClass
+from werkzeug.utils import secure_filename
+
 
 def is_valid_password(password_hash):
     # Password must have at least 1 capital letter, 1 numeric, and be at least 8 characters long
     return bool(re.match(r'^(?=.*[A-Z])(?=.*\d).{8,}$', password_hash))
+
+def save_uploaded_file(file, upload_folder):
+
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(upload_folder, filename)
+    file.save(file_path)
+
+    return file_path
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ConfigClass.ALLOWED_EXTENSIONS
@@ -21,7 +34,6 @@ def parse_gpx(file_path):
        
     return points
 
-
 def info_parse_gpx(file_path):
     with open(file_path, 'r') as gpx_file:
         gpx = gpxpy.parse(gpx_file)
@@ -35,18 +47,37 @@ def info_parse_gpx(file_path):
             })
         return info
 
-def append_to_csv(filename, data):
-    with open(filename, 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(data)
-
-def create_csv_file(filename, header):
-    with open(filename, 'w', newline='') as csvfile:
+def create_and_append_csv(file_path, header, data):
+ 
+    with open(file_path, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(header)
+        writer.writerows(data)
+
+def create_map_html(coordinates):
+ 
+    m = folium.Map(location=coordinates[0], zoom_start=17)
+    initial_coordinate = coordinates[0]
+    goal_coordinate = coordinates[-1]
+    initial_marker = folium.Marker(initial_coordinate, tooltip='Departure', icon=folium.Icon(color='green')).add_to(m)
+    goal_marker = folium.Marker(goal_coordinate, tooltip='Arrival', icon=folium.Icon(color='green')).add_to(m)
+    folium.PolyLine(coordinates).add_to(m)
+    
+    return m._repr_html_()
 
 def calculate_distance(point1, point2):
     coords_1 = (point1['latitude'], point1['longitude'])
     coords_2 = (point2['latitude'], point2['longitude'])
     return geodesic(coords_1, coords_2).meters
+
+
+
+
+
+
+
+
+
+
+
 
