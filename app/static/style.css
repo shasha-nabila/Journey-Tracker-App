@@ -332,3 +332,129 @@ h2 {
         width: 100%;
     }
 }
+
+/* Membership page */
+.membership-plans {
+    margin-top: 20vh; /* Adjust as needed */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Added */
+}
+
+.membership-plans h1 {
+    color: #000000 !important;
+    font-family: monospace;
+    background-color: #6BFFF7;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+
+.membership-plans .plan {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.membership-plans .plan-option {
+    width: 30%;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px; /* Adjusted */
+}
+
+.membership-plans .plan-option h2,
+.membership-plans .plan-option p {
+    color: #000000 !important; /* Changed color to black */
+    font-family: monospace;
+    font-size: 24px;
+}
+
+.membership-plans .plan-option form {
+    margin-top: 20px;
+}
+
+.membership-plans .plan-option button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #6BFFF7;
+    color: #141414;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.membership-plans .plan-option button:hover {
+    background-color: #9bf9f5;
+}
+
+/* Subscription Success Page */
+.subscription-success {
+    text-align: center;
+    margin-top: 20vh;
+}
+
+.subscription-success h1 {
+    color: #6BFFF7;
+    font-family: monospace;
+    font-size: 32px;
+}
+
+.subscription-success p {
+    color: #6BFFF7;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* change plan */
+
+.confirm-plan-change {
+    text-align: center;
+    margin-top: 20vh;
+}
+
+.confirm-plan-change h1 {
+    color: #ffffff !important;
+    font-family: monospace;
+    font-size: 32px;
+}
+
+.confirm-plan-change p {
+    color: #000000;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.confirm-plan-change form {
+    margin-top: 20px;
+}
+
+.confirm-plan-change button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #6BFFF7;
+    color: #141414;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    margin-right: 10px; /* Change margin between buttons */
+}
+
+.confirm-plan-change button:last-child {
+    margin-right: 20px; /* Increase margin between buttons */
+}
+
+.confirm-plan-change button:hover {
+    background-color: #9bf9f5;
+}
