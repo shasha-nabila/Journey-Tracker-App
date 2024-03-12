@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Membership Plan{% endblock %}
+{% block title %}Membership Plans - My Flask App{% endblock %}
 
 {% block content %}
 <div class="membership-plans">
@@ -9,35 +9,33 @@
     <div class="plan">
         {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
         {% for plan_option in plan_options %}
-        <div class="plan-option">
-            <h2>{{ plan_option|capitalize }}</h2>
-            <p>£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else "100" }}</p>
-            {% if current_plan == plan_option %}
-            <form action="{{ url_for('main.cancel_plan') }}" method="post">
-                <input type="hidden" name="plan" value="{{ plan_option }}">
-                <button type="submit">Cancel</button>
-            </form>
-            {% else %}
-            {% if not current_plan %}
-            <form action="/subscription" method="get">
-                <input type="hidden" name="plan" value="{{ plan_option }}">
-                <button type="submit">Subscribe</button>
-            </form>
-            {% else %}
-            <form action="{{ url_for('main.confirm_change_plan') }}" method="post">
-                <input type="hidden" name="new_plan" value="{{ plan_option }}">
-                <input type="hidden" name="current_plan" value="{{ current_plan }}">
-                <button type="submit">Change</button>
-            </form>
-            {% endif %}
-            {% endif %}
+        <div class="card plan-option">
+            <div class="card-body">
+                <h2 class="card-title">{{ plan_option|capitalize }}</h2>
+                <p class="card-text">£{{ "3" if plan_option == 'weekly' else "10" if plan_option == 'monthly' else "100"
+                    }}</p>
+                {% if current_plan == plan_option %}
+                <form action="{{ url_for('main.cancel_plan') }}" method="post">
+                    <input type="hidden" name="plan" value="{{ plan_option }}">
+                    <button type="submit" class="btn btn-danger">Cancel</button>
+                </form>
+                {% else %}
+                {% if not current_plan %}
+                <form action="/subscription" method="get">
+                    <input type="hidden" name="plan" value="{{ plan_option }}">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('main.confirm_change_plan') }}" method="post">
+                    <input type="hidden" name="new_plan" value="{{ plan_option }}">
+                    <input type="hidden" name="current_plan" value="{{ current_plan }}">
+                    <button type="submit" class="btn btn-success">Change</button>
+                </form>
+                {% endif %}
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
-<script>
-    function confirmChange() {
-        return confirm('Do you want to cancel your current plan?');
-    }
-</script>
 {% endblock %}
