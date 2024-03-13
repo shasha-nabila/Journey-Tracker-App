@@ -1,3 +1,57 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+#content {
+    width: 100%;
+    /* Ensure content takes full width when sidebar is hidden */
+    transition: margin-left 0.3s;
+    /* Smooth transition for toggling the sidebar */
+}
+
+/* Adjust this for when the sidebar is toggled */
+#sidebar.active+#content {
+    margin-left: 200px;
+    /* Make space for the sidebar when it's visible */
+}
+
+.sidebar-header {
+    margin-bottom: 45px;
+}
+
+#sidebar {
+    width: 200px;
+    position: fixed;
+    top: 0;
+    padding-left: 40px;
+    padding-top: 35px;
+    left: -250px;
+    /* Start off-screen to the left */
+    height: 100vh;
+    z-index: 999;
+    background: #17A2B8;
+    transition: left 0.3s;
+    /* Smooth transition for showing/hiding the sidebar */
+}
+
+.nav-link {
+    color: #000 !important;
+    font-weight: bold;
+    border-radius: 50px;
+    width: 130px;
+}
+
+.nav-link:hover {
+    background-color: #fff !important;
+}
+
+#sidebar.active {
+    left: 0;
+    /* Move into view when active */
+}
+
 #revenueChart {
     width: 100%;
     height: auto;
