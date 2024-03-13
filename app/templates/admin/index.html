@@ -1,0 +1,28 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Chart Canvas -->
+    <canvas id="revenueChart"></canvas>
+
+    <!-- Define Cumulative Revenue Data -->
+    <script>
+        window.cumulativeRevenue = {{ cumulative_revenue | tojson }};
+    </script>
+
+    <!-- Include main.js -->
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>
+
+{% endblock %}
