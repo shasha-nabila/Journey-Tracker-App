@@ -361,7 +361,7 @@ h2 {
 .membership-plans .plan-option {
     width: 30%;
     background-color: #ffffff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     margin: 10px; /* Adjusted */
 }
@@ -398,13 +398,13 @@ h2 {
 }
 
 .subscription-success h1 {
-    color: #6BFFF7;
+    color: #ffffff;
     font-family: monospace;
     font-size: 32px;
 }
 
 .subscription-success p {
-    color: #6BFFF7;
+    color: #ffffff;
     font-family: Arial, sans-serif;
     font-size: 18px;
     margin-top: 10px;
