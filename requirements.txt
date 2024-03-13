@@ -12,6 +12,7 @@ email-validator
 python-dotenv
 stripe
 gpxpy
+geopy
 folium
 Flask
 Gunicorn
