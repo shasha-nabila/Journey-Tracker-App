@@ -100,13 +100,13 @@ h1 {
 
 .btn-custom-color {
     background-color: #6BFFF7 !important;
-    border-color: #dddcdc !important;
+    border-color: #737373 !important;
     font-family: monospace !important;
 }
 
 .btn-custom-color:hover {
     background-color: #9bf9f5 !important;
-    border-color: #dddcdc !important;
+    border-color: #737373 !important;
 }
 
 .card {
@@ -264,8 +264,10 @@ h2 {
     margin-top: 30px;
     text-align: center;
     width: 70%;
-    max-width: 400px; /* Maximum width for better readability on larger screens */
-    padding: 20px; /* Add some padding for better spacing */
+    max-width: 400px;
+    /* Maximum width for better readability on larger screens */
+    padding: 20px;
+    /* Add some padding for better spacing */
 }
 
 .payment-page h1 {
@@ -275,8 +277,10 @@ h2 {
 
 .payment-page label {
     color: #ffffff;
-    text-align: left; /* Align labels to the left */
-    display: block; /* Ensure labels are displayed as blocks for proper alignment */
+    text-align: left;
+    /* Align labels to the left */
+    display: block;
+    /* Ensure labels are displayed as blocks for proper alignment */
 }
 
 .payment-page input[type="email"],
@@ -326,6 +330,7 @@ h2 {
 }
 
 @media (max-width: 542px) {
+
     .payment-page input[type="email"],
     .payment-page input[type="text"],
     .payment-page select {
@@ -335,12 +340,14 @@ h2 {
 
 /* Membership page */
 .membership-plans {
-    margin-top: 20vh; /* Adjust as needed */
+    margin-top: 20vh;
+    /* Adjust as needed */
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Added */
+    justify-content: center;
+    /* Added */
 }
 
 .membership-plans h1 {
@@ -363,12 +370,14 @@ h2 {
     background-color: #ffffff;
     padding: 15px;
     border-radius: 10px;
-    margin: 10px; /* Adjusted */
+    margin: 10px;
+    /* Adjusted */
 }
 
 .membership-plans .plan-option h2,
 .membership-plans .plan-option p {
-    color: #000000 !important; /* Changed color to black */
+    color: #000000 !important;
+    /* Changed color to black */
     font-family: monospace;
     font-size: 24px;
 }
@@ -448,11 +457,13 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 10px;
-    margin-right: 10px; /* Change margin between buttons */
+    margin-right: 10px;
+    /* Change margin between buttons */
 }
 
 .confirm-plan-change button:last-child {
-    margin-right: 20px; /* Increase margin between buttons */
+    margin-right: 20px;
+    /* Increase margin between buttons */
 }
 
 .confirm-plan-change button:hover {
