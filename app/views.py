@@ -1,10 +1,17 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
-from .models import db, User
+from .models import db, User, Admin, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
-from .utils import is_valid_password
+from datetime import datetime
+from werkzeug.utils import secure_filename
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html
+from config import ConfigClass
+
+import pandas as pd
+import folium
+import gpxpy
 import stripe
 import os
 
@@ -12,9 +19,9 @@ main_blueprint = Blueprint('main', __name__)
 
 # Price IDs for different subscription plans
 price_ids = {
-    'weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
-    'monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
-    'yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
+    'Weekly': 'price_1Om2zYJuJzcfSKx8xpaqnWQN',
+    'Monthly': 'price_1Om2EKJuJzcfSKx8iBN5hANS',
+    'Yearly': 'price_1Om2EYJuJzcfSKx8nnoBFPZI'
 }
 
 # route for homepage
@@ -25,24 +32,37 @@ def index():
 # route for login page
 @main_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    # return to dashboard if user has been authenticated
+    # Return to appropriate dashboard if user has been authenticated
     if current_user.is_authenticated:
-        return redirect(url_for('.dashboard'))
+        # Check if the authenticated user is an admin
+        if isinstance(current_user, Admin):
+            return redirect(url_for('admin.index'))  # Redirect to admin dashboard
+        else:
+            return redirect(url_for('main.dashboard'))  # Redirect to user dashboard
     
-    # edit to specify invalid username or password
     # create instance for login form
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user is None:
-            form.username.errors.append('Invalid username')
-        elif not user.check_password(form.password.data):
-            form.password.errors.append('Invalid password')
+        admin = Admin.query.filter_by(username=form.username.data).first()
+
+        # Check if the username exists either as a user or an admin
+        if user:
+            if not user.check_password(form.password.data):
+                form.password.errors.append('Invalid password')
+            else:
+                login_user(user)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+        elif admin:
+            if not admin.check_password(form.password.data):
+                form.password.errors.append('Invalid password')
+            else:
+                login_user(admin)
+                return redirect(url_for('admin.index'))
         else:
-            login_user(user)
-            next_page = request.args.get('next') # for post login redirection
-            # redirect to next page if exist, otherwise dashboard
-            return redirect(next_page) if next_page else redirect(url_for('.dashboard'))
+            # Username doesn't exist in both User and Admin tables
+            flash('Invalid username', 'danger')
     return render_template('login.html', form=form)
 
 # make sure the username is unique
@@ -90,49 +110,207 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
+# route for subscription plan
 @main_blueprint.route('/subscription')
 def subscription():
-    return render_template('subscription.html', stripe_publishable_key=os.getenv('STRIPE_PUBLISHABLE_KEY'))
+    plan = request.args.get('plan', default='Monthly', type=str)  # Get the plan from query parameter
+    return render_template('subscription.html', plan=plan, stripe_publishable_key=os.getenv('STRIPE_PUBLISHABLE_KEY'))
 
-# route for subscription
+# route for membership
+@main_blueprint.route('/membership')
+@login_required
+def membership():
+    # Get the StripeCustomer associated with the current user
+    stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
+
+    current_plan = None
+    if stripe_customer:
+        # Get the active StripeSubscription associated with the StripeCustomer
+        stripe_subscription = StripeSubscription.query.filter_by(
+            stripe_customer_id=stripe_customer.id,
+            active=True
+        ).first()
+        if stripe_subscription:
+            current_plan = stripe_subscription.plan
+
+    return render_template('membership.html', current_plan=current_plan)
+
+# route for payment
 @main_blueprint.route('/subscribe', methods=['POST'])
 def subscribe():
+    if not current_user.is_authenticated:
+        flash('Please log in to subscribe.', 'danger')
+        return redirect(url_for('main.login'))
+
     name = request.form['name']
     email = request.form['email']
     plan = request.form['plan']
-    
-    try:
-        # Create a customer
-        customer = stripe.Customer.create(
-            name=name,
-            email=email
-        )
 
-        # Subscribe the customer to the selected plan
+    try:
+        # Create a customer in Stripe
+        customer = stripe.Customer.create(name=name, email=email)
+
+        # Subscribe the customer to the selected plan in Stripe
         subscription = stripe.Subscription.create(
             customer=customer.id,
             items=[{'price': price_ids[plan]}],
             payment_behavior='default_incomplete'
         )
 
-        # Assuming subscription creation was successful, redirect to success page
+        # After successfully creating a Stripe subscription, save details in your database
+        # Ensure that the StripeCustomer is either found or created successfully
+        stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
+        if not stripe_customer:
+            stripe_customer = StripeCustomer(user_id=current_user.id, stripe_customer_id=customer.id)
+            db.session.add(stripe_customer)
+            db.session.commit()
+
+        # Now create the StripeSubscription instance
+        stripe_subscription = StripeSubscription(
+            stripe_customer_id=stripe_customer.id,
+            stripe_subscription_id=subscription.id,
+            plan=plan,
+            active=True,
+            start_date=datetime.utcnow().date()
+        )
+        db.session.add(stripe_subscription)
+        db.session.commit()
+
         return redirect(url_for('main.subscription_success'))
 
     except Exception as e:
-        # Log the error and/or send it back to the template
-        print(e)  # Consider using logging instead of print for production applications
-
-        # Optionally, use flash messages to show errors on the current page
-        flash('There was an error processing your subscription. Please try again.', 'danger')
-
-        # Stay on the current page, potentially showing an error message
-        # Make sure your form or subscription page can display flash messages or handle errors
-        return redirect(url_for('main.subscription'))  # Adjust 'main.index' as necessary for your app structure
+        current_app.logger.error(f'Error creating Stripe subscription: {e}')
+        flash(f'There was an error processing your subscription: {str(e)}', 'danger')
+        return redirect(url_for('main.subscription'))
 
 # route for success subscription
 @main_blueprint.route('/success')
 def subscription_success():
     return render_template('success.html')
+
+# route for cancel plan
+@main_blueprint.route('/cancel_plan', methods=['POST'])
+@login_required
+def cancel_plan():
+    plan = request.form['plan']
+    stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
+    
+    if stripe_customer:
+        stripe_subscription = StripeSubscription.query.filter_by(
+            stripe_customer_id=stripe_customer.id, 
+            plan=plan, 
+            active=True
+        ).first()
+
+        if stripe_subscription:
+            # Update the subscription status to inactive
+            stripe_subscription.active = False
+            db.session.commit()
+            
+            # Optionally, cancel the subscription in Stripe as well
+            stripe.Subscription.delete(stripe_subscription.stripe_subscription_id)
+
+            flash('Your subscription has been successfully canceled.', 'success')
+        else:
+            flash('No active subscription found.', 'danger')
+    else:
+        flash('No customer record found.', 'danger')
+
+    return redirect(url_for('main.membership'))
+
+# route for change plan
+@main_blueprint.route('/confirm_change_plan', methods=['POST'])
+@login_required
+def confirm_change_plan():
+    new_plan = request.form['new_plan']
+    current_plan = request.form['current_plan']
+    return render_template('confirm_change_plan.html', new_plan=new_plan, current_plan=current_plan)
+
+@main_blueprint.route('/change_plan', methods=['POST'])
+@login_required
+def change_plan():
+    new_plan = request.form['new_plan']
+    current_plan = request.form['current_plan']
+    confirmation = request.form.get('confirm')
+
+    if confirmation == 'yes':
+        # Cancel the current plan and redirect to the subscription page
+        stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
+        
+        if stripe_customer:
+            stripe_subscription = StripeSubscription.query.filter_by(
+                stripe_customer_id=stripe_customer.id,
+                plan=current_plan,
+                active=True
+            ).first()
+
+            if stripe_subscription:
+                # Update the subscription status to inactive
+                stripe_subscription.active = False
+                db.session.commit()
+                
+                # Optionally, cancel the subscription in Stripe as well
+                stripe.Subscription.delete(stripe_subscription.stripe_subscription_id)
+
+                flash('Your current subscription has been successfully canceled.', 'success')
+            else:
+                flash('No active subscription found.', 'danger')
+        else:
+            flash('No customer record found.', 'danger')
+
+        return redirect(url_for('main.subscription', plan=new_plan))
+    else:
+        # Redirect back to the membership page if the user does not confirm
+        return redirect(url_for('main.membership'))
+
+@main_blueprint.route('/map', methods=['GET', 'POST'])
+def map():
+    if request.method == 'POST':
+
+        if not os.path.exists(ConfigClass.UPLOAD_FOLDER):
+            os.makedirs(ConfigClass.UPLOAD_FOLDER)
+
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        
+        file = request.files['file']
+
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        
+        if  file and allowed_file(file.filename):
+            file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
+            
+            coordinates = parse_gpx(file_path)
+            info = info_parse_gpx(file_path)
+
+            # Create CSV for points
+            points_csv_file = 'points.csv'
+            create_and_append_csv(points_csv_file, ConfigClass.HEADER_INFO, [[point['name'], point['latitude'], point['longitude'], point['address']] for point in info])
+            
+            # Create CSV for distance
+            distance_csv_file = 'distance.csv'
+            distances = [calculate_distance(info[i], info[i+1]) for i in range(len(info)-1)]
+            create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances])
+
+            m = folium.Map(location=coordinates[0], zoom_start=17)
+            
+            initial_coordinate = coordinates[0]
+            goal_coordinate = coordinates[-1]
+            initial_marker = folium.Marker(initial_coordinate, tooltip='Departure', icon=folium.Icon(color='green')).add_to(m)
+            goal_marker = folium.Marker(goal_coordinate, tooltip='Arrival', icon=folium.Icon(color='green')).add_to(m)
+             
+            # Create and get map HTML
+            map_html_content = create_map_html(coordinates)
+                    
+            return render_template('map_api.html', map_html_content=map_html_content, distances = distances,)
+
+        else:
+            return redirect(request.url)
+    
+    return render_template('map.html')
 
 # register the blueprint with the app
 def configure_routes(app):
