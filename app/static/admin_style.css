@@ -1,3 +1,10 @@
+.font-bold-italic {
+    font-family: 'Quantico', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.5rem;
+}
+
 .wrapper {
     display: flex;
     flex-direction: row;
@@ -36,6 +43,12 @@
     /* Smooth transition for showing/hiding the sidebar */
 }
 
+#sidebar.active {
+    left: 0;
+    /* Move into view when active */
+    height: 200vh;
+}
+
 .nav-link {
     color: #000 !important;
     font-weight: bold;
@@ -45,11 +58,6 @@
 
 .nav-link:hover {
     background-color: #fff !important;
-}
-
-#sidebar.active {
-    left: 0;
-    /* Move into view when active */
 }
 
 #revenueChart {
