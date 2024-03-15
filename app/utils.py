@@ -4,14 +4,14 @@ from geopy.distance import geodesic
 from config import ConfigClass
 from werkzeug.utils import secure_filename
 from .models import StripeSubscription
+import random
 
 def is_valid_password(password_hash):
     # Password must have at least 1 capital letter, 1 numeric, and be at least 8 characters long
     return bool(re.match(r'^(?=.*[A-Z])(?=.*\d).{8,}$', password_hash))
 
 def calculate_projected_revenue(db):
-
-    # Calculate the number of active subscriptions for each plan
+    # Initial subscription counts for each plan
     weekly_subs = db.session.query(StripeSubscription).filter_by(plan='Weekly', active=True).count()
     monthly_subs = db.session.query(StripeSubscription).filter_by(plan='Monthly', active=True).count()
     yearly_subs = db.session.query(StripeSubscription).filter_by(plan='Yearly', active=True).count()
@@ -19,14 +19,33 @@ def calculate_projected_revenue(db):
     # Subscription rates
     rates = {'Weekly': 3, 'Monthly': 10, 'Yearly': 100}
 
-    # Project revenue for 52 weeks
     projected_revenue = []
-    for week in range(52):
-        revenue = weekly_subs * rates['Weekly'] + (monthly_subs * rates['Monthly'] / 4) + (yearly_subs * rates['Yearly'] / 52)
+    for week in range(52):  # Predict revenue for each week up to a year
+        # Apply a larger variability in churn and growth rates because of small subscriber base
+        churn_rate = random.choice([0, 0.25])  # 0 or 25% chance to lose a subscriber
+        growth_rate = random.choice([0, 0.25])  # 0 or 25% chance to gain a subscriber
+
+        # Randomly decide if a subscriber is gained or lost
+        if random.random() < churn_rate:
+            if weekly_subs > 0:
+                weekly_subs -= 1
+            elif monthly_subs > 0:
+                monthly_subs -= 1
+            elif yearly_subs > 0:
+                yearly_subs -= 1
+
+        if random.random() < growth_rate:
+            plan_choice = random.choice(['Weekly', 'Monthly', 'Yearly'])
+            if plan_choice == 'Weekly':
+                weekly_subs += 1
+            elif plan_choice == 'Monthly':
+                monthly_subs += 1
+            elif plan_choice == 'Yearly':
+                yearly_subs += 1
+
+        # Calculate weekly revenue from all subscriptions
+        revenue = (weekly_subs * rates['Weekly']) + (monthly_subs * rates['Monthly'] / 4) + (yearly_subs * rates['Yearly'] / 52)
         projected_revenue.append(revenue)
-        weekly_subs += 0  
-        monthly_subs += 0  
-        yearly_subs += 0  
 
     return projected_revenue
 
