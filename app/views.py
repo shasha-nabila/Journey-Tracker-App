@@ -4,16 +4,16 @@ from werkzeug.security import generate_password_hash # for security purpose when
 from .forms import LoginForm, RegistrationForm
 from .models import db, User, Admin, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
-from .utils import is_valid_password
 from datetime import datetime
+from werkzeug.utils import secure_filename
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html
+from config import ConfigClass
+
+import pandas as pd
 import folium
 import gpxpy
 import stripe
 import os
-from werkzeug.utils import secure_filename
-import pandas as pd
-from .utils import allowed_file,parse_gpx,info_parse_gpx,create_and_append_csv,calculate_distance,save_uploaded_file,create_map_html
-from config import ConfigClass
 
 main_blueprint = Blueprint('main', __name__)
 
@@ -312,8 +312,6 @@ def map():
     
     return render_template('map.html')
 
-
 # register the blueprint with the app
 def configure_routes(app):
     app.register_blueprint(main_blueprint)
-

@@ -7,10 +7,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
+    <!-- Subscription Plan Count Boxes -->
+    <div class="subscription-counts">
+        <div class="subscription-box">
+            <h5>Weekly Plan</h5>
+            <h2>{{ plan_counts['Weekly'] }}</h2>
+        </div>
+        <div class="subscription-box">
+            <h5>Monthly Plan</h5>
+            <h2>{{ plan_counts['Monthly'] }}</h2>
+        </div>
+        <div class="subscription-box">
+            <h5>Yearly Plan</h5>
+            <h2>{{ plan_counts['Yearly'] }}</h2>
+        </div>
+    </div>
+
     <!-- Chart Canvas -->
     <canvas id="revenueChart"></canvas>
 
