@@ -50,7 +50,7 @@ def calculate_projected_revenue(db):
     return projected_revenue
 
 def save_uploaded_file(file, upload_folder):
-
+    # test
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
 
