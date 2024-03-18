@@ -95,7 +95,6 @@ h1 {
     /* Black border on hover */
 }
 
-
 /* Register Page */
 
 .btn-custom-color {
@@ -198,58 +197,6 @@ h2 {
     /* Third box even lower */
 }
 
-/* Tablet and smaller */
-@media (max-width: 968px) {
-    .dashboard {
-        flex-direction: column;
-        /* Stack sections vertically */
-        align-items: center;
-        /* Center-align the items */
-    }
-
-    .dashboard-section {
-        width: 80%;
-        margin-top: 10px;
-    }
-
-    .title-word,
-    .section-content {
-        text-align: center;
-        /* Center-align text for smaller screens */
-    }
-
-    .background {
-        background-size: cover;
-        background-position: bottom center;
-        min-height: calc(100vh - 50px);
-    }
-
-    #section3 {
-        margin-top: 80px;
-    }
-}
-
-/* Mobile phones */
-@media (max-width: 542px) {
-    .dashboard-section {
-        width: 90%;
-    }
-
-    .background {
-        background-position: bottom center;
-        background-size: auto auto;
-        min-height: calc(100vh - 50px);
-    }
-}
-
-/* Phones with smaller screens like iPhone SE */
-@media (max-width: 376px) {
-    .background {
-        background-image: none;
-        /* This will remove the background image */
-    }
-}
-
 /* Payment Subscription Page */
 
 .payment-page {
@@ -325,14 +272,6 @@ h2 {
     text-align: left;
 }
 
-@media (max-width: 542px) {
-    .payment-page input[type="email"],
-    .payment-page input[type="text"],
-    .payment-page select {
-        width: 100%;
-    }
-}
-
 /* Membership page */
 .membership-plans {
     margin-top: 20vh; /* Adjust as needed */
@@ -351,26 +290,28 @@ h2 {
     border-radius: 5px;
 }
 
-
 .membership-plans .plan {
     display: flex;
+    flex-wrap: wrap; /* Allow options to wrap to next line */
     justify-content: center;
     margin-top: 20px;
 }
 
 .membership-plans .plan-option {
-    width: 30%;
+    width: calc(33% - 20px); /* Adjusted width for smaller screens with margins */
+    max-width: 300px; /* Added max-width to prevent options from stretching too much */
     background-color: #ffffff;
     padding: 15px;
     border-radius: 10px;
     margin: 10px; /* Adjusted */
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 .membership-plans .plan-option h2,
 .membership-plans .plan-option p {
     color: #000000 !important; /* Changed color to black */
     font-family: monospace;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .membership-plans .plan-option form {
@@ -391,6 +332,20 @@ h2 {
     background-color: #9bf9f5;
 }
 
+/* Adjustments for Smaller Screens */
+@media (max-width: 768px) {
+    .membership-plans .plan-option {
+        width: calc(50% - 20px); /* Adjusted width for smaller screens with margins */
+    }
+}
+
+@media (max-width: 576px) {
+    .membership-plans .plan-option {
+        width: calc(100% - 20px); /* Adjusted width for even smaller screens with margins */
+    }
+}
+
+
 /* Subscription Success Page */
 .subscription-success {
     text-align: center;
@@ -410,7 +365,7 @@ h2 {
     margin-top: 10px;
 }
 
-/* change plan */
+/* Change plan */
 
 .confirm-plan-change {
     text-align: center;
@@ -457,4 +412,129 @@ h2 {
 
 .confirm-plan-change button:hover {
     background-color: #9bf9f5;
+}
+
+
+/* map page */
+
+.map-page {
+    text-align: center;
+    margin-top: 50px; /* Adjust as needed */
+}
+
+.map-page h1 {
+    color: #FAFB63;
+    font-family: monospace;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.map-page form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.map-page input[type="file"] {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #dddcdc;
+}
+
+.map-page input[type="submit"] {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #6BFFF7;
+    color: #141414;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.map-page input[type="submit"]:hover {
+    background-color: #9bf9f5;
+}
+
+.map-page ul.flashes {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.map-page ul.flashes li {
+    color: #ffffff;
+    background-color: #6BFFF7;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Media Queries */
+
+@media (max-width: 768px) {
+    .welcome-section {
+        width: 80%; /* Adjusted width for smaller screens */
+    }
+
+    .dashboard-section {
+        width: 70%; /* Adjusted width for smaller screens */
+    }
+
+    .subscription-success {
+        width: 80%; /* Adjusted width for smaller screens */
+    }
+
+    .confirm-plan-change {
+        width: 80%; /* Adjusted width for smaller screens */
+    }
+
+    .map-page {
+        width: 80%; /* Adjusted width for smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .welcome-section {
+        width: 90%; /* Further adjusted width for even smaller screens */
+    }
+
+    .dashboard-section {
+        width: 80%; /* Further adjusted width for even smaller screens */
+    }
+
+    .subscription-success {
+        width: 90%; /* Further adjusted width for even smaller screens */
+    }
+
+    .confirm-plan-change {
+        width: 90%; /* Further adjusted width for even smaller screens */
+    }
+
+    .map-page {
+        width: 90%; /* Further adjusted width for even smaller screens */
+    }
+}
+
+@media (max-width: 400px) {
+    .welcome-section {
+        width: 95%; /* Adjusted width for smallest screens */
+    }
+
+    .dashboard-section {
+        width: 90%; /* Adjusted width for smallest screens */
+    }
+
+    .subscription-success {
+        width: 95%; /* Adjusted width for smallest screens */
+    }
+
+    .confirm-plan-change {
+        width: 95%; /* Adjusted width for smallest screens */
+    }
+
+    .map-page {
+        width: 95%; /* Adjusted width for smallest screens */
+    }
 }
