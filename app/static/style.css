@@ -414,62 +414,69 @@ h2 {
     background-color: #9bf9f5;
 }
 
-
 /* map page */
 
-.map-page {
-    text-align: center;
-    margin-top: 50px; /* Adjust as needed */
+.map-card {
+    margin: 20px auto;
+    border-radius: 10px;
+    background-color: #22463a;
 }
 
-.map-page h1 {
+.map-card-header {
+    padding: 20px;
+    background-color: #142922;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.map-card-title {
     color: #FAFB63;
     font-family: monospace;
-    font-size: 32px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
-.map-page form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.map-card-body {
+    padding: 20px;
 }
 
-.map-page input[type="file"] {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #dddcdc;
+.map-container form {
+    margin-top: 20px;
 }
 
-.map-page input[type="submit"] {
-    margin-top: 10px;
+.map-container input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.map-container input[type="submit"] {
     padding: 10px 20px;
     border-radius: 5px;
     background-color: #6BFFF7;
     color: #141414;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.map-page input[type="submit"]:hover {
+.map-container input[type="submit"]:hover {
     background-color: #9bf9f5;
 }
 
-.map-page ul.flashes {
+.map-page .flashes {
     list-style: none;
     padding: 0;
     margin-top: 20px;
 }
 
-.map-page ul.flashes li {
+.map-page .flashes li {
     color: #ffffff;
-    background-color: #6BFFF7;
+    background-color: #FF0000;
     padding: 10px;
     border-radius: 5px;
-    margin-top: 10px;
+    margin-bottom: 5px;
 }
+
+
+
 
 /* Media Queries */
 
