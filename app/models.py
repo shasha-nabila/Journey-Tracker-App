@@ -51,3 +51,21 @@ class Admin(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class Journey(db.Model):
+    __tablename__ = 'journey'
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    total_distance = db.Column(db.Float, nullable = False)
+    upload_time = db.Column(db.DateTime, nullable=False) 
+    locations = relationship('Location', backref = 'journey', lazy = True)
+    
+
+class Location(db.Model):
+    __tablename__ = 'location'
+    id = db.Column(db.Integer, primary_key = True)
+    journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable = False)
+    init_latitude = db.Column(db.Float, nullable = False)
+    init_longitude = db.Column(db.Float, nullable = False)
+    goal_latitude = db.Column(db.Float, nullable = False)
+    goal_longitude = db.Column(db.Float, nullable = False)
