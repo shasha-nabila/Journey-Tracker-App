@@ -25,14 +25,14 @@ class User(UserMixin, db.Model):
 class StripeCustomer(db.Model):
     __tablename__ = 'stripe_customer'  # Explicitly setting the table name
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', name='fk_user_id'), nullable=False)
     stripe_customer_id = db.Column(db.String(255), unique=True, nullable=False)
     stripe_subscription = relationship('StripeSubscription', backref='customer', uselist=False, cascade="all, delete-orphan")
 
 class StripeSubscription(db.Model):
     __tablename__ = 'stripe_subscription'  # Explicitly setting the table name
     id = db.Column(db.Integer, primary_key=True)
-    stripe_customer_id = db.Column(db.Integer, db.ForeignKey('stripe_customer.id'), nullable=False)
+    stripe_customer_id = db.Column(db.Integer, db.ForeignKey('stripe_customer.id', ondelete='CASCADE'), nullable=False)
     stripe_subscription_id = db.Column(db.String(255), unique=True, nullable=False)
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     plan = db.Column(db.String(255), nullable=False)
