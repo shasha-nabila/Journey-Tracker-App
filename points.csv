@@ -1,3 +1,10 @@
-name_1,latitude_1,longitude_1,address_1,name_2,latitude_2,longitude_2,address_2
-University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom"
-Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom"
+name_init,latitude_init,longitude_init,address_init,name_goal,latitude_goal,longitude_goal,address_goal,upload_date
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-20 23:38:40
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-20 23:41:11
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-20 23:45:29
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-20 23:47:06
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-20 23:47:52
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-21 08:38:26
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-21 08:44:44
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-21 09:30:30
+University of Leeds,53.8066815,-1.5550328,"University of Leeds, Woodhouse, Leeds LS2 9JT, United Kingdom",Leeds Station,53.7959918,-1.5484392,"Leeds Station, Leeds LS1 4DT, United Kingdom",2024-03-21 09:40:24

@@ -6,7 +6,7 @@ from .models import db, User, Admin, StripeCustomer, StripeSubscription
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,add_locations_from_csv
 from config import ConfigClass
 
 import pandas as pd
@@ -295,16 +295,12 @@ def map():
             distances = [calculate_distance(info[i], info[i+1]) for i in range(len(info)-1)]
             create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances])
 
-            m = folium.Map(location=coordinates[0], zoom_start=17)
-            
-            initial_coordinate = coordinates[0]
-            goal_coordinate = coordinates[-1]
-            initial_marker = folium.Marker(initial_coordinate, tooltip='Departure', icon=folium.Icon(color='green')).add_to(m)
-            goal_marker = folium.Marker(goal_coordinate, tooltip='Arrival', icon=folium.Icon(color='green')).add_to(m)
-             
+            #upload all 
+            add_locations_from_csv(distance_csv_file,points_csv_file,current_user.id)
+              
             # Create and get map HTML
             map_html_content = create_map_html(coordinates)
-                    
+        
             return render_template('map_api.html', map_html_content=map_html_content, distances = distances,)
 
         else:
