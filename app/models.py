@@ -11,8 +11,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    stripe_customer = relationship('StripeCustomer', backref='user', uselist=False)
-    subscription = relationship('StripeSubscription', secondary='stripe_customer', backref='user', uselist=False)
+    stripe_customer = relationship('StripeCustomer', backref='user', uselist=False, cascade="all, delete-orphan")
 
     # method to set user pw (store the hased ver of the pw)
     def set_password(self, password):
@@ -28,7 +27,7 @@ class StripeCustomer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     stripe_customer_id = db.Column(db.String(255), unique=True, nullable=False)
-    stripe_subscription = relationship('StripeSubscription', backref='customer', uselist=False)
+    stripe_subscription = relationship('StripeSubscription', backref='customer', uselist=False, cascade="all, delete-orphan")
 
 class StripeSubscription(db.Model):
     __tablename__ = 'stripe_subscription'  # Explicitly setting the table name
