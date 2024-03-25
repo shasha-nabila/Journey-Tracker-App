@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Map Records</title>
+
+</head>
+<body>
+    <h1>Recent Running Routes</h1>
+    <div class="records-container">
+        {% for journey in journeys %}
+        <div class="journey-block">
+            <p><strong>Upload Time:</strong> {{ journey.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p><strong>Total Distance:</strong> {{ journey.total_distance }} m</p>
+            {% if journey.locations %}
+                <p><strong>Departure:</strong> {{ journey.locations[0].departure }}</p>
+                <p><strong>Arrival:</strong> {{ journey.locations[0].arrival }}</p>
+            {% endif %}
+            {% for filepath in journey.filepath %}
+                <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}" alt="Route Image" style="width:100%;max-width:600px;">
+            {% endfor %}
+        </div>
+    {% endfor %}
+    
+    </div>
+</body>
+</html>
