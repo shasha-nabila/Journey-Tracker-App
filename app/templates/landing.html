@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - My App{% endblock %}
+
+{% block content %}
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: black;">
+    <div class="container">
+        <a class="navbar-brand" href="#homeSection">Logo</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#homeSection">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#visionSection">Vision</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#aboutSection">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#faqSection">FAQ</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Home Section -->
+<section id="homeSection" class="py-5 text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Text Column -->
+            <div class="col-lg-8">
+                <br>
+                <br>
+                <h1 class="display-4">We're PuppyPilot! Pleased to meet you.</h1>
+                <hr>
+            </div>
+            <div class="col-md-8 col-lg-8">
+                <p class="lead">PuppyPilot is designed to bring your journeys to life by visually mapping out the path you've traversed. Whether you're a casual hiker, a dedicated cyclist, or an explorer at heart, PuppyPilot allows you to capture and relive your adventures.</p>
+                <p>View your past adventures, gain insights with detailed statistics, and see how far you've come on your journey with your friends.</p>
+                <!-- Button to create account or login -->
+                <a href="{{ url_for('main.main') }}" class="btn btn-primary">Join us</a>
+            </div>
+            <!-- Image Column -->
+            <div class="col-md-4 col-lg-2">
+                <!-- Update 'path_to_your_puppy_image' to the path of your puppy image -->
+                <img src="{{ url_for('static', filename='images/corgi.png') }}" alt="Puppy Image" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Vision and Mission Section -->
+<section id="visionSection" class="py-5">
+    <div class="container">
+        <h2 class="display-4 text-center">Our Vision and Mission</h2>
+        <br>
+        <div class="row">
+            <!-- Vision Box -->
+            <div class="col-md-6">
+                <div class="vision-box p-3">
+                    <h2>VISION</h2>
+                    <p class="border-box">
+                        To be the leading digital platform that transforms the way individuals and communities interact with their travel experiences, fostering a deeper connection between adventure and data-driven insights.
+                    </p>
+                </div>
+            </div>
+            <!-- Mission Box -->
+            <div class="col-md-6">
+                <div class="mission-box p-3">
+                    <h2>MISSION</h2>
+                    <p class="border-box">
+                        Our mission is to empower explorers of all kinds with intuitive tools to map, analyze, and share their journeys. We strive to enhance the adventure experience by providing a seamless way to upload GPS data, visualize paths, and uncover the stories behind each journey.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- About Section -->
+<section id="aboutSection" class="py-6">
+    <div class="container mt-5">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-12 text-center">
+                <h2 class="section-heading">A bit about us</h2>
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Team Member 1 -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="profile text-center">
+                    <img src="{{ url_for('static', filename='images/eunseok.jpeg') }}" alt="Jimmy Kim" class="img-fluid rounded-circle mb-3">
+                    <h3>Shasha Al Malek</h3>
+                    <p>CEO and Co-Founder</p>
+                </div>
+            </div>
+            <!-- Team Member 2 -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="profile text-center">
+                    <img src="{{ url_for('static', filename='images/eunseok.jpeg') }}" alt="Priscilla Tingey" class="img-fluid rounded-circle mb-3">
+                    <h3>Amine Melab</h3>
+                    <p>Graphic Designer</p>
+                </div>
+            </div>
+            <!-- Team Member 3 -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="profile text-center">
+                    <img src="{{ url_for('static', filename='images/eunseok.jpeg') }}" alt="Bernard Booth" class="img-fluid rounded-circle mb-3">
+                    <h3>Chunghyun Lee</h3>
+                    <p>Web Programmer</p>
+                </div>
+            </div>
+            <!-- Team Member 4 -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="profile text-center">
+                    <img src="{{ url_for('static', filename='images/eunseok.jpeg') }}" alt="Celia Bird" class="img-fluid rounded-circle mb-3">
+                    <h3>Sabrina Azhar</h3>
+                    <p>Web Programmer</p>
+                </div>
+            </div>
+            <!-- Team Member 5 -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="profile text-center">
+                    <img src="{{ url_for('static', filename='images/eunseok.jpeg') }}" alt="Celia Bird" class="img-fluid rounded-circle mb-3">
+                    <h3>Ainina Azman</h3>
+                    <p>Web Developer</p>
+                </div>
+            </div>
+            <!-- Team Member 6 -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="profile text-center">
+                    <img src="{{ url_for('static', filename='images/eunseok.jpeg') }}" alt="Celia Bird" class="img-fluid rounded-circle mb-3">
+                    <h3>Nadhilah Nazri</h3>
+                    <p>Software Tester</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faqSection" class="py-5">
+    <div class="container">
+        <h2 class="display-4">FAQs</h2>
+        <p class="lead">[Add FAQs here]</p>
+    </div>
+</section>
+
+{% endblock %}

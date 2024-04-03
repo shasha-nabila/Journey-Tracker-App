@@ -458,3 +458,49 @@ h2 {
 .confirm-plan-change button:hover {
     background-color: #9bf9f5;
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
+.profile img {
+    width: 14vw;
+    max-width: 130px;
+    min-width: 70px;
+}
+
+.py-6 {
+    padding-bottom: 3rem !important;
+}
+
+.profile {
+    margin: 0 auto; /* Center the card in the column */
+    padding: 1rem; /* Add some spacing inside the card */
+}
+
+.img-fluid {
+    max-width: 54vw;
+    width: 183px;
+}
+
+#visionSection, #faqSection {
+    background-color: #3d3d3d;
+}
+
+.vision-box, .mission-box {
+    border: 2px dashed #fff; /* Creates the dashed border effect */
+    color: #fff; /* Text color */
+    margin: 1rem 0;
+    padding: 2rem;
+}
+
+.vision-box h2, .mission-box h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.border-box {
+    border: 3px solid #fff; /* Solid border inside */
+    padding: 1rem;
+    text-align: justify;
+}

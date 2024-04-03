@@ -27,6 +27,11 @@ price_ids = {
 # route for homepage
 @main_blueprint.route('/')
 def index():
+    return render_template('landing.html')
+
+# route for main page
+@main_blueprint.route('/main')
+def main():
     return render_template('main.html')
 
 # route for login page
