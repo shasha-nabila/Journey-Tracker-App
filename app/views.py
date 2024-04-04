@@ -9,6 +9,8 @@ from werkzeug.utils import secure_filename
 from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,add_locations_from_csv
 from config import ConfigClass
 
+from flask import jsonify
+
 import pandas as pd
 import folium
 import gpxpy
@@ -307,6 +309,57 @@ def map():
             return redirect(request.url)
     
     return render_template('map.html')
+
+# Create route to search friends
+@main_blueprint.route('/friends')
+def friends():
+    return render_template('friends.html')
+
+@main_blueprint.route('/search')
+def search_users():
+    query = request.args.get('query', '')
+    if query:
+        # Query users from the database
+        users = User.query.filter(User.username.like(f'%{query}%')).filter(User.id != current_user.id).all()
+        users_list = [{'id': user.id, 'username': user.username} for user in users]
+        return jsonify({'users': users_list})
+    return jsonify({'users': []})
+
+@main_blueprint.route('/send_friend_request/<int:user_id>', methods=['POST'])
+@login_required
+def send_friend_request(user_id):
+    if request.method == 'POST':
+        to_user = User.query.get(user_id)
+        if to_user:
+            existing_request = FriendRequest.query.filter_by(from_user_id=current_user.id, to_user_id=to_user.id).first()
+            if existing_request:
+                return jsonify({'success': False, 'message': 'Friend request already sent.'})
+            friend_request = FriendRequest(from_user=current_user, to_user=to_user)
+            db.session.add(friend_request)
+            db.session.commit()
+            return jsonify({'success': True, 'message': 'Friend request sent successfully!'})
+    return jsonify({'success': False, 'message': 'Failed to send friend request.'})
+
+@main_blueprint.route('/respond_friend_request/<int:request_id>/<action>', methods=['POST'])
+@login_required
+def respond_friend_request(request_id, action):
+    if action not in ['accept', 'decline']:
+        return jsonify({'success': False, 'message': 'Invalid action.'})
+
+    friend_request = FriendRequest.query.get(request_id)
+    if not friend_request:
+        return jsonify({'success': False, 'message': 'Friend request not found.'})
+
+    if action == 'accept':
+        friend_request.status = 'accepted'
+        current_user.friends.append(friend_request.from_user)
+        friend_request.from_user.friends.append(current_user)
+    else:
+        friend_request.status = 'declined'
+
+    db.session.commit()
+    return jsonify({'success': True, 'message': f'Friend request {action}ed successfully.'})
+
 
 # register the blueprint with the app
 def configure_routes(app):

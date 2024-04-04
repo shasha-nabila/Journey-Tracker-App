@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Friends - My Flask App{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search for Friend</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg sticky-top navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">Logo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.map') }}">Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="friends">
+        <h1>Friends</h1>
+        <!-- Search bar -->
+        <input type="text" id="searchInput" placeholder="Search for friends...">      
+        <!-- List of friends -->
+        <ul id="friendList">
+            <!-- Friends will be dynamically added here -->
+        </ul>
+        <!-- Suggested Users -->
+        <h2>Suggested Users</h2>
+        <ul id="suggestedUserList">
+            <!-- Suggested users will be dynamically added here -->
+        </ul>
+
+        <!-- Include script.js -->
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

@@ -26,3 +26,7 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError('This username is taken. Please choose a different one.')
+        
+#class FriendSearchForm(FlaskForm):
+#    search_query = StringField('Search', validators=[DataRequired()])
+#    submit = SubmitField('Search')
