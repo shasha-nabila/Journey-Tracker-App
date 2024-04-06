@@ -126,6 +126,18 @@ def create_map_html(coordinates):
     
     return m._repr_html_()
 
+def create_multiple_route_map_html(gpx_file):
+
+    map = folium.Map(Location =[0, 0], zoom_start = 2)
+
+    for gpx_file in gpx_file:
+        coordinates = parse_gpx(gpx_file)
+        if coordinates:
+            folium.PolyLine(coordinates).add_to(map)
+    
+    return map._repr_html_()
+     
+
 def calculate_distance(point1, point2):
     coords_1 = (point1['latitude'], point1['longitude'])
     coords_2 = (point2['latitude'], point2['longitude'])
@@ -214,4 +226,3 @@ def create_route_image(coordinates, output_dir):
     plt.close()
 
     return file_path 
-

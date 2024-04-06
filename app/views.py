@@ -6,7 +6,7 @@ from .models import db, User, Admin, StripeCustomer, StripeSubscription, Filepat
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html
 from config import ConfigClass
 
 import pandas as pd
@@ -102,8 +102,10 @@ def register():
 @main_blueprint.route('/dashboard')
 @login_required
 def dashboard():
+
     return render_template('dashboard.html')
 
+            
 # route for logout
 @main_blueprint.route('/logout')
 def logout():
@@ -279,7 +281,7 @@ def map():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        
+                
         if  file and allowed_file(file.filename):
             gpx_file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
             
@@ -322,7 +324,23 @@ def map():
 def records():
 
     journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+    
     return render_template('map_record.html', journeys=journeys)
+
+@main_blueprint.route('/map_record/submit-selected-journeys', methods=['POST'])
+def submit_selected_journey_map():
+    
+    selected_journeys = request.form.getlist('journey_ids')
+    gpx_file_paths = []
+
+    for journey_id in selected_journeys:
+        filepath_info = Filepath.query.filter_by(journey_id = journey_id).all()
+        for entry in filepath_info:
+            gpx_file_paths.append(entry.gpx_file_path)
+
+    multiple_route_map_html_content = create_multiple_route_map_html(gpx_file_paths)
+
+    return render_template('multiple_route_map_api.html', multiple_route_map_html_content = multiple_route_map_html_content)
 
 # register the blueprint with the app
 def configure_routes(app):
