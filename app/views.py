@@ -2,11 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
-from .models import db, User, Admin, StripeCustomer, StripeSubscription
+from .models import db, User, Admin, StripeCustomer, StripeSubscription, Filepath,Journey,Location
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,add_locations_from_csv
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html
 from config import ConfigClass
 
 import pandas as pd
@@ -107,8 +107,10 @@ def register():
 @main_blueprint.route('/dashboard')
 @login_required
 def dashboard():
+
     return render_template('dashboard.html')
 
+            
 # route for logout
 @main_blueprint.route('/logout')
 def logout():
@@ -284,12 +286,16 @@ def map():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        
+                
         if  file and allowed_file(file.filename):
-            file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
+            gpx_file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
             
-            coordinates = parse_gpx(file_path)
-            info = info_parse_gpx(file_path)
+            coordinates = parse_gpx(gpx_file_path)
+            info = info_parse_gpx(gpx_file_path)
+
+            # Create image file for route
+            file_path = 'app/static/image'
+            image_file_path = create_route_image(coordinates, file_path)
 
             # Create CSV for points
             points_csv_file = 'points.csv'
@@ -300,8 +306,14 @@ def map():
             distances = [calculate_distance(info[i], info[i+1]) for i in range(len(info)-1)]
             create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances])
 
-            #upload all 
-            add_locations_from_csv(distance_csv_file,points_csv_file,current_user.id)
+            #upload to Journey class
+            new_journey = upload_journey_database(distance_csv_file,current_user.id,)
+
+            #upload to Filepath class
+            upload_filepath_database(new_journey, image_file_path, gpx_file_path)
+
+            #upload to Location class
+            upload_location_database(points_csv_file, new_journey)
               
             # Create and get map HTML
             map_html_content = create_map_html(coordinates)
@@ -312,6 +324,28 @@ def map():
             return redirect(request.url)
     
     return render_template('map.html')
+
+@main_blueprint.route('/map_record', methods=['GET'])
+def records():
+
+    journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+    
+    return render_template('map_record.html', journeys=journeys)
+
+@main_blueprint.route('/map_record/submit-selected-journeys', methods=['POST'])
+def submit_selected_journey_map():
+    
+    selected_journeys = request.form.getlist('journey_ids')
+    gpx_file_paths = []
+
+    for journey_id in selected_journeys:
+        filepath_info = Filepath.query.filter_by(journey_id = journey_id).all()
+        for entry in filepath_info:
+            gpx_file_paths.append(entry.gpx_file_path)
+
+    multiple_route_map_html_content = create_multiple_route_map_html(gpx_file_paths)
+
+    return render_template('multiple_route_map_api.html', multiple_route_map_html_content = multiple_route_map_html_content)
 
 # register the blueprint with the app
 def configure_routes(app):

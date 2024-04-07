@@ -3,11 +3,15 @@ from .models import StripeSubscription
 from geopy.distance import geodesic
 from config import ConfigClass
 from werkzeug.utils import secure_filename
-from .models import StripeSubscription,Location,Journey
+from .models import StripeSubscription,Location,Journey,Filepath
 import random
 from datetime import datetime
 from .extensions import db
 from flask_login import current_user
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg') 
+
 
 def is_valid_password(password_hash):
     # Password must have at least 1 capital letter, 1 numeric, and be at least 8 characters long
@@ -122,45 +126,103 @@ def create_map_html(coordinates):
     
     return m._repr_html_()
 
+def create_multiple_route_map_html(gpx_file):
+
+    map = folium.Map(Location =[0, 0], zoom_start = 2)
+
+    for gpx_file in gpx_file:
+        coordinates = parse_gpx(gpx_file)
+        if coordinates:
+            folium.PolyLine(coordinates).add_to(map)
+    
+    return map._repr_html_()
+     
+
 def calculate_distance(point1, point2):
     coords_1 = (point1['latitude'], point1['longitude'])
     coords_2 = (point2['latitude'], point2['longitude'])
     return geodesic(coords_1, coords_2).meters
 
-def uplaod_journey_database(user_id, total_distance, upload_time):
-       
-    new_journey = Journey(
-        user_id=user_id,
-        total_distance=total_distance,
-        upload_time=upload_time
-        )
-        
-    db.session.add(new_journey)
-        
-    db.session.commit()
-        
+def upload_journey_database(csv_file_path, user_id):
+
+    with open(csv_file_path, 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+
+            existing_journey = Journey.query.filter_by(
+                user_id = user_id,
+                total_distance=float(row['distance']),
+                upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                
+            ).first()
+
+            if not existing_journey:
+                new_journey = Journey(
+                    user_id = user_id,
+                    total_distance=float(row['distance']),
+                    upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                )
+                db.session.add(new_journey)
+        db.session.commit()
+    
     return new_journey
 
-def add_locations_from_csv(csv_file_path_1,csv_file_path_2, user_id):
+def upload_filepath_database(new_journey, image_file_path, gpx_file_path):
+   
+    new_filepath = Filepath(
+    journey_id=new_journey.id,
+    image_file_path=image_file_path,
+    gpx_file_path=gpx_file_path
+        )
+    db.session.add(new_filepath)
+    db.session.commit()
 
-    with open(csv_file_path_1, 'r') as csvfile:
+def upload_location_database(csv_file_path, new_journey):
+
+    with open(csv_file_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
-        first_row = next(reader)  
-        total_distance = float(first_row['distance'])  
-        upload_time = datetime.strptime(first_row['upload_time'], '%Y-%m-%d %H:%M:%S')  # upload_time 값을 얻습니다.
-
-    new_journey = uplaod_journey_database(user_id, total_distance, upload_time)
-
-    with open(csv_file_path_2, 'r') as csvfile:
-        reader = csv.DictReader(csvfile)  
         for row in reader:
-            
-            location = Location(
-                journey_id=new_journey.id,  
-                init_latitude=float(row['latitude_init']),
-                init_longitude=float(row['longitude_init']),
-                goal_latitude=float(row['latitude_goal']),
-                goal_longitude=float(row['longitude_goal'])
-            )
-            db.session.add(location)  
-        db.session.commit()  
+
+            existing_location = Location.query.filter_by(
+                upload_time=datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
+            ).first()
+         
+            if not existing_location:
+                location = Location(
+                    journey_id=new_journey.id,  
+                    init_latitude=float(row['latitude_init']),
+                    init_longitude=float(row['longitude_init']),
+                    goal_latitude=float(row['latitude_goal']),
+                    goal_longitude=float(row['longitude_goal']),
+                    departure=row['name_init'],
+                    arrival=row['name_goal'],
+                    upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
+                )
+                db.session.add(location)
+        db.session.commit()
+ 
+def create_route_image(coordinates, output_dir):
+
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = f"{output_dir}/{current_time}_route.png"
+
+    latitudes, longitudes = zip(*coordinates)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(longitudes, latitudes, color='white', linewidth=3)  
+    plt.gca().set_facecolor('black') 
+
+
+    plt.gca().axes.get_xaxis().set_visible(False)
+    plt.gca().axes.get_yaxis().set_visible(False)
+
+
+    plt.subplots_adjust(top=1, bottom=0, right=1, left=0, 
+                        hspace=0, wspace=0)
+    plt.margins(0,0)
+
+
+    plt.savefig(file_path, format='png', dpi=300, bbox_inches='tight', pad_inches=0)
+    plt.close()
+
+    return file_path 
