@@ -47,11 +47,11 @@
                     <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}" alt="Route Image">
                 {% endfor %}
                 <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
-
             </div>
             {% endfor %}
             <button type="submit">Submit Selected Journeys</button>
         </form>
+        <a href="{{ url_for('main.map') }}" class="map">Map</a>
     </div>
 </body>
 </html>

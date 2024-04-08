@@ -102,10 +102,9 @@ def register():
 @main_blueprint.route('/dashboard')
 @login_required
 def dashboard():
-
+    
     return render_template('dashboard.html')
 
-            
 # route for logout
 @main_blueprint.route('/logout')
 def logout():
