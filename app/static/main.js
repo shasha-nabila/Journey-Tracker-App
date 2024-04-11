@@ -9,8 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
 // Chart Generation
 document.addEventListener('DOMContentLoaded', function () {
     if (window.cumulativeRevenue) {
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        const revenueChart = new Chart(ctx, {
+        const canvas = document.getElementById('revenueChart');
+        const ctx = canvas.getContext('2d');
+        // Check if the chart instance already exists
+        if (window.revenueChartInstance) {
+            window.revenueChartInstance.destroy();
+        }
+        // Create the chart instance and store it on the window object
+        window.revenueChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [...Array(window.cumulativeRevenue.length).keys()].map(i => `Week ${i + 1}`),
@@ -23,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -31,4 +38,18 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+});
+
+// Initialize Sidebar
+jQuery(document).ready(function ($) {
+
+    $("#sidebar").mCustomScrollbar({
+        theme: "minimal"
+    });
+
+    $('#sidebarCollapse').on('click', function () {
+        // open or close navbar
+        $('#sidebar').toggleClass('active');
+    });
+
 });

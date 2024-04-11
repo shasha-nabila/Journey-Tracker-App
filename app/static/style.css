@@ -99,13 +99,13 @@ h1 {
 
 .btn-custom-color {
     background-color: #6BFFF7 !important;
-    border-color: #dddcdc !important;
+    border-color: #737373 !important;
     font-family: monospace !important;
 }
 
 .btn-custom-color:hover {
     background-color: #9bf9f5 !important;
-    border-color: #dddcdc !important;
+    border-color: #737373 !important;
 }
 
 .card {
@@ -211,8 +211,10 @@ h2 {
     margin-top: 30px;
     text-align: center;
     width: 70%;
-    max-width: 400px; /* Maximum width for better readability on larger screens */
-    padding: 20px; /* Add some padding for better spacing */
+    max-width: 400px;
+    /* Maximum width for better readability on larger screens */
+    padding: 20px;
+    /* Add some padding for better spacing */
 }
 
 .payment-page h1 {
@@ -222,8 +224,10 @@ h2 {
 
 .payment-page label {
     color: #ffffff;
-    text-align: left; /* Align labels to the left */
-    display: block; /* Ensure labels are displayed as blocks for proper alignment */
+    text-align: left;
+    /* Align labels to the left */
+    display: block;
+    /* Ensure labels are displayed as blocks for proper alignment */
 }
 
 .payment-page input[type="email"],
@@ -274,12 +278,14 @@ h2 {
 
 /* Membership page */
 .membership-plans {
-    margin-top: 20vh; /* Adjust as needed */
+    margin-top: 20vh;
+    /* Adjust as needed */
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Added */
+    justify-content: center;
+    /* Added */
 }
 
 .membership-plans h1 {
@@ -292,24 +298,30 @@ h2 {
 
 .membership-plans .plan {
     display: flex;
-    flex-wrap: wrap; /* Allow options to wrap to next line */
+    flex-wrap: wrap;
+    /* Allow options to wrap to next line */
     justify-content: center;
     margin-top: 20px;
 }
 
 .membership-plans .plan-option {
-    width: calc(33% - 20px); /* Adjusted width for smaller screens with margins */
-    max-width: 300px; /* Added max-width to prevent options from stretching too much */
+    width: calc(33% - 20px);
+    /* Adjusted width for smaller screens with margins */
+    max-width: 300px;
+    /* Added max-width to prevent options from stretching too much */
     background-color: #ffffff;
     padding: 15px;
     border-radius: 10px;
-    margin: 10px; /* Adjusted */
-    box-sizing: border-box; /* Include padding and border in width calculation */
+    margin: 10px;
+    /* Adjusted */
+    box-sizing: border-box;
+    /* Include padding and border in width calculation */
 }
 
 .membership-plans .plan-option h2,
 .membership-plans .plan-option p {
-    color: #000000 !important; /* Changed color to black */
+    color: #000000 !important;
+    /* Changed color to black */
     font-family: monospace;
     font-size: 20px;
 }
@@ -335,13 +347,15 @@ h2 {
 /* Adjustments for Smaller Screens */
 @media (max-width: 768px) {
     .membership-plans .plan-option {
-        width: calc(50% - 20px); /* Adjusted width for smaller screens with margins */
+        width: calc(50% - 20px);
+        /* Adjusted width for smaller screens with margins */
     }
 }
 
 @media (max-width: 576px) {
     .membership-plans .plan-option {
-        width: calc(100% - 20px); /* Adjusted width for even smaller screens with margins */
+        width: calc(100% - 20px);
+        /* Adjusted width for even smaller screens with margins */
     }
 }
 
@@ -403,15 +417,71 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 10px;
-    margin-right: 10px; /* Change margin between buttons */
+    margin-right: 10px;
+    /* Change margin between buttons */
 }
 
 .confirm-plan-change button:last-child {
-    margin-right: 20px; /* Increase margin between buttons */
+    margin-right: 20px;
+    /* Increase margin between buttons */
 }
 
 .confirm-plan-change button:hover {
     background-color: #9bf9f5;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.profile img {
+    width: 14vw;
+    max-width: 130px;
+    min-width: 70px;
+}
+
+.py-6 {
+    padding-bottom: 3rem !important;
+}
+
+.profile {
+    margin: 0 auto;
+    /* Center the card in the column */
+    padding: 1rem;
+    /* Add some spacing inside the card */
+}
+
+.img-fluid {
+    max-width: 54vw;
+    width: 183px;
+}
+
+#visionSection,
+#faqSection {
+    background-color: #3d3d3d;
+}
+
+.vision-box,
+.mission-box {
+    border: 2px dashed #fff;
+    /* Creates the dashed border effect */
+    color: #fff;
+    /* Text color */
+    margin: 1rem 0;
+    padding: 2rem;
+}
+
+.vision-box h2,
+.mission-box h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.border-box {
+    border: 3px solid #fff;
+    /* Solid border inside */
+    padding: 1rem;
+    text-align: justify;
 }
 
 /* map page */
@@ -475,73 +545,85 @@ h2 {
     margin-bottom: 5px;
 }
 
-
-
-
 /* Media Queries */
 
 @media (max-width: 768px) {
     .welcome-section {
-        width: 80%; /* Adjusted width for smaller screens */
+        width: 80%;
+        /* Adjusted width for smaller screens */
     }
 
     .dashboard-section {
-        width: 70%; /* Adjusted width for smaller screens */
+        width: 70%;
+        /* Adjusted width for smaller screens */
     }
 
     .subscription-success {
-        width: 80%; /* Adjusted width for smaller screens */
+        width: 80%;
+        /* Adjusted width for smaller screens */
     }
 
     .confirm-plan-change {
-        width: 80%; /* Adjusted width for smaller screens */
+        width: 80%;
+        /* Adjusted width for smaller screens */
     }
 
     .map-page {
-        width: 80%; /* Adjusted width for smaller screens */
+        width: 80%;
+        /* Adjusted width for smaller screens */
     }
 }
 
 @media (max-width: 576px) {
     .welcome-section {
-        width: 90%; /* Further adjusted width for even smaller screens */
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
     }
 
     .dashboard-section {
-        width: 80%; /* Further adjusted width for even smaller screens */
+        width: 80%;
+        /* Further adjusted width for even smaller screens */
     }
 
     .subscription-success {
-        width: 90%; /* Further adjusted width for even smaller screens */
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
     }
 
     .confirm-plan-change {
-        width: 90%; /* Further adjusted width for even smaller screens */
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
     }
 
     .map-page {
-        width: 90%; /* Further adjusted width for even smaller screens */
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
     }
 }
 
 @media (max-width: 400px) {
     .welcome-section {
-        width: 95%; /* Adjusted width for smallest screens */
+        width: 95%;
+        /* Adjusted width for smallest screens */
     }
 
     .dashboard-section {
-        width: 90%; /* Adjusted width for smallest screens */
+        width: 90%;
+        /* Adjusted width for smallest screens */
     }
 
     .subscription-success {
-        width: 95%; /* Adjusted width for smallest screens */
+        width: 95%;
+        /* Adjusted width for smallest screens */
     }
 
     .confirm-plan-change {
-        width: 95%; /* Adjusted width for smallest screens */
+        width: 95%;
+        /* Adjusted width for smallest screens */
     }
 
     .map-page {
-        width: 95%; /* Adjusted width for smallest screens */
+        width: 95%;
+        /* Adjusted width for smallest screens */
     }
 }

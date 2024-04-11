@@ -5,6 +5,7 @@ from flask_admin import AdminIndexView, expose
 from werkzeug.exceptions import HTTPException
 from .models import Admin, StripeSubscription, StripeCustomer
 from sqlalchemy.orm import aliased
+from sqlalchemy import func
 from .extensions import db
 from .utils import calculate_projected_revenue
 
@@ -93,6 +94,24 @@ class MyAdminIndexView(AdminIndexView):
     @expose('/')
     def index(self):
         projected_revenue = calculate_projected_revenue(db)
-        # Convert weekly data into cumulative revenue for visualization
         cumulative_revenue = [sum(projected_revenue[:i+1]) for i in range(len(projected_revenue))]
-        return self.render('admin/index.html', cumulative_revenue=cumulative_revenue)
+        
+        # Calculate the number of active subscriptions for each plan
+        plan_counts = db.session.query(
+            StripeSubscription.plan,
+            func.count(StripeSubscription.id)
+        ).filter_by(active=True).group_by(StripeSubscription.plan).all()
+
+        # Convert the query result to a dictionary {plan: count}
+        plan_counts_dict = {plan: count for plan, count in plan_counts}
+
+        # If specific plans are not found in the dictionary, set their count to 0
+        plan_counts_dict.setdefault('Weekly', 0)
+        plan_counts_dict.setdefault('Monthly', 0)
+        plan_counts_dict.setdefault('Yearly', 0)
+
+        return self.render(
+            'admin/index.html',
+            cumulative_revenue=cumulative_revenue,
+            plan_counts=plan_counts_dict
+        )
