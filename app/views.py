@@ -102,7 +102,7 @@ def register():
 @main_blueprint.route('/dashboard')
 @login_required
 def dashboard():
-    
+
     return render_template('dashboard.html')
 
 # route for logout
@@ -266,6 +266,17 @@ def change_plan():
 
 @main_blueprint.route('/map', methods=['GET', 'POST'])
 def map():
+
+    if request.method == 'GET':
+        stripe_customer = StripeCustomer.query.filter_by(user_id = current_user.id).first()
+
+        if not stripe_customer:
+            
+            flash('No active subscription found.', 'danger')
+            return redirect(url_for('main.subscription'))
+    else:
+        redirect(request.url)
+    
     if request.method == 'POST':
 
         if not os.path.exists(ConfigClass.UPLOAD_FOLDER):
@@ -319,12 +330,19 @@ def map():
     
     return render_template('map.html')
 
-@main_blueprint.route('/map_record', methods=['GET'])
+@main_blueprint.route('/map_record', methods=['GET','POST'])
 def records():
+    if request.method == 'GET':
+        stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
 
-    journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+        if not stripe_customer:
+            flash('No active subscription found', 'danger')
+            return redirect(url_for('main.subscription'))
+        
+        journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+        return render_template('map_record.html', journeys=journeys)
     
-    return render_template('map_record.html', journeys=journeys)
+    return redirect(request.url)
 
 @main_blueprint.route('/map_record/submit-selected-journeys', methods=['POST'])
 def submit_selected_journey_map():

@@ -1,5 +1,5 @@
 import re, gpxpy, csv, os, folium
-from .models import StripeSubscription
+from .models import StripeCustomer, StripeSubscription
 from geopy.distance import geodesic
 from config import ConfigClass
 from werkzeug.utils import secure_filename
@@ -10,6 +10,7 @@ from .extensions import db
 from flask_login import current_user
 import matplotlib.pyplot as plt
 import matplotlib
+from flask_sqlalchemy import SQLAlchemy
 matplotlib.use('Agg') 
 
 
