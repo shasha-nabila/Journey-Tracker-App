@@ -1,5 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Tracks{% endblock %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Map Records</title>
@@ -8,6 +14,7 @@
             max-width: 800px;
             margin: auto;
         }
+
         .journey-block {
             border: 1px solid #ddd;
             margin-bottom: 20px;
@@ -15,43 +22,53 @@
             border-radius: 5px;
             background-color: #f9f9f9;
         }
+
         .journey-block p {
             margin: 10px 0;
         }
+
         .journey-block img {
             max-width: 100%;
             height: auto;
             margin-top: 10px;
             border-radius: 5px;
         }
+
         .delete-form {
             display: inline;
         }
     </style>
 </head>
+
 <body>
-    <h1>Recent Running Routes</h1>
+    <header>
+        {% include 'navbar.html' %}
+    </header>
     <div class="records-container">
 
+        <a href="{{ url_for('main.map') }}" class="map">Upload a Track</a>
         <form action="/map_record/submit-selected-journeys" method="post">
             {% for journey in journeys %}
             <div class="journey-block">
                 <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
-                <p><strong>Upload Time:</strong> {{ journey.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                <p><strong>Total Distance:</strong> {{ journey.total_distance }} m</p>
                 {% if journey.locations %}
-                    <p><strong>Departure:</strong> {{ journey.locations[0].departure }}</p>
-                    <p><strong>Arrival:</strong> {{ journey.locations[0].arrival }}</p>
+                <p><strong>From:</strong> {{ journey.locations[0].departure }}</p>
+                <p><strong>To:</strong> {{ journey.locations[0].arrival }}</p>
                 {% endif %}
+                <p><strong>Distance Travelled:</strong> {{ journey.total_distance }} m</p>
+                <p><strong>Upload Date:</strong> {{ journey.upload_time.strftime('%d-%m-%Y %H:%M:%S') }}</p>
                 {% for filepath in journey.filepath %}
-                    <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}" alt="Route Image">
+                <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
+                    alt="Route Image">
                 {% endfor %}
                 <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
-
             </div>
             {% endfor %}
-            <button type="submit">Submit Selected Journeys</button>
+            <button type="submit">Show Selected Tracks</button>
         </form>
     </div>
 </body>
+
 </html>
+
+{% endblock %}
