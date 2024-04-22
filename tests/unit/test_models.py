@@ -335,6 +335,9 @@ def test_stripe_subscription_id_uniqueness(test_db):
     WHEN a new StripeSubscription is created with an existing stripe_subscription_id
     THEN the database should raise an IntegrityError
     """
+    # Start clean session
+    test_db.session.rollback()
+
     # Creating a User and StripeCustomer for our StripeSubscription
     user = User(username='stripe_test_user', email='stripe_test@example.com')
     user.set_password('password123')
@@ -382,6 +385,9 @@ def test_default_values_stripe_subscription(test_db, plan):
     WHEN a new StripeSubscription is created without explicitly setting `active` and `start_date`
     THEN check that the `active` field defaults to True and the `start_date` defaults to the current UTC time
     """
+    # Start clean session
+    test_db.session.rollback()
+
     # GIVEN
     user = User(username='test_user_default', email='default@example.com')
     user.set_password('securepassword')
@@ -421,6 +427,9 @@ def test_user_customer_subscription_relationship(test_db, plan):
     WHEN they are linked together and data is added to the database
     THEN check that the relationships between these models are maintained and data integrity is preserved
     """
+    # Start clean session
+    test_db.session.rollback()
+
     # Create a new User
     user = User(username='test_relationship_user', email='relationship@example.com')
     user.set_password('secure123')
@@ -509,6 +518,9 @@ def test_stripe_customer_missing_required_fields(test_db, missing_field):
     WHEN a new StripeCustomer is created missing a required field
     THEN the database should raise an IntegrityError
     """
+    # Start clean session
+    test_db.session.rollback()
+
     params = {"user_id": 1, "stripe_customer_id": "cust_67890"}
     params.pop(missing_field, None)  # Remove the field to test its absence
 
