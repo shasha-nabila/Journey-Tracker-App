@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Tracks{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Map Records</title>
+    <style>
+        .records-container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .journey-block {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .journey-block p {
+            margin: 10px 0;
+        }
+
+        .journey-block img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .delete-form {
+            display: inline;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        {% include 'navbar.html' %}
+    </header>
+    <div class="records-container">
+
+        <a href="{{ url_for('main.map') }}" class="map">Upload a Track</a>
+        <form action="/map_record/submit-selected-journeys" method="post">
+            {% for journey in journeys %}
+            <div class="journey-block">
+                <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
+                {% if journey.locations %}
+                <p><strong>From:</strong> {{ journey.locations[0].departure }}</p>
+                <p><strong>To:</strong> {{ journey.locations[0].arrival }}</p>
+                {% endif %}
+                <p><strong>Distance Travelled:</strong> {{ journey.total_distance }} m</p>
+                <p><strong>Upload Date:</strong> {{ journey.upload_time.strftime('%d-%m-%Y %H:%M:%S') }}</p>
+                {% for filepath in journey.filepath %}
+                <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
+                    alt="Route Image">
+                {% endfor %}
+                <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
+            </div>
+            {% endfor %}
+            <button type="submit">Show Selected Tracks</button>
+        </form>
+    </div>
+</body>
+
+</html>
+
+{% endblock %}

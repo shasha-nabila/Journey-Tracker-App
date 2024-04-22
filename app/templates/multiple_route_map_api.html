@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Single Route Map{% endblock %}
+{% block title %}Multiple Route Map{% endblock %}
 
 {% block content %}
 
@@ -49,10 +49,13 @@
 </head>
 
 <body>
-    {% include 'map_navigator.html' %}
+
+    <header>
+        {% include 'navbar.html' %}
+    </header>
 
     <div id="map">
-        {{ map_html_content | safe }}
+        {{ multiple_route_map_html_content | safe }}
     </div>
 </body>
 
