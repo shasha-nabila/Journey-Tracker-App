@@ -293,8 +293,12 @@ def test_new_stripe_subscription(test_db, plan):
     # Start clean session
     test_db.session.rollback()
 
+    timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+    username = f'stripe_user_{timestamp}'
+    email = f'stripe_{timestamp}@example.com'
+
     # GIVEN
-    user = User(username='stripe_user', email='stripe@example.com')
+    user = User(username=username, email=email)
     user.set_password('securepassword123')
     test_db.session.add(user)
     test_db.session.commit()
@@ -388,20 +392,27 @@ def test_default_values_stripe_subscription(test_db, plan):
     # Start clean session
     test_db.session.rollback()
 
+    # Use the current timestamp to ensure uniqueness
+    timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+    unique_username = f'test_user_{timestamp}'
+    unique_email = f'default_{timestamp}@example.com'
+    unique_stripe_customer_id = f'cust_default{timestamp}'
+    unique_stripe_subscription_id = f'sub_default{timestamp}'
+
     # GIVEN
-    user = User(username='test_user_default', email='default@example.com')
+    user = User(username=unique_username, email=unique_email)
     user.set_password('securepassword')
     test_db.session.add(user)
     test_db.session.commit()
 
-    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id='cust_default123456')
+    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id=unique_stripe_customer_id)
     test_db.session.add(stripe_customer)
     test_db.session.commit()
 
     # WHEN
     stripe_subscription = StripeSubscription(
         stripe_customer_id=stripe_customer.id,
-        stripe_subscription_id='sub_default123',
+        stripe_subscription_id=unique_stripe_subscription_id,
         plan=plan
     )
     test_db.session.add(stripe_subscription)
@@ -430,21 +441,28 @@ def test_user_customer_subscription_relationship(test_db, plan):
     # Start clean session
     test_db.session.rollback()
 
+    # Use the current timestamp to ensure uniqueness
+    timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+    unique_username = f'test_relationship_user_{timestamp}'
+    unique_email = f'relationship_{timestamp}@example.com'
+    unique_stripe_customer_id = f'cust_{timestamp}'
+    unique_stripe_subscription_id = f'sub_{timestamp}'
+
     # Create a new User
-    user = User(username='test_relationship_user', email='relationship@example.com')
+    user = User(username=unique_username, email=unique_email)
     user.set_password('secure123')
     test_db.session.add(user)
     test_db.session.commit()
 
     # Create a StripeCustomer linked to the User
-    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id='cust_999999')
+    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id=unique_stripe_customer_id)
     test_db.session.add(stripe_customer)
     test_db.session.commit()
 
     # Create a StripeSubscription linked to the StripeCustomer
     stripe_subscription = StripeSubscription(
         stripe_customer_id=stripe_customer.id,
-        stripe_subscription_id='sub_999999',
+        stripe_subscription_id=unique_stripe_subscription_id,
         start_date=datetime.utcnow(),
         plan=plan,
         active=True
@@ -476,19 +494,26 @@ def test_cascade_delete_from_stripe_customer_to_subscription(test_db, plan):
     # Start clean session
     test_db.session.rollback()
 
-    # Setup a User, StripeCustomer, and StripeSubscription
-    user = User(username='cascade_test_user', email='cascade_test@example.com')
+    # Generate a unique timestamp
+    timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+    unique_username = f'cascade_test_user_{timestamp}'
+    unique_email = f'cascade_{timestamp}@example.com'
+    unique_stripe_customer_id = f'cust_cascade{timestamp}'
+    unique_stripe_subscription_id = f'sub_cascade{timestamp}'
+
+    # Setup a User, StripeCustomer, and StripeSubscription with unique identifiers
+    user = User(username=unique_username, email=unique_email)
     user.set_password('securepassword123')
     test_db.session.add(user)
     test_db.session.commit()
 
-    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id='cust_cascade123')
+    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id=unique_stripe_customer_id)
     test_db.session.add(stripe_customer)
     test_db.session.commit()
 
     stripe_subscription = StripeSubscription(
         stripe_customer_id=stripe_customer.id,
-        stripe_subscription_id='sub_cascade123',
+        stripe_subscription_id=unique_stripe_subscription_id,
         start_date=datetime.utcnow(),
         plan=plan,
         active=True
@@ -504,7 +529,7 @@ def test_cascade_delete_from_stripe_customer_to_subscription(test_db, plan):
     test_db.session.commit()
 
     # Check if the StripeSubscription has also been deleted
-    deleted_subscription = StripeSubscription.query.filter_by(stripe_subscription_id='sub_cascade123').first()
+    deleted_subscription = StripeSubscription.query.filter_by(stripe_subscription_id=unique_stripe_subscription_id).first()
     assert deleted_subscription is None, "StripeSubscription should be deleted when its StripeCustomer is deleted"
 
     # Cleanup
