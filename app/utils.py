@@ -1,15 +1,17 @@
 import re, gpxpy, csv, os, folium
-from .models import StripeSubscription
+from .models import StripeCustomer, StripeSubscription
 from geopy.distance import geodesic
 from config import ConfigClass
 from werkzeug.utils import secure_filename
 from .models import StripeSubscription,Location,Journey,Filepath
+from sqlalchemy.orm import aliased
 import random
 from datetime import datetime
 from .extensions import db
 from flask_login import current_user
 import matplotlib.pyplot as plt
 import matplotlib
+from flask_sqlalchemy import SQLAlchemy
 matplotlib.use('Agg') 
 
 
@@ -226,3 +228,18 @@ def create_route_image(coordinates, output_dir):
     plt.close()
 
     return file_path 
+
+def find_active_subscription(user):
+    # Alias for StripeCustomer to use in our subquery
+    stripe_customer_alias = aliased(StripeCustomer)
+    
+    # Find the active subscription for this user
+    active_subscription = StripeSubscription.query.join(
+        stripe_customer_alias, 
+        stripe_customer_alias.id == StripeSubscription.stripe_customer_id
+    ).filter(
+        stripe_customer_alias.user_id == user.id,
+        StripeSubscription.active == True
+    ).order_by(StripeSubscription.start_date.desc()).first()  # Assuming you want the latest subscription
+    
+    return active_subscription.plan if active_subscription else 'No Subscription'

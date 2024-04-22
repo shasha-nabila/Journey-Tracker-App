@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
@@ -6,7 +6,7 @@ from .models import db, User, Admin, StripeCustomer, StripeSubscription, Filepat
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html, find_active_subscription
 from config import ConfigClass
 
 import pandas as pd
@@ -43,20 +43,28 @@ def login():
         if isinstance(current_user, Admin):
             return redirect(url_for('admin.index'))  # Redirect to admin dashboard
         else:
+            active_subscription = find_active_subscription(current_user)
+            if active_subscription == 'No Subscription':
+                flash('No active subscription found. Please subscribe to fully utilize the app.', 'danger')
+                return redirect(url_for('main.membership'))
             return redirect(url_for('main.dashboard'))  # Redirect to user dashboard
-    
-    # create instance for login form
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         admin = Admin.query.filter_by(username=form.username.data).first()
 
-        # Check if the username exists either as a user or an admin
         if user:
             if not user.check_password(form.password.data):
                 form.password.errors.append('Invalid password')
             else:
                 login_user(user)
+                # Check for active subscription
+                active_subscription = find_active_subscription(user)
+                if active_subscription == 'No Subscription':
+                    flash('No active subscription found. Please subscribe to fully utilize the app.', 'danger')
+                    return redirect(url_for('main.membership'))
+
                 next_page = request.args.get('next')
                 return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
         elif admin:
@@ -66,7 +74,6 @@ def login():
                 login_user(admin)
                 return redirect(url_for('admin.index'))
         else:
-            # Username doesn't exist in both User and Admin tables
             flash('Invalid username', 'danger')
     return render_template('login.html', form=form)
 
@@ -103,14 +110,18 @@ def register():
 
     return render_template('register.html', form=form)
 
-# route to dashboard
 @main_blueprint.route('/dashboard')
 @login_required
 def dashboard():
+    # Use the utility function to check for active subscription
+    active_subscription = find_active_subscription(current_user)
+
+    if active_subscription == 'No Subscription':
+        flash('No active subscription found. Please subscribe to access the dashboard.', 'danger')
+        return redirect(url_for('main.membership'))
 
     return render_template('dashboard.html')
 
-            
 # route for logout
 @main_blueprint.route('/logout')
 def logout():
@@ -129,8 +140,9 @@ def subscription():
 def membership():
     # Get the StripeCustomer associated with the current user
     stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
-
     current_plan = None
+    renewal_date = None
+
     if stripe_customer:
         # Get the active StripeSubscription associated with the StripeCustomer
         stripe_subscription = StripeSubscription.query.filter_by(
@@ -139,8 +151,10 @@ def membership():
         ).first()
         if stripe_subscription:
             current_plan = stripe_subscription.plan
+            # Get the renewal date
+            renewal_date = stripe_subscription.renewal_date
 
-    return render_template('membership.html', current_plan=current_plan)
+    return render_template('membership.html', current_plan=current_plan, renewal_date=renewal_date)
 
 # route for payment
 @main_blueprint.route('/subscribe', methods=['POST'])
@@ -180,6 +194,7 @@ def subscribe():
             active=True,
             start_date=datetime.utcnow().date()
         )
+        stripe_subscription.set_renewal_date()
         db.session.add(stripe_subscription)
         db.session.commit()
 
@@ -272,6 +287,17 @@ def change_plan():
 
 @main_blueprint.route('/map', methods=['GET', 'POST'])
 def map():
+
+    if request.method == 'GET':
+        # Use the utility function to check for active subscription
+        active_subscription = find_active_subscription(current_user)
+        
+        if active_subscription == 'No Subscription':
+            flash('No active subscription found. Please subscribe to access the upload map page.', 'danger')
+            return redirect(url_for('main.membership'))
+    else:
+        redirect(request.url)
+    
     if request.method == 'POST':
 
         if not os.path.exists(ConfigClass.UPLOAD_FOLDER):
@@ -325,12 +351,20 @@ def map():
     
     return render_template('map.html')
 
-@main_blueprint.route('/map_record', methods=['GET'])
+@main_blueprint.route('/map_record', methods=['GET','POST'])
 def records():
+    if request.method == 'GET':
+        # Use the utility function to check for active subscription
+        active_subscription = find_active_subscription(current_user)
 
-    journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+        if active_subscription == 'No Subscription':
+            flash('No active subscription found. Please subscribe to access the map.', 'danger')
+            return redirect(url_for('main.membership'))
+        
+        journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+        return render_template('map_record.html', journeys=journeys)
     
-    return render_template('map_record.html', journeys=journeys)
+    return redirect(request.url)
 
 @main_blueprint.route('/map_record/submit-selected-journeys', methods=['POST'])
 def submit_selected_journey_map():
@@ -346,6 +380,13 @@ def submit_selected_journey_map():
     multiple_route_map_html_content = create_multiple_route_map_html(gpx_file_paths)
 
     return render_template('multiple_route_map_api.html', multiple_route_map_html_content = multiple_route_map_html_content)
+
+# download data route
+@main_blueprint.route('/download/<filename>')
+@login_required
+def download_file(filename):
+    directory = os.path.join(current_app.root_path, ConfigClass.UPLOAD_FOLDER)
+    return send_from_directory(directory=directory, filename=filename, as_attachment=True)
 
 # register the blueprint with the app
 def configure_routes(app):
