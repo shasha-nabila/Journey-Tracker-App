@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
@@ -380,6 +380,13 @@ def submit_selected_journey_map():
     multiple_route_map_html_content = create_multiple_route_map_html(gpx_file_paths)
 
     return render_template('multiple_route_map_api.html', multiple_route_map_html_content = multiple_route_map_html_content)
+
+# download data route
+@main_blueprint.route('/download/<filename>')
+@login_required
+def download_file(filename):
+    directory = os.path.join(current_app.root_path, ConfigClass.UPLOAD_FOLDER)
+    return send_from_directory(directory=directory, filename=filename, as_attachment=True)
 
 # register the blueprint with the app
 def configure_routes(app):
