@@ -1,1 +1,6 @@
 .env
+*.pyc
+app.db
+.DS_Store
+migrations/
+__pycache__/

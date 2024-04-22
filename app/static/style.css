@@ -95,18 +95,17 @@ h1 {
     /* Black border on hover */
 }
 
-
 /* Register Page */
 
 .btn-custom-color {
     background-color: #6BFFF7 !important;
-    border-color: #dddcdc !important;
+    border-color: #737373 !important;
     font-family: monospace !important;
 }
 
 .btn-custom-color:hover {
     background-color: #9bf9f5 !important;
-    border-color: #dddcdc !important;
+    border-color: #737373 !important;
 }
 
 .card {
@@ -198,58 +197,6 @@ h2 {
     /* Third box even lower */
 }
 
-/* Tablet and smaller */
-@media (max-width: 968px) {
-    .dashboard {
-        flex-direction: column;
-        /* Stack sections vertically */
-        align-items: center;
-        /* Center-align the items */
-    }
-
-    .dashboard-section {
-        width: 80%;
-        margin-top: 10px;
-    }
-
-    .title-word,
-    .section-content {
-        text-align: center;
-        /* Center-align text for smaller screens */
-    }
-
-    .background {
-        background-size: cover;
-        background-position: bottom center;
-        min-height: calc(100vh - 50px);
-    }
-
-    #section3 {
-        margin-top: 80px;
-    }
-}
-
-/* Mobile phones */
-@media (max-width: 542px) {
-    .dashboard-section {
-        width: 90%;
-    }
-
-    .background {
-        background-position: bottom center;
-        background-size: auto auto;
-        min-height: calc(100vh - 50px);
-    }
-}
-
-/* Phones with smaller screens like iPhone SE */
-@media (max-width: 376px) {
-    .background {
-        background-image: none;
-        /* This will remove the background image */
-    }
-}
-
 /* Payment Subscription Page */
 
 .payment-page {
@@ -264,8 +211,10 @@ h2 {
     margin-top: 30px;
     text-align: center;
     width: 70%;
-    max-width: 400px; /* Maximum width for better readability on larger screens */
-    padding: 20px; /* Add some padding for better spacing */
+    max-width: 400px;
+    /* Maximum width for better readability on larger screens */
+    padding: 20px;
+    /* Add some padding for better spacing */
 }
 
 .payment-page h1 {
@@ -275,8 +224,10 @@ h2 {
 
 .payment-page label {
     color: #ffffff;
-    text-align: left; /* Align labels to the left */
-    display: block; /* Ensure labels are displayed as blocks for proper alignment */
+    text-align: left;
+    /* Align labels to the left */
+    display: block;
+    /* Ensure labels are displayed as blocks for proper alignment */
 }
 
 .payment-page input[type="email"],
@@ -325,10 +276,354 @@ h2 {
     text-align: left;
 }
 
-@media (max-width: 542px) {
-    .payment-page input[type="email"],
-    .payment-page input[type="text"],
-    .payment-page select {
-        width: 100%;
+/* Membership page */
+.membership-plans {
+    margin-top: 20vh;
+    /* Adjust as needed */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Added */
+}
+
+.membership-plans h1 {
+    color: #000000 !important;
+    font-family: monospace;
+    background-color: #6BFFF7;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.membership-plans .plan {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow options to wrap to next line */
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.membership-plans .plan-option {
+    width: calc(33% - 20px);
+    /* Adjusted width for smaller screens with margins */
+    max-width: 300px;
+    /* Added max-width to prevent options from stretching too much */
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px;
+    /* Adjusted */
+    box-sizing: border-box;
+    /* Include padding and border in width calculation */
+}
+
+.membership-plans .plan-option h2,
+.membership-plans .plan-option p {
+    color: #000000 !important;
+    /* Changed color to black */
+    font-family: monospace;
+    font-size: 20px;
+}
+
+.membership-plans .plan-option form {
+    margin-top: 20px;
+}
+
+.membership-plans .plan-option button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #6BFFF7;
+    color: #141414;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.membership-plans .plan-option button:hover {
+    background-color: #9bf9f5;
+}
+
+/* Adjustments for Smaller Screens */
+@media (max-width: 768px) {
+    .membership-plans .plan-option {
+        width: calc(50% - 20px);
+        /* Adjusted width for smaller screens with margins */
+    }
+}
+
+@media (max-width: 576px) {
+    .membership-plans .plan-option {
+        width: calc(100% - 20px);
+        /* Adjusted width for even smaller screens with margins */
+    }
+}
+
+
+/* Subscription Success Page */
+.subscription-success {
+    text-align: center;
+    margin-top: 20vh;
+}
+
+.subscription-success h1 {
+    color: #ffffff;
+    font-family: monospace;
+    font-size: 32px;
+}
+
+.subscription-success p {
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+/* Change plan */
+
+.confirm-plan-change {
+    text-align: center;
+    margin-top: 20vh;
+}
+
+.confirm-plan-change h1 {
+    color: #ffffff !important;
+    font-family: monospace;
+    font-size: 32px;
+}
+
+.confirm-plan-change p {
+    color: #000000;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.confirm-plan-change form {
+    margin-top: 20px;
+}
+
+.confirm-plan-change button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #6BFFF7;
+    color: #141414;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    margin-right: 10px;
+    /* Change margin between buttons */
+}
+
+.confirm-plan-change button:last-child {
+    margin-right: 20px;
+    /* Increase margin between buttons */
+}
+
+.confirm-plan-change button:hover {
+    background-color: #9bf9f5;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.profile img {
+    width: 14vw;
+    max-width: 130px;
+    min-width: 70px;
+}
+
+.py-6 {
+    padding-bottom: 3rem !important;
+}
+
+.profile {
+    margin: 0 auto;
+    /* Center the card in the column */
+    padding: 1rem;
+    /* Add some spacing inside the card */
+}
+
+.img-fluid {
+    max-width: 54vw;
+    width: 183px;
+}
+
+#visionSection,
+#faqSection {
+    background-color: #3d3d3d;
+}
+
+.vision-box,
+.mission-box {
+    border: 2px dashed #fff;
+    /* Creates the dashed border effect */
+    color: #fff;
+    /* Text color */
+    margin: 1rem 0;
+    padding: 2rem;
+}
+
+.vision-box h2,
+.mission-box h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.border-box {
+    border: 3px solid #fff;
+    /* Solid border inside */
+    padding: 1rem;
+    text-align: justify;
+}
+
+/* map page */
+
+.map-card {
+    margin: 20px auto;
+    border-radius: 10px;
+    background-color: #22463a;
+}
+
+.map-card-header {
+    padding: 20px;
+    background-color: #142922;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.map-card-title {
+    color: #FAFB63;
+    font-family: monospace;
+    margin-bottom: 0;
+}
+
+.map-card-body {
+    padding: 20px;
+}
+
+.map-container form {
+    margin-top: 20px;
+}
+
+.map-container input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.map-container input[type="submit"] {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #6BFFF7;
+    color: #141414;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.map-container input[type="submit"]:hover {
+    background-color: #9bf9f5;
+}
+
+.map-page .flashes {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.map-page .flashes li {
+    color: #ffffff;
+    background-color: #FF0000;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+/* Media Queries */
+
+@media (max-width: 768px) {
+    .welcome-section {
+        width: 80%;
+        /* Adjusted width for smaller screens */
+    }
+
+    .dashboard-section {
+        width: 70%;
+        /* Adjusted width for smaller screens */
+    }
+
+    .subscription-success {
+        width: 80%;
+        /* Adjusted width for smaller screens */
+    }
+
+    .confirm-plan-change {
+        width: 80%;
+        /* Adjusted width for smaller screens */
+    }
+
+    .map-page {
+        width: 80%;
+        /* Adjusted width for smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .welcome-section {
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
+    }
+
+    .dashboard-section {
+        width: 80%;
+        /* Further adjusted width for even smaller screens */
+    }
+
+    .subscription-success {
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
+    }
+
+    .confirm-plan-change {
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
+    }
+
+    .map-page {
+        width: 90%;
+        /* Further adjusted width for even smaller screens */
+    }
+}
+
+@media (max-width: 400px) {
+    .welcome-section {
+        width: 95%;
+        /* Adjusted width for smallest screens */
+    }
+
+    .dashboard-section {
+        width: 90%;
+        /* Adjusted width for smallest screens */
+    }
+
+    .subscription-success {
+        width: 95%;
+        /* Adjusted width for smallest screens */
+    }
+
+    .confirm-plan-change {
+        width: 95%;
+        /* Adjusted width for smallest screens */
+    }
+
+    .map-page {
+        width: 95%;
+        /* Adjusted width for smallest screens */
     }
 }

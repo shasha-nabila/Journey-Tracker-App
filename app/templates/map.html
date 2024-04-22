@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Map - My App{% endblock %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card map-card" style="max-width: 400px;">
+        <div class="card-header map-card-header">
+            <h1 class="map-card-title">Map</h1>
+        </div>
+        <div class="card-body map-card-body">
+            <form method="POST" action="{{ url_for('main.map') }}" enctype="multipart/form-data">
+                {% include 'map_display.html' %}
+                <input type="file" name="file">
+                <input type="submit" value="Upload">
+            </form>
+        </div>
+    </div>
+</div>
+
+<ul class="flashes">
+    {% for message in get_flashed_messages() %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

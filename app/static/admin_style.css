@@ -1,0 +1,122 @@
+.font-bold-italic {
+    font-family: 'Quantico', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 2.5rem;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+#content {
+    width: 100%;
+    /* Ensure content takes full width when sidebar is hidden */
+    transition: margin-left 0.3s;
+    /* Smooth transition for toggling the sidebar */
+}
+
+/* Adjust this for when the sidebar is toggled */
+#sidebar.active+#content {
+    margin-left: 200px;
+    /* Make space for the sidebar when it's visible */
+}
+
+.sidebar-header {
+    margin-bottom: 45px;
+}
+
+#sidebar {
+    width: 200px;
+    position: fixed;
+    top: 0;
+    padding-left: 40px;
+    padding-top: 35px;
+    left: -250px;
+    /* Start off-screen to the left */
+    height: 100vh;
+    z-index: 999;
+    background: #17A2B8;
+    transition: left 0.3s;
+    /* Smooth transition for showing/hiding the sidebar */
+}
+
+#sidebar.active {
+    left: 0;
+    /* Move into view when active */
+    height: 200vh;
+}
+
+.nav-link {
+    color: #000 !important;
+    font-weight: bold;
+    border-radius: 50px;
+    width: 130px;
+}
+
+.nav-link:hover {
+    background-color: #fff !important;
+}
+
+#revenueChart {
+    width: 100%;
+    height: auto;
+    border: 1px solid #000;
+    border-radius: 12px;
+    padding: 10px;
+    margin: auto auto 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.subscription-counts {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow the boxes to wrap on small screens */
+    justify-content: space-evenly;
+    /* Space out the boxes evenly */
+    margin-bottom: 20px;
+    /* Space between the boxes and the chart */
+}
+
+.subscription-box {
+    box-sizing: border-box;
+    /* Include padding and border in the element's total width and height */
+    padding: 10px;
+    margin: 10px;
+    /* Spacing between boxes */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    /* Set a basis for the box to take full width on small screens and a fraction of the width on larger screens */
+    flex: 0 0 100%;
+}
+
+/* Responsive settings */
+@media (min-width: 576px) {
+    .subscription-box {
+        /* On small screens (larger than 576px), boxes take about half the container width minus margins */
+        flex: 0 0 calc(50% - 20px);
+    }
+}
+
+@media (min-width: 768px) {
+    .subscription-box {
+        /* On medium screens (larger than 768px), boxes take about a third of the container width minus margins */
+        flex: 0 0 calc(33.3333% - 20px);
+    }
+
+    #revenueChart {
+        width: 80%;
+    }
+}
+
+@media (min-width: 992px) {
+    .subscription-box {
+        /* On large screens (larger than 992px), boxes take a specified portion of the container width minus margins */
+        flex: 0 0 calc(25% - 20px);
+    }
+}
