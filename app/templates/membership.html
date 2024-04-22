@@ -21,6 +21,9 @@
     <div class="membership-plans">
         <h1>Membership Plan</h1>
         <p>Current Plan: {{ current_plan|capitalize if current_plan else "None" }}</p>
+        {% if current_plan %}
+            <p>Renewal Date: {{ renewal_date.strftime('%Y-%m-%d') if renewal_date else "N/A" }}</p>
+        {% endif %}
         <div class="plan">
             {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
             {% for plan_option in plan_options %}

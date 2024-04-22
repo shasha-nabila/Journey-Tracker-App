@@ -140,8 +140,9 @@ def subscription():
 def membership():
     # Get the StripeCustomer associated with the current user
     stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
-
     current_plan = None
+    renewal_date = None
+
     if stripe_customer:
         # Get the active StripeSubscription associated with the StripeCustomer
         stripe_subscription = StripeSubscription.query.filter_by(
@@ -150,8 +151,10 @@ def membership():
         ).first()
         if stripe_subscription:
             current_plan = stripe_subscription.plan
+            # Get the renewal date
+            renewal_date = stripe_subscription.renewal_date
 
-    return render_template('membership.html', current_plan=current_plan)
+    return render_template('membership.html', current_plan=current_plan, renewal_date=renewal_date)
 
 # route for payment
 @main_blueprint.route('/subscribe', methods=['POST'])
@@ -191,6 +194,7 @@ def subscribe():
             active=True,
             start_date=datetime.utcnow().date()
         )
+        stripe_subscription.set_renewal_date()
         db.session.add(stripe_subscription)
         db.session.commit()
 
