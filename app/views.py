@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
@@ -140,8 +140,9 @@ def subscription():
 def membership():
     # Get the StripeCustomer associated with the current user
     stripe_customer = StripeCustomer.query.filter_by(user_id=current_user.id).first()
-
     current_plan = None
+    renewal_date = None
+
     if stripe_customer:
         # Get the active StripeSubscription associated with the StripeCustomer
         stripe_subscription = StripeSubscription.query.filter_by(
@@ -150,8 +151,10 @@ def membership():
         ).first()
         if stripe_subscription:
             current_plan = stripe_subscription.plan
+            # Get the renewal date
+            renewal_date = stripe_subscription.renewal_date
 
-    return render_template('membership.html', current_plan=current_plan)
+    return render_template('membership.html', current_plan=current_plan, renewal_date=renewal_date)
 
 # route for payment
 @main_blueprint.route('/subscribe', methods=['POST'])
@@ -191,6 +194,7 @@ def subscribe():
             active=True,
             start_date=datetime.utcnow().date()
         )
+        stripe_subscription.set_renewal_date()
         db.session.add(stripe_subscription)
         db.session.commit()
 
@@ -376,6 +380,13 @@ def submit_selected_journey_map():
     multiple_route_map_html_content = create_multiple_route_map_html(gpx_file_paths)
 
     return render_template('multiple_route_map_api.html', multiple_route_map_html_content = multiple_route_map_html_content)
+
+# download data route
+@main_blueprint.route('/download/<filename>')
+@login_required
+def download_file(filename):
+    directory = os.path.join(current_app.root_path, ConfigClass.UPLOAD_FOLDER)
+    return send_from_directory(directory=directory, filename=filename, as_attachment=True)
 
 # register the blueprint with the app
 def configure_routes(app):

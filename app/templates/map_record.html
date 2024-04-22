@@ -58,8 +58,9 @@
                 <p><strong>Distance Travelled:</strong> {{ journey.total_distance }} m</p>
                 <p><strong>Upload Date:</strong> {{ journey.upload_time.strftime('%d-%m-%Y %H:%M:%S') }}</p>
                 {% for filepath in journey.filepath %}
-                <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
-                    alt="Route Image">
+                    <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
+                        alt="Route Image">
+                    <a href="{{ url_for('main.download_file', filename=filepath.gpx_file_path.split('/')[-1]) }}" download>Download GPX</a>
                 {% endfor %}
                 <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
             </div>
