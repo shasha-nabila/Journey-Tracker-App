@@ -1,7 +1,7 @@
 from .extensions import db
 from flask_login import UserMixin # for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship
 
 # user data model will extends the base for database models with user authentication
@@ -37,6 +37,15 @@ class StripeSubscription(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     plan = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True, nullable=False)
+    renewal_date = db.Column(db.DateTime, nullable=False)
+
+    def set_renewal_date(self):
+        if self.plan == 'Yearly':
+            self.renewal_date = self.start_date + timedelta(days=365)
+        elif self.plan == 'Monthly':
+            self.renewal_date = self.start_date + timedelta(days=30)
+        else:  # Weekly
+            self.renewal_date = self.start_date + timedelta(days=7)
 
 # admin data model
 class Admin(UserMixin, db.Model):
