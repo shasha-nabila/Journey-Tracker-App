@@ -32,6 +32,10 @@
 <body>
     <h1>Recent Running Routes</h1>
     <div class="records-container">
+        
+        {% for message in get_flashed_messages() %}
+        <div style="color: red;">{{ message }}</div>
+        {% endfor %}
 
         <form action="/map_record/submit-selected-journeys" method="post">
             {% for journey in journeys %}
@@ -46,7 +50,6 @@
                 {% for filepath in journey.filepath %}
                     <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}" alt="Route Image">
                 {% endfor %}
-                <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
             </div>
             {% endfor %}
             <button type="submit">Submit Selected Journeys</button>

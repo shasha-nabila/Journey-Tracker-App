@@ -291,7 +291,13 @@ def map():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-                
+        
+        if '.' in file.filename and file.filename.rsplit('.',1)[1].lower() in ConfigClass.ALLOWED_EXTENSIONS:
+            pass
+        else:
+            flash('Invalid file type selected, please select gpx file')
+            return redirect(request.url)
+        
         if  file and allowed_file(file.filename):
             gpx_file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
             
@@ -340,6 +346,9 @@ def records():
             return redirect(url_for('main.subscription'))
         
         journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+
+        db.session.commit()
+        
         return render_template('map_record.html', journeys=journeys)
     
     return redirect(request.url)
@@ -348,6 +357,11 @@ def records():
 def submit_selected_journey_map():
     
     selected_journeys = request.form.getlist('journey_ids')
+
+    if not selected_journeys:
+        flash('No journey selected. Please select journey')
+        return redirect(url_for('main.records'))
+    
     gpx_file_paths = []
 
     for journey_id in selected_journeys:
@@ -359,6 +373,7 @@ def submit_selected_journey_map():
 
     return render_template('multiple_route_map_api.html', multiple_route_map_html_content = multiple_route_map_html_content)
 
+@main_blueprint.route('/records')
 # register the blueprint with the app
 def configure_routes(app):
     app.register_blueprint(main_blueprint)
