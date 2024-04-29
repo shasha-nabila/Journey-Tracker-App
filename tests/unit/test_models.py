@@ -1,7 +1,7 @@
 import pytest
 from app.models import User, StripeCustomer, StripeSubscription, Admin
 from sqlalchemy.exc import IntegrityError, DataError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @pytest.mark.parametrize("model", [User, Admin])
 def test_new_user_or_admin(test_db, model):
@@ -296,6 +296,8 @@ def test_new_stripe_subscription(test_db, plan):
     timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
     username = f'stripe_user_{timestamp}'
     email = f'stripe_{timestamp}@example.com'
+    stripe_customer_id = f'cust_{timestamp}'
+    stripe_subscription_id = f'sub_{timestamp}'
 
     # GIVEN
     user = User(username=username, email=email)
@@ -303,18 +305,21 @@ def test_new_stripe_subscription(test_db, plan):
     test_db.session.add(user)
     test_db.session.commit()
 
-    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id='cust_1234567')
+    stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id=stripe_customer_id)
     test_db.session.add(stripe_customer)
     test_db.session.commit()
 
     start_date = datetime.utcnow()
     stripe_subscription = StripeSubscription(
         stripe_customer_id=stripe_customer.id,
-        stripe_subscription_id='sub_12345',
+        stripe_subscription_id=stripe_subscription_id,
         start_date=start_date,
         plan=plan,
         active=True
     )
+
+    # Set the renewal date
+    stripe_subscription.set_renewal_date()
 
     # WHEN
     test_db.session.add(stripe_subscription)
@@ -325,7 +330,7 @@ def test_new_stripe_subscription(test_db, plan):
     assert stripe_subscription.plan == plan
     assert stripe_subscription.active is True
     assert stripe_subscription.start_date == start_date
-    assert stripe_subscription.stripe_subscription_id == 'sub_12345'
+    assert stripe_subscription.stripe_subscription_id == stripe_subscription_id
 
     # Cleanup after test
     test_db.session.delete(stripe_subscription)
@@ -360,6 +365,10 @@ def test_stripe_subscription_id_uniqueness(test_db):
         plan='Monthly',
         active=True
     )
+
+    # Set the renewal date based on the plan
+    stripe_subscription1.set_renewal_date()
+
     test_db.session.add(stripe_subscription1)
     test_db.session.commit()
 
@@ -413,8 +422,13 @@ def test_default_values_stripe_subscription(test_db, plan):
     stripe_subscription = StripeSubscription(
         stripe_customer_id=stripe_customer.id,
         stripe_subscription_id=unique_stripe_subscription_id,
-        plan=plan
+        plan=plan,
+        start_date=datetime.utcnow()
     )
+
+    # Set the renewal date based on the plan
+    stripe_subscription.set_renewal_date()
+
     test_db.session.add(stripe_subscription)
     test_db.session.commit()
 
@@ -467,6 +481,10 @@ def test_user_customer_subscription_relationship(test_db, plan):
         plan=plan,
         active=True
     )
+
+    # Set the renewal date based on the plan
+    stripe_subscription.set_renewal_date()
+
     test_db.session.add(stripe_subscription)
     test_db.session.commit()
 
@@ -518,6 +536,10 @@ def test_cascade_delete_from_stripe_customer_to_subscription(test_db, plan):
         plan=plan,
         active=True
     )
+
+    # Set the renewal date based on the plan
+    stripe_subscription.set_renewal_date()
+
     test_db.session.add(stripe_subscription)
     test_db.session.commit()
 
@@ -560,7 +582,8 @@ def test_stripe_customer_missing_required_fields(test_db, missing_field):
 @pytest.mark.parametrize("field, value", [
     ("stripe_subscription_id", None),
     ("stripe_customer_id", None),
-    ("plan", None)
+    ("plan", None),
+    ("renewal_date", None)
     # start_date and active have default values so they will never be None
 ])
 
@@ -594,7 +617,8 @@ def test_stripe_subscription_missing_required_fields(test_db, field, value):
         "stripe_subscription_id": f"sub_{timestamp}",
         "start_date": datetime.utcnow(),
         "plan": "Monthly",
-        "active": True
+        "active": True,
+        "renewal_date": datetime.utcnow() + timedelta(days=30)  # Set a valid default
     }
 
     # Set the test field to the provided value, which could be invalid
@@ -623,7 +647,6 @@ def test_field_max_length(test_app, test_db, model, field, max_length):
     THEN check whether the string length exceeds the maximum and raise an AssertionError if it does not
     """
     with test_app.app_context():
-        # Use a unique email by adding a timestamp
         timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
         unique_email = f"test_{timestamp}@example.com"
         user = User(username=f'user_{timestamp}', email=unique_email)
@@ -634,7 +657,7 @@ def test_field_max_length(test_app, test_db, model, field, max_length):
         max_length_value = 'a' * (max_length + 1)
         if model == StripeCustomer:
             instance = model(user_id=user.id, stripe_customer_id=max_length_value)
-        else:  # StripeSubscription
+        elif model == StripeSubscription:
             # Create a valid StripeCustomer for ForeignKey
             stripe_customer = StripeCustomer(user_id=user.id, stripe_customer_id=f'cust_{timestamp}')
             test_db.session.add(stripe_customer)
@@ -645,19 +668,22 @@ def test_field_max_length(test_app, test_db, model, field, max_length):
                 plan="Monthly",
                 start_date=datetime.utcnow()
             )
+            # Set the renewal date for StripeSubscription
+            instance.set_renewal_date()
+        else:
+            raise ValueError("The model provided is not supported by this test")
 
-        # Instead of relying on DataError, assert the string length manually
         assert len(getattr(instance, field)) > max_length, "Field value did not exceed maximum length as expected"
 
         try:
             test_db.session.add(instance)
             test_db.session.commit()
         except IntegrityError as e:
-            # This except block should catch any unique constraint issues
             assert False, f"IntegrityError raised with message: {e}"
+        except DataError as e:
+            # This except block should catch any length or format issues
+            assert False, f"DataError raised with message: {e}"
         except Exception as e:
-            # This except block will catch other exceptions like DataError
-            # if they are enforced by the database
-            assert isinstance(e, DataError), f"Expected DataError, but caught {type(e)} with message: {e}"
-        
+            assert False, f"An unexpected exception type {type(e)} was raised with message: {e}"
+
         test_db.session.rollback()
