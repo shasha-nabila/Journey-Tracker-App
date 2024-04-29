@@ -47,6 +47,47 @@ header {
     margin-top: 5px;
 }
 
+/* Navbar Styles */
+.navbar-custom {
+    background-color: #014E86;
+    margin-top: 0;
+    /* Set navbar background color */
+}
+
+.navbar-custom .navbar-brand-custom {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    text-decoration: none;
+    /* Customize navbar brand styles */
+}
+
+.navbar-custom .navbar-toggler-icon {
+    background-image: ;
+    /* Change color of toggler icon */
+}
+
+.navbar-custom .nav-item {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-custom .nav-item a {
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #ffffff;
+}
+
+.navbar-custom .nav-item a:hover {
+    background-color: #ffffff;
+    color: #ffffff;
+    /* Change background color and text color on hover */
+}
+
+
+
+
 
 /* Landing Page */
 
@@ -100,14 +141,17 @@ h1 {
 /* Register Page */
 
 .btn-custom-color {
-    background-color: #FFA500 !important;
-    border-color: #737373 !important;
+    background-color: #014E86 !important;
+    border-color: #ffffff !important;
     font-family: monospace !important;
+    color: #ffffff !important; /* Set text color to white */
+    
 }
 
 .btn-custom-color:hover {
-    background-color: #FFA500 !important;
-    border-color: #737373 !important;
+    background-color: #014E86 !important;
+    border-color: #ffffff !important;
+    color: #ffffff !important; /* Set text color to white on hover */
 }
 
 .card {
@@ -131,8 +175,10 @@ h1 {
 
 /* User Dashboard Page */
 
+
+
 .background {
-    background-image: ;
+    background-color: #ffffff ;
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: 100% auto;
@@ -140,21 +186,24 @@ h1 {
 }
 
 .dashboard-header h1 {
-    color: #000000 !important;
+    color: #ffffff !important;
     font-family: monospace !important;
     font-weight: bolder;
     font-style: italic;
+    position: relative; /* Make it a positioned element */
+    top: 30px; /* Adjust the top position */
+    right: -40px; /* Adjust the right position */
 }
 
 .highlighted {
-    background-color: #ffffff !important;
+    background-color: #014E86 !important;
     padding: 0 10px;
     display: inline-block;
     /* Makes the div only as wide as its content */
 }
 
 .dashboard {
-    margin-top: 30px;
+    margin-top: 200px;
     display: flex;
     justify-content: space-between;
     padding: 20px;
@@ -166,6 +215,17 @@ h1 {
     /* Set a fixed percentage width for each section */
 }
 
+.dashboard-gif {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 600px; /* Adjusted width to make the image bigger */
+    height: auto;
+    transform: scaleX(-1); /* Invert the image horizontally */
+}
+
+
+
 .title-word {
     display: block;
     text-align: right;
@@ -174,12 +234,13 @@ h1 {
 .section-content {
     text-align: right;
     font-size: large;
+    color: #014E86 !important;
 }
 
 h2 {
     font-family: monospace;
     font-weight: bold !important;
-    color: #ffffff !important;
+    color: #014E86 !important;
     font-style: italic;
     margin: 0 !important;
 }
@@ -198,6 +259,8 @@ h2 {
     margin-top: 180px;
     /* Third box even lower */
 }
+
+
 
 /* Payment Subscription Page */
 
@@ -220,7 +283,7 @@ h2 {
 }
 
 .payment-page h1 {
-    color: #FFA500 !important;
+    color: #014E86 !important;
     font-family: monospace;
 }
 
@@ -254,7 +317,7 @@ h2 {
 .payment-page button {
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #FFA500;
+    background-color: #014E86;
     color: #141414;
     border: none;
     cursor: pointer;
@@ -262,7 +325,7 @@ h2 {
 }
 
 .payment-page button:hover {
-    background-color: #FFA500;
+    background-color: #014E86;
 }
 
 .payment-page #card-element {
@@ -365,7 +428,7 @@ h2 {
 /* Subscription Success Page */
 .subscription-success {
     text-align: center;
-    margin-top: 20vh;
+    margin-top: 10vh;
 }
 
 .subscription-success h1 {
@@ -376,30 +439,35 @@ h2 {
 
 .subscription-success p {
     color: #ffffff;
-    font-family: Arial, sans-serif;
-    font-size: 18px;
+    font-family: monospace, sans-serif;
+    font-size: 24px;
     margin-top: 10px;
+}
+
+.subscription-success-gif {
+    margin-top: -40px;
+    width: 500px; /* Adjust width as needed */
+    height: 500px; /* Adjust height as needed */
+      
 }
 
 /* Change plan */
 
 .confirm-plan-change {
-    text-align: center;
-    margin-top: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 50vh; /* Make the box a square */
     color: #ffffff;
 }
 
-.confirm-plan-change h1 {
-    color: #ffffff !important;
-    font-family: monospace;
-    font-size: 32px;
-}
 
 .confirm-plan-change p {
     color: #000000;
     font-family: Arial, sans-serif;
-    font-size: 18px;
-    margin-top: 10px;
+    font-size: 24px;
+    margin-top: 20px;
 }
 
 .button-container {
@@ -414,8 +482,8 @@ h2 {
 .confirm-plan-change button {
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #FFA500;
-    color: #141414;
+    background-color: #014E86;
+    color: #ffffff;
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -430,8 +498,9 @@ h2 {
 }
 
 .confirm-plan-change button:hover {
-    background-color: #FFA500;
+    background-color: #014E86;
 }
+
 
 html {
     scroll-behavior: smooth;
@@ -461,14 +530,14 @@ html {
 
 #visionSection,
 #faqSection {
-    background-color: #3d3d3d;
+    background-color: #ffffff;
 }
 
 .vision-box,
 .mission-box {
     border: 2px dashed #014E86;
     /* Creates the dashed border effect */
-    color: #fff;
+    color: #014E86;
     /* Text color */
     margin: 1rem 0;
     padding: 2rem;
@@ -481,7 +550,7 @@ html {
 }
 
 .border-box {
-    border: 3px solid #fff;
+    border: 3px solid #014E86;
     /* Solid border inside */
     padding: 1rem;
     text-align: justify;
