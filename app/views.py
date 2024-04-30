@@ -167,6 +167,15 @@ def subscribe():
     email = request.form['email']
     plan = request.form['plan']
 
+    # Check if name and email are provided
+    if not name:
+        flash('Please enter a name.', 'danger')
+        return redirect(url_for('main.subscription'))
+    
+    if not email:
+        flash('Please enter an email address.', 'danger')
+        return redirect(url_for('main.subscription'))
+
     try:
         # Create a customer in Stripe
         customer = stripe.Customer.create(name=name, email=email)

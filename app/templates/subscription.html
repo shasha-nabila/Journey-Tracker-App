@@ -15,8 +15,8 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="plan" class="form-label">Choose a Plan:</label>
-                    <select class="form-control" id="plan" name="plan">
+                    <label for="plan" class="form-label">Plan:</label>
+                    <select class="form-control" id="plan" name="plan" disabled>
                         <option value="Weekly" {% if plan=='Weekly' %}selected{% endif %}>Weekly</option>
                         <option value="Monthly" {% if plan=='Monthly' %}selected{% endif %}>Monthly</option>
                         <option value="Yearly" {% if plan=='Yearly' %}selected{% endif %}>Yearly</option>
@@ -29,11 +29,8 @@
                 </div>
 
                 <div id="card-element" class="form-group mb-3">
-                    <!-- A Stripe Element will be inserted here. -->
+                    <!-- The Stripe card element will be here. -->
                 </div>
-
-                <!-- Used to display form errors. -->
-                <div id="card-errors" class="text-danger"></div>
 
                 <br>
 
