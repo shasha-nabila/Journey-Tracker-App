@@ -278,7 +278,7 @@ h2 {
 
 /* Membership page */
 .membership-plans {
-    margin-top: 20vh;
+    margin-top: 3vh;
     /* Adjust as needed */
     text-align: center;
     display: flex;
@@ -342,6 +342,15 @@ h2 {
 
 .membership-plans .plan-option button:hover {
     background-color: #9bf9f5;
+}
+
+.plan-card-title{
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.py-7{
+    margin-top: 15vh;
 }
 
 /* Adjustments for Smaller Screens */
@@ -457,7 +466,7 @@ html {
 }
 
 #visionSection,
-#faqSection {
+#subsPlanSection {
     background-color: #3d3d3d;
 }
 
