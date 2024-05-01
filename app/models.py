@@ -69,7 +69,6 @@ class Journey(db.Model):
     locations = relationship('Location', backref = 'journey', lazy = True)
     filepath = relationship('Filepath', backref = 'filepath', lazy = True)
     
-
 class Location(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key = True)
