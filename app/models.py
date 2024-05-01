@@ -1,7 +1,7 @@
 from .extensions import db
 from flask_login import UserMixin # for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship
 
 # user data model will extends the base for database models with user authentication
@@ -11,8 +11,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    stripe_customer = relationship('StripeCustomer', backref='user', uselist=False)
-    subscription = relationship('StripeSubscription', secondary='stripe_customer', backref='user', uselist=False)
+    stripe_customer = relationship('StripeCustomer', backref='user', uselist=False, cascade="all, delete-orphan")
 
     # method to set user pw (store the hased ver of the pw)
     def set_password(self, password):
@@ -26,18 +25,27 @@ class User(UserMixin, db.Model):
 class StripeCustomer(db.Model):
     __tablename__ = 'stripe_customer'  # Explicitly setting the table name
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE', name='fk_user_id'), nullable=False)
     stripe_customer_id = db.Column(db.String(255), unique=True, nullable=False)
-    stripe_subscription = relationship('StripeSubscription', backref='customer', uselist=False)
+    stripe_subscription = relationship('StripeSubscription', backref='customer', uselist=False, cascade="all, delete-orphan")
 
 class StripeSubscription(db.Model):
     __tablename__ = 'stripe_subscription'  # Explicitly setting the table name
     id = db.Column(db.Integer, primary_key=True)
-    stripe_customer_id = db.Column(db.Integer, db.ForeignKey('stripe_customer.id'), nullable=False)
+    stripe_customer_id = db.Column(db.Integer, db.ForeignKey('stripe_customer.id', ondelete='CASCADE'), nullable=False)
     stripe_subscription_id = db.Column(db.String(255), unique=True, nullable=False)
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     plan = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True, nullable=False)
+    renewal_date = db.Column(db.DateTime, nullable=False)
+
+    def set_renewal_date(self):
+        if self.plan == 'Yearly':
+            self.renewal_date = self.start_date + timedelta(days=365)
+        elif self.plan == 'Monthly':
+            self.renewal_date = self.start_date + timedelta(days=30)
+        else:  # Weekly
+            self.renewal_date = self.start_date + timedelta(days=7)
 
 # admin data model
 class Admin(UserMixin, db.Model):
@@ -61,7 +69,6 @@ class Journey(db.Model):
     locations = relationship('Location', backref = 'journey', lazy = True)
     filepath = relationship('Filepath', backref = 'filepath', lazy = True)
     
-
 class Location(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key = True)
