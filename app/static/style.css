@@ -24,7 +24,7 @@ header {
 }
 
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23FAFB63' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23014E86' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
 }
 
 .nav-item {
@@ -43,10 +43,6 @@ header {
     background-color: #014E86;
 }
 
-.flash-message {
-    margin-top: 5px;
-}
-
 
 /* Landing Page */
 
@@ -63,9 +59,9 @@ header {
 
 h1 {
     color: #ffffff !important;
-    font-family: 'Quantico' , sans-serif ;
-    font-weight: 700 ;
-    font-style: italic ;
+    font-family: 'Quantico', sans-serif;
+    font-weight: 700;
+    font-style: italic;
 }
 
 .login-register {
@@ -132,7 +128,6 @@ h1 {
 /* User Dashboard Page */
 
 .background {
-    background-image: ;
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: 100% auto;
@@ -346,12 +341,12 @@ h2 {
     background-color: #FFA500;
 }
 
-.plan-card-title{
+.plan-card-title {
     white-space: nowrap;
     overflow: visible;
 }
 
-.py-7{
+.py-7 {
     margin-top: 15vh;
 }
 
