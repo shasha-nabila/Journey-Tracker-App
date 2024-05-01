@@ -3,14 +3,14 @@
 /* Base */
 
 body {
-    background-color: #141414 !important;
+    background-color: #014E86 !important;
     /* Use !important to override Bootstrap's styles */
     color: #ffffff !important;
 
 }
 
 header {
-    background-color: #142922;
+    background-color: #ffffff;
 }
 
 .navbar {
@@ -20,7 +20,7 @@ header {
 .navbar-brand {
     font-size: 24px !important;
     font-weight: bold;
-    color: #FAFB63 !important;
+    color: #014E86 !important;
 }
 
 .navbar-toggler-icon {
@@ -36,11 +36,11 @@ header {
     text-decoration: none;
     padding: 5px 10px;
     border-radius: 5px;
-    color: #FAFB63;
+    color: #014E86;
 }
 
 .nav-item a:hover {
-    background-color: #22463a;
+    background-color: #014E86;
 }
 
 .flash-message {
@@ -62,8 +62,10 @@ header {
 }
 
 h1 {
-    color: #FAFB63 !important;
-    font-family: monospace;
+    color: #ffffff !important;
+    font-family: 'Quantico' , sans-serif ;
+    font-weight: 700 ;
+    font-style: italic ;
 }
 
 .login-register {
@@ -72,7 +74,7 @@ h1 {
 
 .login-register a {
     color: #000000;
-    background-color: #FAFB63;
+    background-color: #FFA500;
     text-decoration: none;
     margin: 10px;
     padding: 10px 20px;
@@ -89,7 +91,7 @@ h1 {
 
 .login-register a:hover {
     text-decoration: underline;
-    background-color: #FFD700;
+    background-color: #FFA500;
     /* Lighter yellow on hover */
     border-color: #000000;
     /* Black border on hover */
@@ -98,13 +100,13 @@ h1 {
 /* Register Page */
 
 .btn-custom-color {
-    background-color: #6BFFF7 !important;
+    background-color: #FFA500 !important;
     border-color: #737373 !important;
     font-family: monospace !important;
 }
 
 .btn-custom-color:hover {
-    background-color: #9bf9f5 !important;
+    background-color: #FFA500 !important;
     border-color: #737373 !important;
 }
 
@@ -130,7 +132,7 @@ h1 {
 /* User Dashboard Page */
 
 .background {
-    background-image: url('/static/wave.png');
+    background-image: ;
     background-repeat: no-repeat;
     background-position: bottom center;
     background-size: 100% auto;
@@ -145,7 +147,7 @@ h1 {
 }
 
 .highlighted {
-    background-color: #FAFB63 !important;
+    background-color: #ffffff !important;
     padding: 0 10px;
     display: inline-block;
     /* Makes the div only as wide as its content */
@@ -177,7 +179,7 @@ h1 {
 h2 {
     font-family: monospace;
     font-weight: bold !important;
-    color: #FAFB63 !important;
+    color: #ffffff !important;
     font-style: italic;
     margin: 0 !important;
 }
@@ -218,7 +220,7 @@ h2 {
 }
 
 .payment-page h1 {
-    color: #FAFB63 !important;
+    color: #FFA500 !important;
     font-family: monospace;
 }
 
@@ -252,7 +254,7 @@ h2 {
 .payment-page button {
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #6BFFF7;
+    background-color: #FFA500;
     color: #141414;
     border: none;
     cursor: pointer;
@@ -260,7 +262,7 @@ h2 {
 }
 
 .payment-page button:hover {
-    background-color: #9bf9f5;
+    background-color: #FFA500;
 }
 
 .payment-page #card-element {
@@ -289,9 +291,9 @@ h2 {
 }
 
 .membership-plans h1 {
-    color: #000000 !important;
+    color: #014E86 !important;
     font-family: monospace;
-    background-color: #6BFFF7;
+    background-color: #ffffff;
     padding: 10px 20px;
     border-radius: 5px;
 }
@@ -333,7 +335,7 @@ h2 {
 .membership-plans .plan-option button {
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #6BFFF7;
+    background-color: #FFA500;
     color: #141414;
     border: none;
     cursor: pointer;
@@ -341,7 +343,7 @@ h2 {
 }
 
 .membership-plans .plan-option button:hover {
-    background-color: #9bf9f5;
+    background-color: #FFA500;
 }
 
 .plan-card-title{
@@ -393,6 +395,7 @@ h2 {
 .confirm-plan-change {
     text-align: center;
     margin-top: 20vh;
+    color: #ffffff;
 }
 
 .confirm-plan-change h1 {
@@ -420,7 +423,7 @@ h2 {
 .confirm-plan-change button {
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: #6BFFF7;
+    background-color: #FFA500;
     color: #141414;
     border: none;
     cursor: pointer;
@@ -436,7 +439,7 @@ h2 {
 }
 
 .confirm-plan-change button:hover {
-    background-color: #9bf9f5;
+    background-color: #FFA500;
 }
 
 html {
@@ -472,7 +475,7 @@ html {
 
 .vision-box,
 .mission-box {
-    border: 2px dashed #fff;
+    border: 2px dashed #014E86;
     /* Creates the dashed border effect */
     color: #fff;
     /* Text color */
@@ -509,7 +512,7 @@ html {
 }
 
 .map-card-title {
-    color: #FAFB63;
+    color: #FFA500;
     font-family: monospace;
     margin-bottom: 0;
 }
