@@ -45,6 +45,10 @@
         {% include 'navbar.html' %}
     </header>
     <div class="records-container">
+        
+        {% for message in get_flashed_messages() %}
+        <div style="color: red;">{{ message }}</div>
+        {% endfor %}
 
         <a href="{{ url_for('main.map') }}" class="map">Upload a Track</a>
         <form action="/map_record/submit-selected-journeys" method="post">
@@ -62,7 +66,6 @@
                         alt="Route Image">
                     <a href="{{ url_for('main.download_file', filename=filepath.gpx_file_path.split('/')[-1]) }}" download>Download GPX</a>
                 {% endfor %}
-                <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
             </div>
             {% endfor %}
             <button type="submit">Show Selected Tracks</button>

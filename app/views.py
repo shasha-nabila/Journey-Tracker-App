@@ -167,6 +167,15 @@ def subscribe():
     email = request.form['email']
     plan = request.form['plan']
 
+    # Check if name and email are provided
+    if not name:
+        flash('Please enter a name.', 'danger')
+        return redirect(url_for('main.subscription'))
+    
+    if not email:
+        flash('Please enter an email address.', 'danger')
+        return redirect(url_for('main.subscription'))
+
     try:
         # Create a customer in Stripe
         customer = stripe.Customer.create(name=name, email=email)
@@ -312,7 +321,13 @@ def map():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-                
+        
+        if '.' in file.filename and file.filename.rsplit('.',1)[1].lower() in ConfigClass.ALLOWED_EXTENSIONS:
+            pass
+        else:
+            flash('Invalid file type selected, please select gpx file')
+            return redirect(request.url)
+        
         if  file and allowed_file(file.filename):
             gpx_file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
             
@@ -362,6 +377,9 @@ def records():
             return redirect(url_for('main.membership'))
         
         journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+
+        db.session.commit()
+        
         return render_template('map_record.html', journeys=journeys)
     
     return redirect(request.url)
@@ -370,6 +388,11 @@ def records():
 def submit_selected_journey_map():
     
     selected_journeys = request.form.getlist('journey_ids')
+
+    if not selected_journeys:
+        flash('No journey selected. Please select journey')
+        return redirect(url_for('main.records'))
+    
     gpx_file_paths = []
 
     for journey_id in selected_journeys:

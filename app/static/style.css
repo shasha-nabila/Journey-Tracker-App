@@ -24,7 +24,7 @@ header {
 }
 
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23FAFB63' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23014E86' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
 }
 
 .nav-item {
@@ -104,9 +104,9 @@ header {
 
 h1 {
     color: #ffffff !important;
-    font-family: 'Quantico' , sans-serif ;
-    font-weight: 700 ;
-    font-style: italic ;
+    font-family: 'Quantico', sans-serif;
+    font-weight: 700;
+    font-style: italic;
 }
 
 .login-register {
@@ -343,7 +343,7 @@ h2 {
 
 /* Membership page */
 .membership-plans {
-    margin-top: 20vh;
+    margin-top: 3vh;
     /* Adjust as needed */
     text-align: center;
     display: flex;
@@ -407,6 +407,15 @@ h2 {
 
 .membership-plans .plan-option button:hover {
     background-color: #FFA500;
+}
+
+.plan-card-title {
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.py-7 {
+    margin-top: 15vh;
 }
 
 /* Adjustments for Smaller Screens */
