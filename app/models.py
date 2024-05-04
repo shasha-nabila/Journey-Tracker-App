@@ -73,6 +73,7 @@ class Location(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key = True)
     journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     init_latitude = db.Column(db.Float, nullable = False)
     init_longitude = db.Column(db.Float, nullable = False)
     goal_latitude = db.Column(db.Float, nullable = False)
@@ -85,5 +86,6 @@ class Filepath(db.Model):
     __tablename__ = 'filepath'
     id = db.Column(db.Integer, primary_key = True)
     journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     image_file_path = db.Column(db.String, nullable=False)
     gpx_file_path = db.Column(db.String, nullable = False)

@@ -103,7 +103,7 @@ def info_parse_gpx(file_path):
         return info
 
 # create csv file for log
-def create_and_append_csv(file_path, header, data):
+def create_and_append_csv(file_path, header, data, current_id):
     
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -120,7 +120,9 @@ def create_and_append_csv(file_path, header, data):
             combined_row.extend(row)  
         
         combined_row.append(current_time)
-       
+        
+        combined_row.append(current_id)
+
         writer.writerow(combined_row)
 
 # create map page with route, departure and arrival markers when user uploads first gpx file
@@ -157,28 +159,30 @@ def upload_journey_database(csv_file_path, user_id):
     with open(csv_file_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-
-            existing_journey = Journey.query.filter_by(
-                user_id = user_id,
-                total_distance=float(row['distance']),
-                upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
-                
-            ).first()
-        # Check duplicated data
-            if not existing_journey:
-                new_journey = Journey(
+            if int(row['user_id']) == user_id:
+                print(row)
+                existing_journey = Journey.query.filter_by(
                     user_id = user_id,
                     total_distance=float(row['distance']),
                     upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
-                )
-                db.session.add(new_journey)
+                
+                ).first()
+            # Check duplicated data
+                if not existing_journey:
+                    new_journey = Journey(
+                        user_id = user_id,
+                        total_distance=float(row['distance']),
+                        upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                    )
+                    db.session.add(new_journey)
         db.session.commit()
     
     return new_journey
 
-def upload_filepath_database(new_journey, image_file_path, gpx_file_path):
+def upload_filepath_database(new_journey, image_file_path, gpx_file_path,user_id):
    
     new_filepath = Filepath(
+    user_id = user_id,
     journey_id=new_journey.id,
     image_file_path=image_file_path,
     gpx_file_path=gpx_file_path
@@ -186,28 +190,30 @@ def upload_filepath_database(new_journey, image_file_path, gpx_file_path):
     db.session.add(new_filepath)
     db.session.commit()
 
-def upload_location_database(csv_file_path, new_journey):
+def upload_location_database(csv_file_path, new_journey, user_id):
 
     with open(csv_file_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-
-            existing_location = Location.query.filter_by(
-                upload_time=datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
-            ).first()
+            if int(row['user_id']) == user_id:
+ 
+                existing_location = Location.query.filter_by(
+                    upload_time=datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
+                ).first()
          
-            if not existing_location:
-                location = Location(
-                    journey_id=new_journey.id,  
-                    init_latitude=float(row['latitude_init']),
-                    init_longitude=float(row['longitude_init']),
-                    goal_latitude=float(row['latitude_goal']),
-                    goal_longitude=float(row['longitude_goal']),
-                    departure=row['name_init'],
-                    arrival=row['name_goal'],
-                    upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
+                if not existing_location:
+                    location = Location(
+                        user_id = user_id,
+                        journey_id=new_journey.id,  
+                        init_latitude=float(row['latitude_init']),
+                        init_longitude=float(row['longitude_init']),
+                        goal_latitude=float(row['latitude_goal']),
+                        goal_longitude=float(row['longitude_goal']),
+                        departure=row['name_init'],
+                        arrival=row['name_goal'],
+                        upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
                 )
-                db.session.add(location)
+                    db.session.add(location)
         db.session.commit()
  
 def create_route_image(coordinates, output_dir):
