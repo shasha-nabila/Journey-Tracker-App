@@ -1,0 +1,9 @@
+app.db
+.env
+.DS_Store
+migrations/
+__pycache__/
+*.pyc
+*.gpx
+*.csv
+*.png
