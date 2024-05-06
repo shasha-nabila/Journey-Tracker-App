@@ -634,3 +634,159 @@ html {
         /* Adjusted width for smallest screens */
     }
 }
+
+/* Friends page */
+#barSearch {
+    background-color: white;
+    border: 1px solid grey;
+    border-radius: 100px;
+    padding: 8px 10px;
+    display: flex;
+    gap: 5px;
+    width: 500px;
+    margin: 0 auto;
+}
+
+#barSearch i {
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+}
+  
+#barSearch input {
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
+#resultsList {
+    padding: 20px 10px;
+    margin: 0 auto;
+    width: 510px;
+}
+
+#tabContainer {
+    padding: 10px 10px;
+    margin: 0 auto;
+    width: 500px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    /* Smooth transition for transform and box-shadow */
+}
+
+#tabContainer:hover {
+    transform: translateY(-10px);
+    /* Makes the card move up slightly */
+    box-shadow: 0px 2px 5px #6BFFF7;
+    /* Creates a 'glow' effect */
+}
+
+.tab_box {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid grey;
+    position: relative;
+}
+
+.tab_box .tab_btn {
+    font-size: 18px;
+    font-weight: normal;
+    border: none;
+    background: none;
+    padding-bottom: 10px;
+    cursor: pointer;
+}
+
+.tab_box .tab_btn.active {
+    color: royalblue;
+    font-weight: bold;
+}
+
+.line {
+    position: absolute;
+    top: 35px;
+    left: 66px;
+    width: 73px;
+    height: 5px;
+    background-color: royalblue;
+    border-radius: 10px;
+    transition: all .3s ease-in-out;
+}
+
+.content_box {
+    padding: 20px;
+    padding-bottom: 0%;
+}
+
+.content_box .content {
+    display: none;
+    animation: moving 0.5s ease;
+}
+@keyframes moving {
+    from{transform: translateY(-20px);opacity: 0;}
+    to{transform: translateY(0px);opacity: 1;}
+}
+
+.content_box .content.active {
+    display: block;
+    color: #000000;
+}
+
+/* TEST */
+#results, #resultsSU {
+    font-weight: bold;
+}
+
+.content ol {
+    list-style: none;
+   counter-reset: item;
+}
+
+.content li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Adjust the gap between list items */
+}
+
+
+/* Style for the numbering */
+.content li::before {
+    content: counter(item) ". ";
+    counter-increment: item;
+    margin-right: 5px;
+}
+
+.username {
+    margin-right: 10px; /* Adjust the space between username and button */
+}
+
+.isUser {
+    background-color: #007bff; /* Adjust button background color */
+    color: white; /* Adjust button text color */
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.isUser:hover {
+    background-color: #0056b3;
+}
+
+.isFriend {
+    background-color: #ff0000; /* Adjust button background color */
+    color: white; /* Adjust button text color */
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.isFriend:hover {
+    background-color: #b30000;
+}

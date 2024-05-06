@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Friends - My Flask App{% endblock %}
+
+{% block content %}
+
+    <header>
+        <nav class="navbar navbar-expand-lg sticky-top navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">Logo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.map') }}">Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.friends') }}">Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    </br>
+    <!-- Search bar -->
+    <div class="container-fluid" id="barSearch">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" class="bi bi-search" viewBox="-5 -5 24 24">
+            <path fill-rule="evenodd" stroke="#000000" stroke-width="1" d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+        </svg>
+        <input type="text" class="input" placeholder="Search.." aria-label="Search" name="q" hx-get="/search" hx-trigger="keyup changed delay:500ms" hx-target="#results, #resultsSU">
+    </div>
+    </br>
+    <!-- Tabs -->
+    <div class="container-fluid" id="tabContainer">
+        <div class="tab_box">
+            <button class="tab_btn active" id="friends-btn">Friends</button>
+            <button class="tab_btn" id="suggested-users-btn">Suggested Users</button>
+            <div class="line"></div>
+        </div>
+        <div class="content_box">
+            <!-- Friends -->
+            <div class="content active">
+                <ol id="results">
+                    <span id="friends-list"></span>
+                    <!-- htmx called, friendsResults.html rendered -->
+                </ol>
+            </div>
+            <!-- Suggested Users -->
+            <div class="content">
+                <ol id="resultsSU">
+                    <span id="suggestedUserList"></span>
+                    <!-- htmx called, friendsResults.html rendered -->
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the javascript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+
+{% endblock %}
