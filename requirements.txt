@@ -18,3 +18,5 @@ pandas
 Flask
 Gunicorn
 matplotlib
+pytest
+pytest-flask

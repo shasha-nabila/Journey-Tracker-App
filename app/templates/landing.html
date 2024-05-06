@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - My App{% endblock %}
+{% block title %}Landing Page{% endblock %}
 
 {% block content %}
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: black;">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(255, 255, 255);">
     <div class="container">
-        <a class="navbar-brand" href="#homeSection">Logo</a>
+        <a class="navbar-brand" href="#homeSection">PuppyPilot</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
             aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -174,7 +174,8 @@
             <div class="card plan-option">
                 <div class="card-body">
                     <h2 class="plan-card-title">{{ plan_option|capitalize }}</h2>
-                    <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else "100" }}</p>
+                    <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else
+                        "100" }}</p>
                 </div>
             </div>
             {% endfor %}
