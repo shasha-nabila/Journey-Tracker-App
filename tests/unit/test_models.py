@@ -748,3 +748,40 @@ def test_journey_with_locations(test_db, user, locations_count):
     test_db.session.commit()
 
     assert len(journey.locations) == locations_count
+
+@pytest.mark.parametrize("image_file_path, gpx_file_path", [
+    ('/path/to/image1.jpg', '/path/to/gpx1.gpx'),
+    ('/path/to/image2.jpg', '/path/to/gpx2.gpx')
+])
+def test_journey_with_filepath(test_db, user, image_file_path, gpx_file_path):
+    """
+    GIVEN a Journey model linked to a User and strings representing file paths
+    WHEN a Filepath instance is created and linked to the Journey
+    THEN check that the Filepath instance is linked correctly and the file paths are as expected
+    """
+    # Start clean session
+    test_db.session.rollback()
+
+    journey = Journey(user_id=user.id, total_distance=30.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    test_db.session.commit()
+
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=image_file_path,
+        gpx_file_path=gpx_file_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the journey to check if filepath is linked correctly
+    loaded_journey = Journey.query.filter_by(id=journey.id).first()
+    test_db.session.refresh(loaded_journey)
+
+    # Since it's a list, get the first Filepath object (if any)
+    assert len(loaded_journey.filepath) > 0, "No Filepath linked to the journey"
+    filepath_instance = loaded_journey.filepath[0]
+
+    assert filepath_instance.image_file_path == image_file_path, "Image file path does not match the expected path"
+    assert filepath_instance.gpx_file_path == gpx_file_path, "GPX file path does not match the expected path"
