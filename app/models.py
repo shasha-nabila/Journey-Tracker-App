@@ -1,8 +1,7 @@
 from .extensions import db
 from flask_login import UserMixin # for user authentication
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-
+from datetime import datetime, timedelta
 # For defining relationships and foreign keys
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
@@ -77,6 +76,15 @@ class StripeSubscription(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     plan = db.Column(db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True, nullable=False)
+    renewal_date = db.Column(db.DateTime, nullable=False)
+
+    def set_renewal_date(self):
+        if self.plan == 'Yearly':
+            self.renewal_date = self.start_date + timedelta(days=365)
+        elif self.plan == 'Monthly':
+            self.renewal_date = self.start_date + timedelta(days=30)
+        else:  # Weekly
+            self.renewal_date = self.start_date + timedelta(days=7)
 
 # admin data model
 class Admin(UserMixin, db.Model):
@@ -96,15 +104,27 @@ class Journey(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     total_distance = db.Column(db.Float, nullable = False)
-    upload_time = db.Column(db.DateTime, nullable=False) 
+    upload_time = db.Column(db.DateTime, nullable=False)
     locations = relationship('Location', backref = 'journey', lazy = True)
+    filepath = relationship('Filepath', backref = 'filepath', lazy = True)
     
-
 class Location(db.Model):
     __tablename__ = 'location'
     id = db.Column(db.Integer, primary_key = True)
     journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
     init_latitude = db.Column(db.Float, nullable = False)
     init_longitude = db.Column(db.Float, nullable = False)
     goal_latitude = db.Column(db.Float, nullable = False)
     goal_longitude = db.Column(db.Float, nullable = False)
+    departure = db.Column(db.String(255), nullable= False) 
+    arrival = db.Column(db.String(255), nullable= False) 
+    upload_time = db.Column(db.DateTime, nullable=False)
+
+class Filepath(db.Model):
+    __tablename__ = 'filepath'
+    id = db.Column(db.Integer, primary_key = True)
+    journey_id = db.Column(db.Integer, db.ForeignKey('journey.id'), nullable = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    image_file_path = db.Column(db.String, nullable=False)
+    gpx_file_path = db.Column(db.String, nullable = False)
