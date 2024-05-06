@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - My App{% endblock %}
+{% block title %}Landing Page{% endblock %}
 
 {% block content %}
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: black;">
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(255, 255, 255);">
     <div class="container">
-        <a class="navbar-brand" href="#homeSection">Logo</a>
+        <a class="navbar-brand" href="#homeSection">PuppyPilot</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
             aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -23,7 +23,10 @@
                     <a class="nav-link" href="#aboutSection">About Us</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#faqSection">FAQ</a>
+                    <a class="nav-link" href="#subsPlanSection">Subscription Plan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
                 </li>
             </ul>
         </div>
@@ -48,7 +51,7 @@
                 <p>View your past adventures, gain insights with detailed statistics, and see how far you've come on
                     your journey with your friends.</p>
                 <!-- Button to create account or login -->
-                <a href="{{ url_for('main.main') }}" class="btn btn-primary">Join us</a>
+                <a href="{{ url_for('main.register') }}" class="btn btn-primary">Join us</a>
             </div>
             <!-- Image Column -->
             <div class="col-md-4 col-lg-2">
@@ -161,12 +164,24 @@
     </div>
 </section>
 
-<!-- FAQ Section -->
-<section id="faqSection" class="py-5">
-    <div class="container">
-        <h2 class="display-4">FAQs</h2>
-        <p class="lead">[Add FAQs here]</p>
+<!-- Subscription Plan Section -->
+<section id="subsPlanSection" class="py-5">
+    <div class="membership-plans">
+        <h2 class="display-4 text-center">Membership Plan</h2>
+        <div class="plan">
+            {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
+            {% for plan_option in plan_options %}
+            <div class="card plan-option">
+                <div class="card-body">
+                    <h2 class="plan-card-title">{{ plan_option|capitalize }}</h2>
+                    <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else
+                        "100" }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </section>
+
 
 {% endblock %}

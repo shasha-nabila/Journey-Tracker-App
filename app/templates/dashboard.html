@@ -31,7 +31,7 @@
                     <h2 class="title-word">LOCATION</h2>
                 </div>
                 <div class="section-content">
-                    <p>Pure Gym, Leeds City Centre</p>
+                    <p>{{ latest_location.arrival if latest_location else 'No recent locations.' }}</p>
                 </div>
             </div>
             <div class="dashboard-section" id="section2">
@@ -41,16 +41,7 @@
                     <h2 class="title-word">TRAVELLED</h2>
                 </div>
                 <div class="section-content">
-                    <p>5,034 KM</p>
-                </div>
-            </div>
-            <div class="dashboard-section" id="section3">
-                <div class="section-title">
-                    <h2 class="title-word">FAVOURITE</h2>
-                    <h2 class="title-word">LOCATION</h2>
-                </div>
-                <div class="section-content">
-                    <p>Edward Boyle Library</p>
+                    <p>{{ total_distance_travelled_km }} KM</p>
                 </div>
             </div>
         </section>

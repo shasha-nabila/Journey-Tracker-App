@@ -18,11 +18,11 @@
         {% include 'navbar.html' %}
     </header>
 
-    <div class="membership-plans">
+    <div class="membership-plans py-7">
         <h1>Membership Plan</h1>
         <p>Current Plan: {{ current_plan|capitalize if current_plan else "None" }}</p>
         {% if current_plan %}
-            <p>Renewal Date: {{ renewal_date.strftime('%Y-%m-%d') if renewal_date else "N/A" }}</p>
+        <p>Renewal Date: {{ renewal_date.strftime('%d-%m-%Y') if renewal_date else "N/A" }}</p>
         {% endif %}
         <div class="plan">
             {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
