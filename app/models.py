@@ -9,9 +9,12 @@ from sqlalchemy import ForeignKey
 
 class Friendship(db.Model):
     __tablename__ = 'friendship'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+
+    # Define relationships
+    user = db.relationship('User', foreign_keys=[user_id])
+    friend = db.relationship('User', foreign_keys=[friend_id])
 
 # user data model will extends the base for database models with user authentication
 class User(UserMixin, db.Model):
@@ -21,6 +24,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     stripe_customer = relationship('StripeCustomer', backref='user', uselist=False, cascade="all, delete-orphan")
+
     # Define the many-to-many relationship with the 'friends' association table
     friends = db.relationship('User',
                           secondary='friendship',
@@ -36,18 +40,26 @@ class User(UserMixin, db.Model):
     # method to check pw if matches the stored hash
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    # friends should be friends with each other
+    def add_friend(self, user):
+        if not self.is_friend_with(user):
+            friendship1 = Friendship(user_id=self.id, friend_id=user.id)
+            friendship2 = Friendship(user_id=user.id, friend_id=self.id)
+            db.session.add_all([friendship1, friendship2])
+            db.session.commit()
 
-class FriendRequest(db.Model):
-    __tablename__ = 'friend_request'
-    id = db.Column(db.Integer, primary_key=True)
-    from_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    to_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='pending')  # pending, accepted, declined
+    def remove_friend(self, user):
+        friendship1 = Friendship.query.filter_by(user_id=self.id, friend_id=user.id).first()
+        friendship2 = Friendship.query.filter_by(user_id=user.id, friend_id=self.id).first()
+        if friendship1:
+            db.session.delete(friendship1)
+        if friendship2:
+            db.session.delete(friendship2)
+        db.session.commit()
 
-    from_user = db.relationship('User', foreign_keys=[from_user_id], backref='sent_requests')
-    to_user = db.relationship('User', foreign_keys=[to_user_id], backref='received_requests')
-
-
+    def is_friend_with(self, user):
+        return self.friends.filter_by(id=user.id).count() > 0
 
 # stripe data model
 class StripeCustomer(db.Model):

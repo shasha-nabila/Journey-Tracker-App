@@ -2,8 +2,9 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
-from .models import db, User, Admin, StripeCustomer, StripeSubscription
+from .models import db, User, Admin, StripeCustomer, StripeSubscription, Friendship
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import not_
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,add_locations_from_csv
@@ -310,55 +311,161 @@ def map():
     
     return render_template('map.html')
 
-# Create route to search friends
+# Create route for friends page
 @main_blueprint.route('/friends')
+@login_required
 def friends():
-    return render_template('friends.html')
+    # Query the friends of the logged-in user
+    friends = (
+        User.query
+        .join(Friendship, User.id == Friendship.friend_id)
+        .filter(Friendship.user_id == current_user.id)
+        .all()
+    )
+    return render_template('friends.html', friends=friends)
 
-@main_blueprint.route('/search')
-def search_users():
-    query = request.args.get('query', '')
-    if query:
-        # Query users from the database
-        users = User.query.filter(User.username.like(f'%{query}%')).filter(User.id != current_user.id).all()
-        users_list = [{'id': user.id, 'username': user.username} for user in users]
-        return jsonify({'users': users_list})
-    return jsonify({'users': []})
-
-@main_blueprint.route('/send_friend_request/<int:user_id>', methods=['POST'])
+# Search bar
+@main_blueprint.route("/search")
 @login_required
-def send_friend_request(user_id):
-    if request.method == 'POST':
-        to_user = User.query.get(user_id)
-        if to_user:
-            existing_request = FriendRequest.query.filter_by(from_user_id=current_user.id, to_user_id=to_user.id).first()
-            if existing_request:
-                return jsonify({'success': False, 'message': 'Friend request already sent.'})
-            friend_request = FriendRequest(from_user=current_user, to_user=to_user)
-            db.session.add(friend_request)
-            db.session.commit()
-            return jsonify({'success': True, 'message': 'Friend request sent successfully!'})
-    return jsonify({'success': False, 'message': 'Failed to send friend request.'})
+def search():
+    # Query the friends of the logged-in user
+    friends = (
+        User.query
+        .join(Friendship, User.id == Friendship.friend_id)
+        .filter(Friendship.user_id == current_user.id)
+        .all()
+    )
+    # Extract friend IDs
+    friend_ids = [friend.id for friend in friends]
 
-@main_blueprint.route('/respond_friend_request/<int:request_id>/<action>', methods=['POST'])
-@login_required
-def respond_friend_request(request_id, action):
-    if action not in ['accept', 'decline']:
-        return jsonify({'success': False, 'message': 'Invalid action.'})
+    # Query for input keywords
+    q = request.args.get("q")
+    print(q)
+    if q:
+        # Query friends list
+        results = (
+            User.query
+            .filter(User.username.icontains(q))
+            .filter(User.id != current_user.id)
+            .join(Friendship, User.id == Friendship.friend_id)
+            .filter(Friendship.user_id == current_user.id)
+            .limit(10)
+            .all()
+        )
 
-    friend_request = FriendRequest.query.get(request_id)
-    if not friend_request:
-        return jsonify({'success': False, 'message': 'Friend request not found.'})
-
-    if action == 'accept':
-        friend_request.status = 'accepted'
-        current_user.friends.append(friend_request.from_user)
-        friend_request.from_user.friends.append(current_user)
+        # Query suggested users list
+        resultsSU = (
+            User.query
+            .filter(User.username.icontains(q))
+            .filter(User.id != current_user.id)
+            .filter(~User.id.in_(friend_ids))
+            .limit(10)
+            .all()
+        )
     else:
-        friend_request.status = 'declined'
+        # Query all friends of the current user
+        results = (
+            User.query
+            .join(Friendship, User.id == Friendship.friend_id)
+            .filter(Friendship.user_id == current_user.id)
+            .all()
+        )
 
+        # Query users who are not friends of the current user
+        resultsSU = (
+            User.query
+            .filter(User.id != current_user.id)
+            .filter(~User.id.in_(friend_ids))  # Filter out friends
+            .limit(5)  # Limit to top 5 suggested users
+            .all()
+        )
+    return render_template('friendsResults.html', results=results, resultsSU=resultsSU)
+
+# For the "Find friends" page
+@main_blueprint.route('/get_friends')
+@login_required
+def get_friends():
+    # Query the friends of the logged-in user
+    friends = (
+        User.query
+        .join(Friendship, User.id == Friendship.friend_id)
+        .filter(Friendship.user_id == current_user.id)
+        .all()
+    )
+
+    # Convert friends to JSON format
+    friends_json = [{'username': friend.username} for friend in friends]
+
+    return jsonify(friends_json)
+
+@main_blueprint.route('/get_suggested_users')
+@login_required
+def get_suggested_users():
+    # Subquery to get IDs of friends of the current user
+    subquery = (
+        db.session.query(Friendship.friend_id)
+        .filter(Friendship.user_id == current_user.id)
+    )
+
+    # Query users who are not friends of the current user
+    suggested_users = (
+        User.query
+        .filter(User.id != current_user.id)
+        .filter(~User.id.in_(subquery))
+        .limit(5)  # Limit to top 5 suggested users
+        .all()
+    )
+
+    # Convert suggested users to JSON format
+    suggested_users_json = [{'username': user.username} for user in suggested_users]
+
+    return jsonify(suggested_users_json)
+
+@main_blueprint.route('/delete_friendship/<string:friend_username>')
+@login_required
+def delete_friendship(friend_username):
+    # Find the user object corresponding to the friend_username
+    friend = User.query.filter_by(username=friend_username).first()
+
+    # Check if the friend exists
+    if friend is None:
+        return jsonify({'error': 'User does not exist'})
+
+    # Check if the friend is a friend of the current user
+    if friend not in current_user.friends.all():
+        return jsonify({'info': 'User is not your friend'})
+
+    # Find the Friendship instance
+    friendship_instance = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend.id).first()
+
+    # Delete the Friendship instance if found
+    if friendship_instance:
+        db.session.delete(friendship_instance)
+        db.session.commit()
+        return jsonify({'success': 'Friendship deleted successfully'})
+    else:
+        return jsonify({'error': 'Friendship not found'})
+
+@main_blueprint.route('/add_friendship/<string:friend_username>')
+@login_required
+def add_friendship(friend_username):
+    # Find the user object corresponding to the friend_username
+    friend = User.query.filter_by(username=friend_username).first()
+
+    # Check if the friend exists
+    if friend is None:
+        return jsonify({'error': 'User does not exist'})
+
+    # Check if the friend is already a friend
+    if friend in current_user.friends.all():
+        return jsonify({'info': 'User is already your friend'})
+
+    # Create a new Friendship instance
+    new_friendship = Friendship(user_id=current_user.id, friend_id=friend.id)
+    db.session.add(new_friendship)
     db.session.commit()
-    return jsonify({'success': True, 'message': f'Friend request {action}ed successfully.'})
+
+    return jsonify({'success': 'Friend added successfully'})
 
 
 # register the blueprint with the app
