@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from sqlalchemy.orm import relationship
 
-# user data model will extends the base for database models with user authentication
+# user data model will extend the base for database models with user authentication
 class User(UserMixin, db.Model):
     __tablename__ = 'user'  # Explicitly setting the table name
     id = db.Column(db.Integer, primary_key=True)

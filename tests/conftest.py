@@ -1,5 +1,7 @@
 import pytest
+import uuid
 from app import create_app, db
+from app.models import User
 
 @pytest.fixture(scope='module')
 def test_app():
@@ -37,3 +39,15 @@ def test_client(test_app):
     THEN provide a test client for the Flask application
     """
     return test_app.test_client()
+
+@pytest.fixture(scope='module')
+def user(test_db):
+    """
+    Creates a user fixture that can be used for tests requiring a User model, with a unique email each time.
+    """
+    unique_email = f"test_{uuid.uuid4()}@example.com"
+    user = User(username='test_user', email=unique_email)
+    user.set_password('testpassword')
+    test_db.session.add(user)
+    test_db.session.commit()
+    return user

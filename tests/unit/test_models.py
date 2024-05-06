@@ -1,5 +1,5 @@
 import pytest
-from app.models import User, StripeCustomer, StripeSubscription, Admin
+from app.models import User, StripeCustomer, StripeSubscription, Admin, Journey, Location, Filepath
 from sqlalchemy.exc import IntegrityError, DataError
 from datetime import datetime, timedelta
 
@@ -687,3 +687,64 @@ def test_field_max_length(test_app, test_db, model, field, max_length):
             assert False, f"An unexpected exception type {type(e)} was raised with message: {e}"
 
         test_db.session.rollback()
+
+@pytest.mark.parametrize("total_distance", [0.0, 5.5, 100.3])
+def test_journey_creation(test_db, user, total_distance):
+    """
+    GIVEN a User model and a float for total_distance
+    WHEN a new Journey instance is created with valid total_distance and linked to a user
+    THEN check that the Journey is added to the session and committed to the database
+    """
+    upload_time = datetime.utcnow()
+    journey = Journey(user_id=user.id, total_distance=total_distance, upload_time=upload_time)
+    test_db.session.add(journey)
+    test_db.session.commit()
+
+    # Retrieve the specific journey to ensure it's saved and check fields
+    saved_journey = Journey.query.filter_by(user_id=user.id, total_distance=total_distance, upload_time=upload_time).first()
+    assert saved_journey is not None, "No journey found matching the criteria"
+    assert saved_journey.user_id == user.id
+    assert saved_journey.total_distance == total_distance
+    assert saved_journey.upload_time == upload_time
+
+def test_journey_without_user(test_db):
+    """
+    WHEN a Journey instance is created without a linked User
+    THEN the database should raise an IntegrityError
+    """
+    journey = Journey(total_distance=50.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+@pytest.mark.parametrize("locations_count", [0, 1, 5])
+def test_journey_with_locations(test_db, user, locations_count):
+    """
+    GIVEN a Journey model linked to a User
+    WHEN several Location instances are related to the Journey
+    THEN check that all Location instances are linked correctly
+    """
+    # Start clean session
+    test_db.session.rollback()
+    
+    journey = Journey(user_id=user.id, total_distance=20.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    test_db.session.commit()
+
+    for _ in range(locations_count):
+        location = Location(
+            journey_id=journey.id,
+            user_id=user.id,
+            init_latitude=0.0,
+            init_longitude=0.0,
+            goal_latitude=10.0,
+            goal_longitude=10.0,
+            departure="City A",
+            arrival="City B",
+            upload_time=datetime.utcnow()
+        )
+        test_db.session.add(location)
+
+    test_db.session.commit()
+
+    assert len(journey.locations) == locations_count
