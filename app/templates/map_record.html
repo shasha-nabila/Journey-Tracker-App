@@ -9,64 +9,70 @@
 <head>
     <meta charset="UTF-8">
     <title>Map Records</title>
-    <style>
-        .records-container {
-            max-width: 800px;
-            margin: auto;
-        }
-
-        .journey-block {
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-
-        .journey-block p {
-            margin: 10px 0;
-        }
-
-        .journey-block img {
-            max-width: 100%;
-            height: auto;
-            margin-top: 10px;
-            border-radius: 5px;
-        }
-
-        .delete-form {
-            display: inline;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
     <header>
-        {% include 'navbar.html' %}
-    </header>
-    <div class="records-container">
-
-        <a href="{{ url_for('main.map') }}" class="map">Upload a Track</a>
-        <form action="/map_record/submit-selected-journeys" method="post">
-            {% for journey in journeys %}
-            <div class="journey-block">
-                <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
-                {% if journey.locations %}
-                <p><strong>From:</strong> {{ journey.locations[0].departure }}</p>
-                <p><strong>To:</strong> {{ journey.locations[0].arrival }}</p>
-                {% endif %}
-                <p><strong>Distance Travelled:</strong> {{ journey.total_distance }} m</p>
-                <p><strong>Upload Date:</strong> {{ journey.upload_time.strftime('%d-%m-%Y %H:%M:%S') }}</p>
-                {% for filepath in journey.filepath %}
-                    <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
-                        alt="Route Image">
-                    <a href="{{ url_for('main.download_file', filename=filepath.gpx_file_path.split('/')[-1]) }}" download>Download GPX</a>
-                {% endfor %}
-                <a href="/journey/{{ journey.id }}" class="detail-button">Detail</a>
+        <nav class="navbar navbar-custom navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">PuppyPilot</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdownCustom">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.records') }}">Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Log Out</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            {% endfor %}
-            <button type="submit">Show Selected Tracks</button>
-        </form>
+        </nav>
+    </header>
+
+    <div class="background">
+        <div class="records-container">
+            <div class="centered-button-container">
+                <a href="{{ url_for('main.map') }}" class="button">Upload a Track</a>
+                <form action="/map_record/submit-selected-journeys" method="post">
+                    {% for journey in journeys %}
+                    <div class="journey-block">
+                        <div class="text-container">
+                            My track: <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
+                            {% if journey.locations %}
+                            <p><strong>From:</strong> {{ journey.locations[0].departure }}</p>
+                            <p><strong>To:</strong> {{ journey.locations[0].arrival }}</p>
+                            {% endif %}
+                            <p><strong>Distance Travelled:</strong> {{ journey.total_distance }} m</p>
+                            <p><strong>Upload Date:</strong> {{ journey.upload_time.strftime('%d-%m-%Y %H:%M:%S') }}</p>
+                        </div>
+                        {% for filepath in journey.filepath %}
+                        <div class="image-container">
+                            <a href="{{ url_for('main.download_gpx_file', filename=filepath.gpx_file_path.split('/')[-1]) }}"
+                                download class="download-link"><i class="fa fa-download download-icon"></i></a>
+                            <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
+                                alt="Route Image">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="button">Show Selected Tracks</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 
