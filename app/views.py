@@ -322,13 +322,13 @@ def map():
         file = request.files['file']
 
         if file.filename == '':
-            flash('No selected file')
+            flash('No selected file.', 'danger')
             return redirect(request.url)
         
         if '.' in file.filename and file.filename.rsplit('.',1)[1].lower() in ConfigClass.ALLOWED_EXTENSIONS:
             pass
         else:
-            flash('Invalid file type selected, please select gpx file')
+            flash('Invalid file type selected, please select a GPX file.', 'danger')
             return redirect(request.url)
         
         if  file and allowed_file(file.filename):
@@ -393,7 +393,7 @@ def submit_selected_journey_map():
     selected_journeys = request.form.getlist('journey_ids')
 
     if not selected_journeys:
-        flash('No journey selected. Please select journey')
+        flash('No track selected. Please select at least one track.', 'danger')
         return redirect(url_for('main.records'))
     
     gpx_file_paths = []
