@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash, redirect, url_for
+import gpxpy.gpx
 
 matplotlib.use('Agg') 
 
@@ -76,16 +77,16 @@ def allowed_file(filename):
 
 def parse_gpx(file_path):
     # open filename.gpx 
-    gpx_file = open(file_path, 'r')
-    gpx = gpxpy.parse(gpx_file)
-    # store latitude, longitude datas for routes
-    points = []
-    for track in gpx.tracks:
-        for segment in track.segments:
-            for point in segment.points:
-                points.append((point.latitude, point.longitude))
-    # return data to display route on map
-    return points
+    with open(file_path, 'r') as gpx_file:
+        gpx = gpxpy.parse(gpx_file)
+        # store latitude, longitude datas for routes
+        points = []
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    points.append((point.latitude, point.longitude))
+        # return data to display route on map
+        return points
 
 def info_parse_gpx(file_path):
     # open gpx file
@@ -116,6 +117,7 @@ def create_and_append_csv(file_path, header, data, current_id):
             writer.writerow(header)
         
         combined_row = []
+        
         for row in data:
             combined_row.extend(row)  
         
@@ -148,31 +150,37 @@ def create_multiple_route_map_html(gpx_file):
     
     return map._repr_html_()
      
+def parse_gpx_and_calculate_distance(gpx_file_path):
 
-def calculate_distance(point1, point2):
-    coords_1 = (point1['latitude'], point1['longitude'])
-    coords_2 = (point2['latitude'], point2['longitude'])
-    return geodesic(coords_1, coords_2).meters
+    with open(gpx_file_path, 'r') as gpx_file:
+        gpx = gpxpy.parse(gpx_file)
 
-def upload_journey_database(csv_file_path, user_id):
+    total_distance = 0.0  
+
+    for track in gpx.tracks:
+        for segment in track.segments:
+ 
+            total_distance += segment.length_3d() 
+
+    return total_distance
+
+def upload_journey_database(csv_file_path, user_id, total_distance):
 
     with open(csv_file_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             if int(row['user_id']) == user_id:
-                print(row)
+   
                 existing_journey = Journey.query.filter_by(
-                    user_id = user_id,
-                    total_distance=float(row['distance']),
-                    upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                    upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
                 
                 ).first()
             # Check duplicated data
                 if not existing_journey:
                     new_journey = Journey(
                         user_id = user_id,
-                        total_distance=float(row['distance']),
-                        upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                        total_distance=total_distance,
+                        upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
                     )
                     db.session.add(new_journey)
         db.session.commit()
