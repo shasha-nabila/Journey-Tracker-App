@@ -938,3 +938,7 @@ html {
 .isFriend:hover {
     background-color: #b30000;
 }
+
+.logo {
+    width: 60px;
+}

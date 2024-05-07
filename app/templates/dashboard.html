@@ -15,7 +15,9 @@
     <header>
         <nav class="navbar navbar-custom navbar-expand-lg">
             <div class="container-fluid">
-                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">PuppyPilot</a>
+                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">
+                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo">
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
                     aria-expanded="false" aria-label="Toggle navigation">

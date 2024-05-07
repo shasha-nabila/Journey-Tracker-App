@@ -6,7 +6,9 @@
 <!-- Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(255, 255, 255);">
     <div class="container">
-        <a class="navbar-brand" href="#homeSection">PuppyPilot</a>
+        <a class="navbar-brand" href="#homeSection">
+            <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
             aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
