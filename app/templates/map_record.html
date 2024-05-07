@@ -64,7 +64,7 @@
                 {% for filepath in journey.filepath %}
                     <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
                         alt="Route Image">
-                    <a href="{{ url_for('main.download_file', filename=filepath.gpx_file_path.split('/')[-1]) }}" download>Download GPX</a>
+                    <a href="{{ url_for('main.download_gpx_file', journey_id=journey.id, filename=filepath.gpx_file_path.split('/')[-1] )}}" download>Download GPX</a>
                 {% endfor %}
             </div>
             {% endfor %}

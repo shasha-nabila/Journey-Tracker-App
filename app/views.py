@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory, Response
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
@@ -6,7 +6,7 @@ from .models import db, User, Admin, StripeCustomer, StripeSubscription, Filepat
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, calculate_distance, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html, find_active_subscription
+from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html, find_active_subscription, parse_gpx_and_calculate_distance 
 from config import ConfigClass
 
 import pandas as pd
@@ -341,14 +341,12 @@ def map():
             # Create CSV for points
             points_csv_file = 'points.csv'
             create_and_append_csv(points_csv_file, ConfigClass.HEADER_INFO, [[point['name'], point['latitude'], point['longitude'], point['address']] for point in info],current_user.id)
-            
-            # Create CSV for distance
-            distance_csv_file = 'distance.csv'
-            distances = [calculate_distance(info[i], info[i+1]) for i in range(len(info)-1)]
-            create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances],current_user.id)
+              
+            # Calculate total distance
+            total_distance = parse_gpx_and_calculate_distance(gpx_file_path)
 
             #upload to Journey class
-            new_journey = upload_journey_database(distance_csv_file,current_user.id,)
+            new_journey = upload_journey_database(points_csv_file,current_user.id, total_distance)
 
             #upload to Filepath class
             upload_filepath_database(new_journey, image_file_path, gpx_file_path,current_user.id)
@@ -359,7 +357,7 @@ def map():
             # Create and get map HTML
             map_html_content = create_map_html(coordinates)
         
-            return render_template('map_api.html', map_html_content=map_html_content, distances = distances,)
+            return render_template('map_api.html', map_html_content=map_html_content, distances = total_distance,)
 
         else:
             return redirect(request.url)
@@ -407,9 +405,16 @@ def submit_selected_journey_map():
 # download data route
 @main_blueprint.route('/download/<filename>')
 @login_required
-def download_file(filename):
-    directory = os.path.join(current_app.root_path, ConfigClass.UPLOAD_FOLDER)
-    return send_from_directory(directory=directory, filename=filename, as_attachment=True)
+def download_gpx_file(filename):
+    
+    file_path = os.path.join(ConfigClass.UPLOAD_FOLDER, filename)
+    if not os.path.isfile(file_path):
+        return "File not found.", 404
+    with open(file_path, 'rb') as f:
+        data = f.read()
+    response = Response(data, mimetype='application/gpx+xml')
+    response.headers.set('Content-Disposition', 'attachment', filename=filename)
+    return response
 
 # register the blueprint with the app
 def configure_routes(app):
