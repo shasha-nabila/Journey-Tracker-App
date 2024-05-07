@@ -539,9 +539,8 @@ html {
 }
 
 .profile img {
-    width: 14vw;
-    max-width: 130px;
-    min-width: 70px;
+    width: 130px;
+    height: 160px; /* Adjust the height as needed to maintain your desired aspect ratio */
 }
 
 .py-6 {
