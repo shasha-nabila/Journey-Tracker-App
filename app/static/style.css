@@ -647,7 +647,22 @@ html {
 
 }
 
+.routeTypeContainer {
+    display: flex;
+    justify-content: center;
+    /* Centers content horizontally */
+    flex-wrap: wrap;
+    /* Allows buttons to wrap on smaller screens */
+}
 
+.routeTypeContainer a {
+    flex: 1; /* Distribute available space equally among all buttons */
+    border-radius: 50px;
+}
+
+.routeTypeContainer #myTracks {
+    margin-right: 10%;
+}
 
 .button {
     background-color: #014E86;
@@ -769,6 +784,7 @@ html {
 }
 
 /* Friends page */
+
 #barSearch {
     background-color: white;
     border: 1px solid grey;

@@ -466,22 +466,8 @@ def search():
             .all()
         )
     else:
-        # Query all friends of the current user
-        results = (
-            User.query
-            .join(Friendship, User.id == Friendship.friend_id)
-            .filter(Friendship.user_id == current_user.id)
-            .all()
-        )
-
-        # Query users who are not friends of the current user
-        resultsSU = (
-            User.query
-            .filter(User.id != current_user.id)
-            .filter(~User.id.in_(friend_ids))  # Filter out friends
-            .limit(5)  # Limit to top 5 suggested users
-            .all()
-        )
+        results = []
+        resultsSU = []
     return render_template('friendsResults.html', results=results, resultsSU=resultsSU)
 
 # For the "Find friends" page
@@ -538,12 +524,14 @@ def delete_friendship(friend_username):
     if friend not in current_user.friends.all():
         return jsonify({'info': 'User is not your friend'})
 
-    # Find the Friendship instance
-    friendship_instance = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend.id).first()
+    # Find Friendship instances
+    instance1 = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend.id).first()
+    instance2 = Friendship.query.filter_by(user_id=friend.id, friend_id=current_user.id).first()
 
-    # Delete the Friendship instance if found
-    if friendship_instance:
-        db.session.delete(friendship_instance)
+    # Delete the Friendship instances if found
+    if instance1:
+        db.session.delete(instance1)
+        db.session.delete(instance2)
         db.session.commit()
         return jsonify({'success': 'Friendship deleted successfully'})
     else:
@@ -563,9 +551,11 @@ def add_friendship(friend_username):
     if friend in current_user.friends.all():
         return jsonify({'info': 'User is already your friend'})
 
-    # Create a new Friendship instance
-    new_friendship = Friendship(user_id=current_user.id, friend_id=friend.id)
-    db.session.add(new_friendship)
+    # Create new Friendship instances (reciprocal)
+    friendship1 = Friendship(user_id=current_user.id, friend_id=friend.id)
+    friendship2 = Friendship(user_id=friend.id, friend_id=current_user.id)
+    db.session.add(friendship1)
+    db.session.add(friendship2)
     db.session.commit()
 
     return jsonify({'success': 'Friend added successfully'})
