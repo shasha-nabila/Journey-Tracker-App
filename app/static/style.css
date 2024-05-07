@@ -17,12 +17,6 @@ header {
     margin-top: 0;
 }
 
-.navbar-brand {
-    font-size: 24px !important;
-    font-weight: bold;
-    color: #014E86 !important;
-}
-
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23014E86' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
 }
@@ -34,7 +28,6 @@ header {
 
 .nav-item a {
     text-decoration: none;
-    padding: 5px 10px;
     border-radius: 5px;
     color: #014E86;
 }
@@ -70,7 +63,6 @@ header {
 
 .navbar-custom .nav-item a {
     text-decoration: none;
-    padding: 5px 10px;
     border-radius: 5px;
     color: #ffffff;
 }
