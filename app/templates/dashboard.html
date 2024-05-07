@@ -9,6 +9,10 @@
 
 <head>
     <title>Dashboard</title>
+    <!-- Google Font Link for Quantico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -44,15 +48,15 @@
 
     <div class="background">
         <div class="dashboard-header">
-            <h1><span class="highlighted">DASHBOARD</span></h1>
+            <h1 class="font-bold-italic"><span class="highlighted font-bold-italic">DASHBOARD</span></h1>
         </div>
 
         <section class="dashboard">
             <div class="dashboard-section" id="section1">
                 <div class="section-title">
-                    <h2 class="title-word">LATEST</h2>
-                    <h2 class="title-word">VISITED</h2>
-                    <h2 class="title-word">LOCATION</h2>
+                    <h2 class="title-word font-bold-italic">LATEST</h2>
+                    <h2 class="title-word font-bold-italic">VISITED</h2>
+                    <h2 class="title-word font-bold-italic">LOCATION</h2>
                 </div>
                 <div class="section-content">
                     <p>{{ latest_location.arrival if latest_location else 'No recent locations.' }}</p>
@@ -60,14 +64,13 @@
             </div>
             <div class="dashboard-section" id="section2">
                 <div class="section-title">
-                    <h2 class="title-word">TOTAL</h2>
-                    <h2 class="title-word">DISTANCE</h2>
-                    <h2 class="title-word">TRAVELLED</h2>
+                    <h2 class="title-word font-bold-italic">TOTAL</h2>
+                    <h2 class="title-word font-bold-italic">DISTANCE</h2>
+                    <h2 class="title-word font-bold-italic">TRAVELLED</h2>
                 </div>
                 <div class="section-content">
                     <p>{{ total_distance_travelled_km }} KM</p>
                 </div>
-
             </div>
         </section>
         <div class="dashboard">
