@@ -1,6 +1,6 @@
 import pytest
 from app.models import User, StripeCustomer, StripeSubscription, Admin, Journey, Location, Filepath
-from sqlalchemy.exc import IntegrityError, DataError
+from sqlalchemy.exc import IntegrityError, DataError, StatementError
 from datetime import datetime, timedelta
 
 @pytest.mark.parametrize("model", [User, Admin])
@@ -753,6 +753,7 @@ def test_journey_with_locations(test_db, user, locations_count):
     ('/path/to/image1.jpg', '/path/to/gpx1.gpx'),
     ('/path/to/image2.jpg', '/path/to/gpx2.gpx')
 ])
+
 def test_journey_with_filepath(test_db, user, image_file_path, gpx_file_path):
     """
     GIVEN a Journey model linked to a User and strings representing file paths
@@ -785,3 +786,98 @@ def test_journey_with_filepath(test_db, user, image_file_path, gpx_file_path):
 
     assert filepath_instance.image_file_path == image_file_path, "Image file path does not match the expected path"
     assert filepath_instance.gpx_file_path == gpx_file_path, "GPX file path does not match the expected path"
+
+@pytest.mark.parametrize("init_lat,init_long,goal_lat,goal_long", [
+    (40.7128, -74.0060, 34.0522, -118.2437),  # Valid coordinates
+    (91.0, -74.0060, 34.0522, 361.0),         # Invalid latitude and longitude
+    (-91.0, -74.0060, 34.0522, -361.0),
+    (90.0, 180.0, -90.0, -180.0),             # Boundary conditions
+    (90.0, -180.0, -90.0, 180.0),
+    ("not_a_number", -74.0060, 34.0522, -118.2437),  # Non-numeric inputs
+    (40.7128, "not_a_number", 34.0522, -118.2437)
+])
+
+def test_create_location(test_app, test_db, user, journey, init_lat, init_long, goal_lat, goal_long):
+    """
+    GIVEN a test application context and various sets of latitude and longitude values
+    WHEN a Location instance is created and a database commit is attempted
+    THEN the test verifies that valid locations are saved and improper inputs raise appropriate exceptions.
+    """
+    with test_app.app_context():
+        upload_time = datetime.utcnow()
+        location = Location(
+            journey_id=journey.id,
+            user_id=user.id,
+            init_latitude=init_lat,
+            init_longitude=init_long,
+            goal_latitude=goal_lat,
+            goal_longitude=goal_long,
+            departure="Origin City",
+            arrival="Destination City",
+            upload_time=upload_time
+        )
+        test_db.session.add(location)
+        # Expect errors for invalid or non-numeric data
+        if isinstance(init_lat, str) or isinstance(init_long, str) or isinstance(goal_lat, str) or isinstance(goal_long, str):
+            with pytest.raises((DataError, StatementError)):
+                test_db.session.commit()
+            test_db.session.rollback()  # Rollback after catching expected errors
+        else:
+            # If no exception is expected, commit normally
+            try:
+                test_db.session.commit()
+                saved_location = Location.query.filter_by(journey_id=journey.id, user_id=user.id).first()
+                assert saved_location is not None, "Location should be saved in the database"
+            except Exception as e:
+                test_db.session.rollback()
+                assert False, f"Unexpected error occurred: {e}"
+
+def test_location_missing_fields(test_db, user, journey):
+    """
+    WHEN a Location instance is created missing required fields
+    THEN the database should raise an IntegrityError
+    """
+    location = Location(
+        journey_id=journey.id,
+        user_id=user.id,
+        # Missing latitude and longitude
+        departure="Origin City",
+        arrival="Destination City",
+        upload_time=datetime.utcnow()
+    )
+    test_db.session.add(location)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+def test_location_foreign_keys(test_db, user, journey):
+    """
+    GIVEN incorrect or missing foreign keys for a Location
+    WHEN trying to commit to the database
+    THEN expect an IntegrityError
+    """
+    # Start clean session
+    test_db.session.rollback()
+    
+    scenarios = [
+        {"journey_id": None, "user_id": user.id},  # Missing journey_id
+        {"journey_id": journey.id, "user_id": None}  # Missing user_id
+    ]
+
+    for scenario in scenarios:
+        location = Location(
+            journey_id=scenario["journey_id"],
+            user_id=scenario["user_id"],
+            init_latitude=40.7128,
+            init_longitude=-74.0060,
+            goal_latitude=34.0522,
+            goal_longitude=-118.2437,
+            departure="Origin City",
+            arrival="Destination City",
+            upload_time=datetime.utcnow()
+        )
+        test_db.session.add(location)
+        with pytest.raises(IntegrityError):
+            test_db.session.commit()
+
+        # Reset session to clear out the effects of the failed transaction
+        test_db.session.rollback()

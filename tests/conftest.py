@@ -1,7 +1,8 @@
 import pytest
 import uuid
 from app import create_app, db
-from app.models import User
+from app.models import User, Journey
+from datetime import datetime
 
 @pytest.fixture(scope='module')
 def test_app():
@@ -51,3 +52,13 @@ def user(test_db):
     test_db.session.add(user)
     test_db.session.commit()
     return user
+
+@pytest.fixture(scope='module')
+def journey(test_db, user):
+    """
+    Creates a Journey instance linked to the user fixture for tests requiring a Journey model.
+    """
+    journey = Journey(user_id=user.id, total_distance=100.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    test_db.session.commit()
+    return journey
