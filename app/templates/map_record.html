@@ -15,18 +15,18 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-custom">
+        <nav class="navbar navbar-custom navbar-expand-lg">
             <div class="container-fluid">
                 <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">PuppyPilot</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
-                    aria-label="Toggle navigation">
+                    data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
+                    aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <div class="collapse navbar-collapse" id="navbarNavDropdownCustom">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.map') }}">Map</a>
+                            <a class="nav-link" href="{{ url_for('main.records') }}">Map</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Friends</a>
@@ -45,10 +45,6 @@
 
     <div class="background">
         <div class="records-container">
-            {% for message in get_flashed_messages() %}
-            <div style="color: red;">{{ message }}</div>
-            {% endfor %}
-
             <div class="centered-button-container">
                 <a href="{{ url_for('main.map') }}" class="button">Upload a Track</a>
                 <form action="/map_record/submit-selected-journeys" method="post">
@@ -65,8 +61,10 @@
                         </div>
                         {% for filepath in journey.filepath %}
                         <div class="image-container">
-                            <a href="{{ url_for('main.download_file', filename=filepath.gpx_file_path.split('/')[-1]) }}" download class="download-link"><i class="fa fa-download download-icon"></i></a>
-                            <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}" alt="Route Image">
+                            <a href="{{ url_for('main.download_file', filename=filepath.gpx_file_path.split('/')[-1]) }}"
+                                download class="download-link"><i class="fa fa-download download-icon"></i></a>
+                            <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
+                                alt="Route Image">
                         </div>
                         {% endfor %}
                     </div>

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - My App{% endblock %}
+{% block title %}Landing Page{% endblock %}
 
 {% block content %}
 <!-- Navigation Bar -->
@@ -171,7 +171,8 @@
             <div class="card plan-option">
                 <div class="card-body">
                     <h2 class="plan-card-title">{{ plan_option|capitalize }}</h2>
-                    <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else "100" }}</p>
+                    <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else
+                        "100" }}</p>
                 </div>
             </div>
             {% endfor %}

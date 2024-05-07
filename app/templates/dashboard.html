@@ -8,25 +8,23 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
 </head>
 
 <body>
     <header>
-        <nav class="navbar navbar-custom">
+        <nav class="navbar navbar-custom navbar-expand-lg">
             <div class="container-fluid">
                 <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">PuppyPilot</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
-                    aria-label="Toggle navigation">
+                    data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
+                    aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <div class="collapse navbar-collapse" id="navbarNavDropdownCustom">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.map') }}">Map</a>
+                            <a class="nav-link" href="{{ url_for('main.records') }}">Map</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Friends</a>
@@ -69,11 +67,11 @@
                 <div class="section-content">
                     <p>{{ total_distance_travelled_km }} KM</p>
                 </div>
-                
+
             </div>
         </section>
         <div class="dashboard">
-            <img class="dashboard-gif" src="{{ url_for('static', filename='image/dog_dashboard.gif') }}" alt="Your GIF Description">
+            <img class="dashboard-gif" src="{{ url_for('static', filename='image/dog_dashboard.gif') }}" alt="Dog GIF">
         </div>
     </div>
 

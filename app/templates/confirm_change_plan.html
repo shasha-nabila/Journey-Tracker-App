@@ -5,20 +5,22 @@
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="text-center">
-        <div class="card confirm-plan-change mx-auto" style="max-width: 500px;">
+        <div class="card confirm-plan-change mx-auto" style="max-width: 600px; width: 100%;">
             <div class="card-body">
-                <p class="card-text">Are you sure you want to cancel your current plan "<strong>{{ current_plan|capitalize }}</strong>" and change to "<strong>{{ new_plan|capitalize }}</strong>"?</p>
+                <p class="card-text">Are you sure you want to cancel your current plan "<strong>{{
+                        current_plan|capitalize }}</strong>" and change to "<strong>{{ new_plan|capitalize }}</strong>"?
+                </p>
                 <div class="button-container">
                     <form action="{{ url_for('main.change_plan') }}" method="post">
                         <input type="hidden" name="new_plan" value="{{ new_plan }}">
                         <input type="hidden" name="current_plan" value="{{ current_plan }}">
                         <button type="submit" name="confirm" value="yes" class="btn btn-primary mr-2">Yes</button>
-                    </form>    
+                    </form>
                     <form action="{{ url_for('main.membership') }}">
                         <button type="submit" class="btn btn-secondary">No</button>
                     </form>
                 </div>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
