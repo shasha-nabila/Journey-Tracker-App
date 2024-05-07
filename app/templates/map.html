@@ -3,17 +3,97 @@
 {% block title %}Map - My App{% endblock %}
 
 {% block content %}
+<style>
+    .custom-file-input, .custom-submit {
+        visibility: hidden;
+    }
+    .custom-file-label, .custom-submit-label {
+        background-color: #014E86;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: inline-block;
+    }
+    .custom-file-label:hover, .custom-submit-label:hover {
+        background-color: #013A6B;
+    }
+    .no-file {
+        display: none;
+    }
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="card map-card" style="max-width: 400px;">
-        <div class="card-header map-card-header">
-            <h1 class="map-card-title">Map</h1>
-        </div>
+    .map-card-body {
+        padding: 50px; /* Adjust the padding to make the card body bigger */
+    }
+
+    .drag-drop-area {
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        margin-bottom: 50px; /* Add margin bottom */
+    }
+
+    .drag-drop-area.highlight {
+        background-color: #f0f0f0;
+    }
+
+    /* Add margin top to the submit button */
+    #submit {
+        margin-top: 20px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('file');
+        const fileLabel = document.getElementById('fileLabel');
+        const noFile = document.getElementById('noFile');
+        const dragDropArea = document.getElementById('dragDropArea');
+
+        fileInput.onchange = function() {
+            if (fileInput.value) {
+                noFile.style.display = 'none';
+            } else {
+                noFile.style.display = 'block';
+            }
+        };
+
+        // Drag and Drop functionality
+        dragDropArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dragDropArea.classList.add('highlight');
+        });
+
+        dragDropArea.addEventListener('dragleave', function() {
+            dragDropArea.classList.remove('highlight');
+        });
+
+        dragDropArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            fileInput.files = e.dataTransfer.files;
+            fileLabel.innerHTML = file.name;
+            noFile.style.display = 'none';
+            dragDropArea.classList.remove('highlight');
+        });
+    });
+</script>
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card map-card">
         <div class="card-body map-card-body">
             <form method="POST" action="{{ url_for('main.map') }}" enctype="multipart/form-data">
-                {% include 'map_display.html' %}
-                <input type="file" name="file">
-                <input type="submit" value="Upload">
+                <div id="dragDropArea" class="drag-drop-area">
+                    <p>Drag & drop your GPX file here</p>
+                </div>
+                <label for="file" class="custom-file-label">or Choose GPX file</label>
+                <input type="file" id="file" name="file" style="display: none;">
+                <div id="noFile" class="no-file">No file chosen</div>
+                <label for="submit" class="custom-submit-label">Upload</label>
+                <input type="submit" id="submit" value="Upload" style="display: none;">
             </form>
         </div>
     </div>

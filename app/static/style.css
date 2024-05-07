@@ -565,66 +565,85 @@ html {
     text-align: justify;
 }
 
-/* map page */
+/* map_record */
 
-.map-card {
-    margin: 20px auto;
-    border-radius: 10px;
-    background-color: #22463a;
+.records-container {
+    max-width: 600px;
+    margin: auto;
 }
 
-.map-card-header {
-    padding: 20px;
-    background-color: #142922;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.map-card-title {
-    color: #FFA500;
-    font-family: monospace;
-    margin-bottom: 0;
-}
-
-.map-card-body {
-    padding: 20px;
-}
-
-.map-container form {
-    margin-top: 20px;
-}
-
-.map-container input[type="file"] {
-    margin-bottom: 10px;
-}
-
-.map-container input[type="submit"] {
-    padding: 10px 20px;
-    border-radius: 5px;
-    background-color: #6BFFF7;
-    color: #141414;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.map-container input[type="submit"]:hover {
-    background-color: #9bf9f5;
-}
-
-.map-page .flashes {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-.map-page .flashes li {
-    color: #ffffff;
-    background-color: #FF0000;
+.journey-block {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
     padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 5px;
+    border-radius: 15px;
+    background-color: #014E86;
+    justify-content: space-between;
 }
+
+.text-container {
+    width: 65%; /* Adjust according to your content */
+    margin-right: 20px; /* Provides spacing between text and image */
+}
+
+.image-container {
+    width: 30%; /* Adjust based on your image sizes */
+    display: flex;
+    align-items: center;
+}
+
+.journey-block p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: white; /* Enhances readability on the blue background */
+}
+
+.journey-block img {
+    max-width: 80%; /* Ensures the image is contained within the image container */
+    height: auto;
+    border-radius: 5px;
+}
+
+.download-link {
+    margin-right: 10px; /* Space between the download link and the image */
+    color: #FFD700; /* Yellow color for the download icon */
+}
+
+.centered-button-container {
+    display: flex;
+    justify-content: center; /* Centers content horizontally */
+    flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+    margin: 0px 0; /* Adds vertical spacing around the container */
+    
+}
+
+
+
+.button {
+    background-color: #014E86; /* Dark blue background */
+    color: white; /* White text for contrast */
+    border: none; /* No border for a modern look */
+    padding: 10px 20px; /* Padding for better sizing */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor indicates clickable */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.button:hover {
+    background-color: #01315f; /* Slightly darker shade on hover for feedback */
+}
+
+.records-container a.button, /* Styling applies to anchor tag used as button */
+.records-container button.button {
+    margin: 20px 0; /* Margin for spacing around buttons */
+    display: inline-block; /* Ensures proper spacing and alignment */
+    text-decoration: none; /* Removes underline from links */
+}
+
+/* map-page */
+
 
 /* Media Queries */
 
