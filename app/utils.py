@@ -74,15 +74,20 @@ def allowed_file(filename):
 
 def parse_gpx(file_path):
     # open filename.gpx 
-    gpx_file = open(file_path, 'r')
-    gpx = gpxpy.parse(gpx_file)
-    points = []
-    for track in gpx.tracks:
-        for segment in track.segments:
-            for point in segment.points:
-                points.append((point.latitude, point.longitude))
-       
-    return points
+    with open(file_path, 'r') as gpx_file:
+        gpx = gpxpy.parse(gpx_file)
+        points = []
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    points.append({
+                        'latitude': point.latitude,
+                        'longitude': point.longitude,
+                        'name': point.name if hasattr(point, 'name') else ''
+                    })
+    start_point = points[0] if points else None
+    end_point = points[-1] if points else None
+    return points, start_point, end_point
 
 def info_parse_gpx(file_path):
     with open(file_path, 'r') as gpx_file:
@@ -118,25 +123,55 @@ def create_and_append_csv(file_path, header, data):
     
         writer.writerow(combined_row)
 
-def create_map_html(coordinates): 
-    m = folium.Map(location=coordinates[0], zoom_start=17)
-    initial_coordinate = coordinates[0]
-    goal_coordinate = coordinates[-1]
-    initial_marker = folium.Marker(initial_coordinate, tooltip='Departure', icon=folium.Icon(color='green')).add_to(m)
-    goal_marker = folium.Marker(goal_coordinate, tooltip='Arrival', icon=folium.Icon(color='green')).add_to(m)
-    folium.PolyLine(coordinates).add_to(m)
-    
+def create_map_html(file_path): 
+    coordinates, start_point, end_point = parse_gpx(file_path)
+    m = folium.Map(location=[start_point['latitude'], start_point['longitude']], zoom_start=15)
+    folium.Marker(
+        [start_point['latitude'], start_point['longitude']], 
+        popup=f"Start point", 
+        icon=folium.Icon(color='green')
+    ).add_to(m)
+    folium.Marker(
+        [end_point['latitude'], end_point['longitude']], 
+        popup=f"End point", 
+        icon=folium.Icon(color='red')
+    ).add_to(m)
+    folium.PolyLine([(point['latitude'], point['longitude']) for point in coordinates], color='blue').add_to(m)
+
+    # Fit the map to include all markers
+    m.fit_bounds([[
+        start_point['latitude'], start_point['longitude']],
+        [end_point['latitude'], end_point['longitude']]
+    ])
+
     return m._repr_html_()
 
-def create_multiple_route_map_html(gpx_file):
+def create_multiple_route_map_html(gpx_file_paths):
 
-    map = folium.Map(Location =[0, 0], zoom_start = 2)
+    map_center = [53.8008, -1.5491]  # Center of Leeds, for example
+    map = folium.Map(location=map_center, zoom_start=13)
+    colors = ['blue', 'green', 'red', 'purple', 'orange']  # Define more colors as needed
 
-    for gpx_file in gpx_file:
-        coordinates = parse_gpx(gpx_file)
-        if coordinates:
-            folium.PolyLine(coordinates).add_to(map)
-    
+    for index, path in enumerate(gpx_file_paths):
+        coordinates, start_point, end_point = parse_gpx(path)
+        route_color = colors[index % len(colors)]  # Cycle through colors
+        folium.PolyLine([(point['latitude'], point['longitude']) for point in coordinates], color=route_color).add_to(map)
+        folium.Marker(
+            [start_point['latitude'], start_point['longitude']], 
+            popup=f"Start point", 
+            icon=folium.Icon(color='green')
+        ).add_to(map)
+        folium.Marker(
+            [end_point['latitude'], end_point['longitude']], 
+            popup=f"End point", 
+            icon=folium.Icon(color='red')
+        ).add_to(map)
+
+    # Fit the map to include all markers
+    map.fit_bounds([[
+        start_point['latitude'], start_point['longitude']],
+        [end_point['latitude'], end_point['longitude']]
+    ])
     return map._repr_html_()
      
 
@@ -208,7 +243,7 @@ def create_route_image(coordinates, output_dir):
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     file_path = f"{output_dir}/{current_time}_route.png"
 
-    latitudes, longitudes = zip(*coordinates)
+    latitudes, longitudes = zip(*[(coord['latitude'], coord['longitude']) for coord in coordinates if 'latitude' in coord and 'longitude' in coord])
 
     plt.figure(figsize=(8, 6))
     plt.plot(longitudes, latitudes, color='white', linewidth=3)  
