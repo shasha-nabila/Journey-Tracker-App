@@ -3,7 +3,6 @@
 {% block title %}Record Track{% endblock %}
 
 {% block content %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,50 +10,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map</title>
-    <style>
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        nav ul li {
-            display: inline;
-            margin-right: 20px;
-        }
-
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-
-        #map {
-            width: 80%;
-            height: 80vh;
-            margin: auto;
-            margin-top: 50px;
-        }
-    </style>
+    <!-- Google Font Quantico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
-
+<div class="background">
 <body>
-    {% include 'map_navigator.html' %}
+    <nav class="custom-nav">
+        <ul>
+            <li><a href="/map_record" class="custom-nav-link">Record</a></li>
+            <!-- Add other navigation items here -->
+        </ul>
+    </nav>
 
-    <div id="map">
-        {{ map_html_content | safe }}
+    <div class="custom-map-container">
+        <!-- Apply font style to the Distance text -->
+        <span class="custom-distance font-bold-italic">Distance: {{ distances }}</span>
+        <div class="custom-map">
+            {{ map_html_content | safe }}
+        </div>
     </div>
 </body>
+</div>
 
 </html>
 {% endblock %}

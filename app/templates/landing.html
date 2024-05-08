@@ -3,16 +3,33 @@
 {% block title %}Landing Page{% endblock %}
 
 {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing</title>
+    <!-- Google Font Quantico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
 <!-- Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(255, 255, 255);">
     <div class="container">
-        <a class="navbar-brand" href="#homeSection">PuppyPilot</a>
+        <a class="navbar-brand" href="#homeSection">
+            <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
+                style="max-width: 4vw;">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
             aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ms-auto"> <!-- Changed from ml-auto to ms-auto -->
                 <li class="nav-item">
                     <a class="nav-link" href="#homeSection">Home</a>
                 </li>
@@ -41,17 +58,19 @@
             <div class="col-lg-8">
                 <br>
                 <br>
-                <h1 class="display-4">We're PuppyPilot! Pleased to meet you.</h1>
+                <h1 class="display-4 font-bold-italic">We're PuppyPilot! Pleased to meet you.</h1>
                 <hr>
             </div>
             <div class="col-md-8 col-lg-8">
-                <p class="lead">PuppyPilot is designed to bring your journeys to life by visually mapping out the path
-                    you've traversed. Whether you're a casual hiker, a dedicated cyclist, or an explorer at heart,
-                    PuppyPilot allows you to capture and relive your adventures.</p>
-                <p>View your past adventures, gain insights with detailed statistics, and see how far you've come on
-                    your journey with your friends.</p>
+                <p class="lead">PuppyPilot is a dedicated app that enhances the dog-walking experience by allowing users
+                    to share and discover new walking tracks. Tailored for dog owners, PuppyPilot enables you to record
+                    the routes you take with your furry friend, visualized clearly on a map. Discover tracks other users
+                    have enjoyed, find inspiration for your next outing, and make each walk a new adventure. </p>
+                <p>Connect with friends, share your favorite routes, and explore the paths taken by the community. With
+                    PuppyPilot, every walk is an opportunity to discover new sights, sounds, and sniffs for you and your
+                    dog.</p>
                 <!-- Button to create account or login -->
-                <a href="{{ url_for('main.register') }}" class="btn btn-primary">Join us</a>
+                <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-yellow">Join us</a>
             </div>
             <!-- Image Column -->
             <div class="col-md-4 col-lg-2">
@@ -66,28 +85,29 @@
 <!-- Vision and Mission Section -->
 <section id="visionSection" class="py-5">
     <div class="container">
-        <h2 class="display-4 text-center">Our Vision and Mission</h2>
+        <h2 class="display-4 text-center font-bold-italic">Our Vision and Mission</h2>
         <br>
         <div class="row">
             <!-- Vision Box -->
             <div class="col-md-6">
                 <div class="vision-box p-3">
-                    <h2>VISION</h2>
+                    <h2 class="font-bold-italic">VISION</h2>
                     <p class="border-box">
-                        To be the leading digital platform that transforms the way individuals and communities interact
-                        with their travel experiences, fostering a deeper connection between adventure and data-driven
-                        insights.
+                        To create a world where every dog walk is an adventure shared,
+                        fostering a community of exploration, health,
+                        and joy for dogs and their owners
                     </p>
                 </div>
             </div>
             <!-- Mission Box -->
             <div class="col-md-6">
                 <div class="mission-box p-3">
-                    <h2>MISSION</h2>
+                    <h2 class=" font-bold-italic">MISSION</h2>
                     <p class="border-box">
-                        Our mission is to empower explorers of all kinds with intuitive tools to map, analyze, and share
-                        their journeys. We strive to enhance the adventure experience by providing a seamless way to
-                        upload GPS data, visualize paths, and uncover the stories behind each journey.
+                        Our mission is to enrich the lives of dogs and their owners
+                        by providing an intutive app that makes discovering and shring safe,
+                        exciting walking tracks efoortless, promoting an active lifestyle and a social community of
+                        like-minded pet lovers.
                     </p>
                 </div>
             </div>
@@ -101,79 +121,81 @@
     <div class="container mt-5">
         <div class="row justify-content-center align-items-center">
             <div class="col-12 text-center">
-                <h2 class="section-heading">A bit about us</h2>
+                <h3 class="section-heading font-bold-italic" style="color: white;">A bit about us</h3>
                 <br>
             </div>
         </div>
-        <div class="row">
-            <!-- Team Member 1 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/eunseok.jpeg') }}" alt="Jimmy Kim"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Shasha Al Malek</h3>
-                    <p>CEO and Co-Founder</p>
-                </div>
-            </div>
-            <!-- Team Member 2 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/eunseok.jpeg') }}" alt="Priscilla Tingey"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Amine Melab</h3>
-                    <p>Graphic Designer</p>
-                </div>
-            </div>
-            <!-- Team Member 3 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/eunseok.jpeg') }}" alt="Bernard Booth"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Chunghyun Lee</h3>
-                    <p>Web Programmer</p>
-                </div>
-            </div>
-            <!-- Team Member 4 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/eunseok.jpeg') }}" alt="Celia Bird"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Sabrina Azhar</h3>
-                    <p>Web Programmer</p>
-                </div>
-            </div>
-            <!-- Team Member 5 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/eunseok.jpeg') }}" alt="Celia Bird"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Ainina Azman</h3>
-                    <p>Web Developer</p>
-                </div>
-            </div>
-            <!-- Team Member 6 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/eunseok.jpeg') }}" alt="Celia Bird"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Nadhilah Nazri</h3>
-                    <p>Software Tester</p>
-                </div>
+    </div>
+
+    <div class="row">
+        <!-- Team Member 1 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/ShashaPFP.jpg') }}" alt="Jimmy Kim"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Shasha Al Malek</h3>
+                <p>CEO and Co-Founder</p>
             </div>
         </div>
+        <!-- Team Member 2 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/AminePFP.jpg') }}" alt="Priscilla Tingey"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Amine Melab</h3>
+                <p>Graphic Designer</p>
+            </div>
+        </div>
+        <!-- Team Member 3 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/KadPFP.JPEG') }}" alt="Bernard Booth"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Chunghyun Lee</h3>
+                <p>Web Programmer</p>
+            </div>
+        </div>
+        <!-- Team Member 4 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/SabrinaPFP.jpg') }}" alt="Celia Bird"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Sabrina Azhar</h3>
+                <p>Web Programmer</p>
+            </div>
+        </div>
+        <!-- Team Member 5 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/AininaPFP.jpg') }}" alt="Celia Bird"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Ainina Azman</h3>
+                <p>Web Developer</p>
+            </div>
+        </div>
+        <!-- Team Member 6 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/nadhilahPFP.jpg') }}" alt="Celia Bird"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Nadhilah Nazri</h3>
+                <p>Software Tester</p>
+            </div>
+        </div>
+    </div>
     </div>
 </section>
 
 <!-- Subscription Plan Section -->
 <section id="subsPlanSection" class="py-5">
     <div class="membership-plans">
-        <h2 class="display-4 text-center">Membership Plan</h2>
-        <div class="plan">
+        <h2 class="display-4 text-center font-bold-italic">Membership Plan</h2>
+        <div class="plan ">
             {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
             {% for plan_option in plan_options %}
             <div class="card plan-option">
                 <div class="card-body">
-                    <h2 class="plan-card-title">{{ plan_option|capitalize }}</h2>
+                    <h2 class="plan-card-title font-bold-italic">{{ plan_option|capitalize }}</h2>
                     <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else
                         "100" }}</p>
                 </div>

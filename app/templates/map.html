@@ -3,17 +3,113 @@
 {% block title %}Upload GPX File{% endblock %}
 
 {% block content %}
+<style>
+    .custom-file-input,
+    .custom-submit {
+        visibility: hidden;
+    }
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-    <div class="card map-card" style="max-width: 400px;">
-        <div class="card-header map-card-header">
-            <h1 class="map-card-title">Map</h1>
-        </div>
+    .custom-file-label,
+    .custom-submit-label {
+        background-color: #014E86;
+        color: white;
+        border: none;
+        font-size: 1.3vw;
+        padding: 0.5vw 1vw;
+        border-radius: 10px;
+        cursor: pointer;
+        display: inline-block;
+        margin: 0px 12px;
+    }
+
+    #fileNameDisplay {
+        max-width: 30vw;
+    }
+
+    .custom-file-label:hover,
+    .custom-submit-label:hover {
+        background-color: #013A6B;
+    }
+
+    .no-file {
+        display: none;
+    }
+
+    .map-card-body {
+        padding: 3vw;
+        /* Adjust the padding to make the card body bigger */
+    }
+
+    .button-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        /* Adjust the space between buttons */
+    }
+
+    .drag-drop-area {
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 3vw;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .drag-drop-area.highlight {
+        background-color: #f0f0f0;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('file');
+        const fileNameDisplay = document.getElementById('fileNameDisplay'); // Assuming this is the div where the file name will be displayed
+        const dragDropArea = document.getElementById('dragDropArea');
+
+        fileInput.onchange = function () {
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name; // Display file name
+            } else {
+                fileNameDisplay.textContent = 'No file chosen';
+            }
+        };
+
+        // Drag and Drop functionality
+        dragDropArea.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dragDropArea.classList.add('highlight');
+        });
+
+        dragDropArea.addEventListener('dragleave', function (e) {
+            dragDropArea.classList.remove('highlight');
+        });
+
+        dragDropArea.addEventListener('drop', function (e) {
+            e.preventDefault();
+            fileInput.files = e.dataTransfer.files; // Assign dropped files to file input
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name; // Update the file name display
+                dragDropArea.classList.remove('highlight');
+            }
+        });
+    });
+</script>
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card map-card">
         <div class="card-body map-card-body">
             <form method="POST" action="{{ url_for('main.map') }}" enctype="multipart/form-data">
-                {% include 'map_display.html' %}
-                <input type="file" name="file">
-                <input type="submit" value="Upload">
+                <div id="dragDropArea" class="drag-drop-area">
+                    <p>Drag & drop your GPX file here</p>
+                </div>
+                <div id="fileNameDisplay" style="color: #014E86; font-size: 1.3vw; margin-bottom: 1vw;">No file chosen
+                </div>
+                <div class="button-container">
+                    <label for="file" class="custom-file-label">or Choose GPX file</label>
+                    <label for="submit" class="custom-submit-label">Upload</label>
+                </div>
+                <input type="file" id="file" name="file" style="display: none;">
+                <input type="submit" id="submit" value="Upload" style="display: none;">
             </form>
         </div>
     </div>

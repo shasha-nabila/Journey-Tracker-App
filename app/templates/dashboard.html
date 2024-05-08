@@ -8,27 +8,58 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <!-- Google Font Link for Quantico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header>
-        {% include 'navbar.html' %}
+        <nav class="navbar navbar-custom navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">
+                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
+                        style="max-width: 4vw;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdownCustom">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.records') }}">Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Log Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
 
+
     <div class="background">
-        <div class="dashboard-header mt-5 ms-5">
-            <h1><span class="highlighted">DASHBOARD</span></h1>
+        <div class="dashboard-header">
+            <h1 class="font-bold-italic"><span class="highlighted font-bold-italic">DASHBOARD</span></h1>
         </div>
 
         <section class="dashboard">
             <div class="dashboard-section" id="section1">
                 <div class="section-title">
-                    <h2 class="title-word">LATEST</h2>
-                    <h2 class="title-word">VISITED</h2>
-                    <h2 class="title-word">LOCATION</h2>
+                    <h2 class="title-word font-bold-italic">LATEST</h2>
+                    <h2 class="title-word font-bold-italic">VISITED</h2>
+                    <h2 class="title-word font-bold-italic">LOCATION</h2>
                 </div>
                 <div class="section-content">
                     <p>{{ latest_location.arrival if latest_location else 'No recent locations.' }}</p>
@@ -36,15 +67,18 @@
             </div>
             <div class="dashboard-section" id="section2">
                 <div class="section-title">
-                    <h2 class="title-word">TOTAL</h2>
-                    <h2 class="title-word">DISTANCE</h2>
-                    <h2 class="title-word">TRAVELLED</h2>
+                    <h2 class="title-word font-bold-italic">TOTAL</h2>
+                    <h2 class="title-word font-bold-italic">DISTANCE</h2>
+                    <h2 class="title-word font-bold-italic">TRAVELLED</h2>
                 </div>
                 <div class="section-content">
                     <p>{{ total_distance_travelled_km }} KM</p>
                 </div>
             </div>
         </section>
+        <div class="dashboard">
+            <img class="dashboard-gif" src="{{ url_for('static', filename='image/dog_dashboard.gif') }}" alt="Dog GIF">
+        </div>
     </div>
 
 </body>
