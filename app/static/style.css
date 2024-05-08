@@ -664,6 +664,10 @@ html {
     margin-right: 10%;
 }
 
+.smallestButton {
+    --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;
+}
+
 .button {
     background-color: #014E86;
     /* Dark blue background */
@@ -809,12 +813,6 @@ html {
     width: 100%;
 }
 
-#resultsList {
-    padding: 20px 10px;
-    margin: 0 auto;
-    width: 510px;
-}
-
 #tabContainer {
     padding: 10px 10px;
     margin: 0 auto;
@@ -893,10 +891,30 @@ html {
     color: #000000;
 }
 
-/* TEST */
-#results,
-#resultsSU {
-    font-weight: bold;
+.content_box h2{
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+}
+
+#resultsList li {
+    padding: 0.5em .5em;
+    margin: 0 auto;
+    width: 510px;
+    align-items: left;
+}
+
+.resultsList {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+    text-align: center; /* Center the text inside spans */
+    padding: 1em;
+}
+
+#resultsList {
+    list-style: none;
+    padding: 0;
 }
 
 .content ol {
@@ -912,16 +930,8 @@ html {
     /* Adjust the gap between list items */
 }
 
-
-/* Style for the numbering */
-.content li::before {
-    content: counter(item) ". ";
-    counter-increment: item;
-    margin-right: 5px;
-}
-
 .username {
-    margin-right: 10px;
+    margin-right: 1em;
     /* Adjust the space between username and button */
 }
 

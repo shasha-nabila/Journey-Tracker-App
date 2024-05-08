@@ -51,16 +51,21 @@
 
             <!-- Select routes -->
             <div class="routeTypeContainer">
-                <a href="{{ url_for('main.records') }}" class="button btn btn-primary disabled" role="button" aria-disabled="true" id="myTracks">My Tracks</a>
-                <a href="{{ url_for('main.multiRecords') }}" class="button btn btn-primary" role="button" aria-disabled="false" id="me&Friends'Tracks">Me & Friends' Tracks</a>
+                <a href="{{ url_for('main.records') }}" class="button btn btn-primary" role="button" aria-disabled="false" id="myTracks">My Tracks</a>
+                <a href="{{ url_for('main.multiRecords') }}" class="button btn btn-primary disabled" role="button" aria-disabled="true" id="me&Friends'Tracks">Me & Friends' Tracks</a>
             </div>
 
             <div class="centered-button-container">
                 <form action="/map_record/submit-selected-journeys" method="post">
-                    {% for journey in journeys %}
+                    {% for journey, username in journeys %}
                     <div class="journey-block">
                         <div class="text-container">
-                            My track: <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
+                            {% if journey.user_id == current_user.id %}
+                                My track:
+                            {% else %}
+                                {{ username }}'s track:
+                            {% endif %}
+                            <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
                             {% if journey.locations %}
                             <p><strong>From:</strong> {{ journey.locations[0].departure }}</p>
                             <p><strong>To:</strong> {{ journey.locations[0].arrival }}</p>
@@ -76,9 +81,11 @@
                                 alt="Route Image">
                         </div>
                         {% endfor %}
-                        <div class="smallestButton btn btn-danger btn-sm" onclick="confirmDelete('{{ journey.id }}')">
-                            <i class="bi bi-trash3"></i>
-                        </div>
+                        {% if journey.user_id == current_user.id %}
+                            <div class="smallestButton btn btn-danger btn-sm" onclick="confirmDelete('{{ journey.id }}')">
+                                <i class="bi bi-trash3"></i>
+                            </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
                     <button type="submit" class="button">Show Selected Tracks</button>

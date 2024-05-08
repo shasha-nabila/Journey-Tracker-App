@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash # for security purpose when
 from .forms import LoginForm, RegistrationForm
 from .models import db, User, Admin, StripeCustomer, StripeSubscription, Filepath, Journey, Location, Friendship
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import not_
+from sqlalchemy import or_
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html, find_active_subscription, parse_gpx_and_calculate_distance 
@@ -17,6 +17,8 @@ import folium
 import gpxpy
 import stripe
 import os
+import csv
+import app
 
 main_blueprint = Blueprint('main', __name__)
 
@@ -127,12 +129,14 @@ def dashboard():
 
 # route for logout
 @main_blueprint.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
 # route for subscription plan
 @main_blueprint.route('/subscription')
+@login_required
 def subscription():
     plan = request.args.get('plan', default='Monthly', type=str)  # Get the plan from query parameter
     return render_template('subscription.html', plan=plan, stripe_publishable_key=os.getenv('STRIPE_PUBLISHABLE_KEY'))
@@ -161,6 +165,7 @@ def membership():
 
 # route for payment
 @main_blueprint.route('/subscribe', methods=['POST'])
+@login_required
 def subscribe():
     if not current_user.is_authenticated:
         flash('Please log in to subscribe.', 'danger')
@@ -219,6 +224,7 @@ def subscribe():
 
 # route for success subscription
 @main_blueprint.route('/success')
+@login_required
 def subscription_success():
     return render_template('success.html')
 
@@ -298,6 +304,7 @@ def change_plan():
         return redirect(url_for('main.membership'))
 
 @main_blueprint.route('/map', methods=['GET', 'POST'])
+@login_required
 def map():
 
     if request.method == 'GET':
@@ -352,7 +359,7 @@ def map():
             new_journey = upload_journey_database(points_csv_file,current_user.id, total_distance)
 
             #upload to Filepath class
-            upload_filepath_database(new_journey, image_file_path, gpx_file_path,current_user.id)
+            upload_filepath_database(new_journey, image_file_path, gpx_file_path, current_user.id)
 
             #upload to Location class
             upload_location_database(points_csv_file, new_journey,current_user.id)
@@ -366,8 +373,10 @@ def map():
             return redirect(request.url)
     
     return render_template('map.html')
-  
+
+# Only current user map records
 @main_blueprint.route('/map_record', methods=['GET','POST'])
+@login_required
 def records():
     if request.method == 'GET':
         # Use the utility function to check for active subscription
@@ -385,7 +394,39 @@ def records():
     
     return redirect(request.url)
 
+# Multiple records for both user & friends
+@main_blueprint.route('/map_multi_record', methods=['GET','POST'])
+@login_required
+def multiRecords():
+    if request.method == 'GET':
+        # Use the utility function to check for active subscription
+        active_subscription = find_active_subscription(current_user)
+
+        if active_subscription == 'No Subscription':
+            flash('No active subscription found. Please subscribe to access the map.', 'danger')
+            return redirect(url_for('main.membership'))
+        
+        # Subquery to get IDs of friends of the current user
+        friend_ids_subquery = (
+            db.session.query(Friendship.friend_id)
+            .filter(Friendship.user_id == current_user.id)
+        )
+
+        journeys = (
+            db.session.query(Journey, User.username)
+            .join(User, Journey.user_id == User.id)
+            .filter(or_(Journey.user_id == current_user.id, Journey.user_id.in_(friend_ids_subquery)))
+            .all()
+        )
+
+        db.session.commit()
+        
+        return render_template('map_multi_record.html', journeys=journeys)
+    
+    return redirect(request.url)
+
 @main_blueprint.route('/map_record/submit-selected-journeys', methods=['POST'])
+@login_required
 def submit_selected_journey_map():
     
     selected_journeys = request.form.getlist('journey_ids')
@@ -418,62 +459,102 @@ def download_gpx_file(filename):
     response = Response(data, mimetype='application/gpx+xml')
     response.headers.set('Content-Disposition', 'attachment', filename=filename)
     return response
-  
+
+# Delete data route
+@main_blueprint.route('/delete_journey/<int:journey_id>', methods=['POST'])
+@login_required
+def delete_journey(journey_id):
+    # Check if the journey exists
+    journey = Journey.query.get(journey_id)
+    if not journey:
+        # Handle case where the journey doesn't exist
+        return jsonify({'status': 'error', 'message': 'Journey not found'}), 404
+    
+    # Get the associated Filepath record and delete its image file
+    filepath_entry = Filepath.query.filter_by(journey_id=journey_id).first()
+    if filepath_entry:
+        image_path = filepath_entry.image_file_path
+        if os.path.exists(image_path):
+            os.remove(image_path)
+    
+    # Delete associated Location records
+    Location.query.filter_by(journey_id=journey_id).delete()
+    
+    # Delete associated Filepath record
+    Filepath.query.filter_by(journey_id=journey_id).delete()
+    
+    # Empty the row corresponding to the journey in points.csv
+    points_csv_path = os.path.join(os.path.dirname(__file__), '..', 'points.csv')  # Adjust the path as needed
+    with open(points_csv_path, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        rows = list(reader)
+        
+        # Update the row corresponding to the journey ID
+        if journey_id < len(rows):
+            rows[journey_id] = []
+
+    with open(points_csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows)
+    
+    # Check if all rows after the header are empty
+    if all(not any(row) for row in rows[1:]):
+        os.remove(points_csv_path)
+        
+    # Delete the journey from the database
+    db.session.delete(journey)
+    db.session.commit()
+
+    # Check if the journey still exists in the database
+    if Journey.query.get(journey_id):
+        return jsonify({'status': 'error', 'message': 'Failed to delete journey'}), 500
+    
+    return jsonify({'status': 'success', 'message': 'Journey deleted successfully'})
+
 # Create route for friends page
 @main_blueprint.route('/friends')
 @login_required
 def friends():
-    # Query the friends of the logged-in user
-    friends = (
-        User.query
-        .join(Friendship, User.id == Friendship.friend_id)
-        .filter(Friendship.user_id == current_user.id)
-        .all()
-    )
-    return render_template('friends.html', friends=friends)
+    if request.method == 'GET':
+        # Use the utility function to check for active subscription
+        active_subscription = find_active_subscription(current_user)
+
+        if active_subscription == 'No Subscription':
+            flash('No active subscription found. Please subscribe to access the map.', 'danger')
+            return redirect(url_for('main.membership'))
+        
+        # Query the friends of the logged-in user
+        friends = (
+            User.query
+            .join(Friendship, User.id == Friendship.friend_id)
+            .filter(Friendship.user_id == current_user.id)
+            .all()
+        )
+        return render_template('friends.html', friends=friends)
+    return redirect(request.url)
 
 # Search bar
 @main_blueprint.route("/search")
 @login_required
 def search():
-    # Query the friends of the logged-in user
-    friends = (
-        User.query
-        .join(Friendship, User.id == Friendship.friend_id)
-        .filter(Friendship.user_id == current_user.id)
-        .all()
-    )
-    # Extract friend IDs
-    friend_ids = [friend.id for friend in friends]
-
     # Query for input keywords
     q = request.args.get("q")
-    print(q)
+
     if q:
-        # Query friends list
+        # Query all users list
         results = (
             User.query
-            .filter(User.username.icontains(q))
-            .filter(User.id != current_user.id)
             .join(Friendship, User.id == Friendship.friend_id)
-            .filter(Friendship.user_id == current_user.id)
-            .limit(10)
-            .all()
-        )
-
-        # Query suggested users list
-        resultsSU = (
-            User.query
             .filter(User.username.icontains(q))
             .filter(User.id != current_user.id)
-            .filter(~User.id.in_(friend_ids))
-            .limit(10)
+            .order_by(Friendship.user_id == current_user.id) # Orders by whether the user is a friend of the current user
             .all()
         )
+        
     else:
         results = []
-        resultsSU = []
-    return render_template('friendsResults.html', results=results, resultsSU=resultsSU)
+
+    return render_template('friendsResults.html', results=results)
 
 # For the "Find friends" page
 @main_blueprint.route('/get_friends')
