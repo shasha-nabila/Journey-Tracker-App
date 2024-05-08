@@ -142,9 +142,10 @@ h1 {
 }
 
 .btn-custom-color:hover {
-    background-color: #014E86 !important;
+    background-color: #0e5587 !important;
     border-color: #ffffff !important;
     color: #ffffff !important;
+    font-weight: bold;
     /* Set text color to white on hover */
 }
 
@@ -630,6 +631,7 @@ html {
     border-radius: 15px;
     background-color: #014E86;
     justify-content: space-between;
+    min-width: 30vw;
 }
 
 .text-container {
@@ -653,13 +655,6 @@ html {
     /* Enhances readability on the blue background */
 }
 
-.journey-block img {
-    max-width: 80%;
-    /* Ensures the image is contained within the image container */
-    height: auto;
-    border-radius: 5px;
-}
-
 .download-link {
     margin-right: 10px;
     /* Space between the download link and the image */
@@ -676,6 +671,30 @@ html {
     margin: 0px 0;
     /* Adds vertical spacing around the container */
 
+}
+
+.routeTypeContainer {
+    display: flex;
+    justify-content: center;
+    /* Centers content horizontally */
+    flex-wrap: wrap;
+    /* Allows buttons to wrap on smaller screens */
+}
+
+.routeTypeContainer a {
+    flex: 1;
+    /* Distribute available space equally among all buttons */
+    border-radius: 50px;
+}
+
+.routeTypeContainer #myTracks {
+    margin-right: 10%;
+}
+
+.smallestButton {
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .75rem;
 }
 
 .button {
@@ -862,6 +881,7 @@ html {
 }
 
 /* Friends page */
+
 #barSearch {
     background-color: white;
     border: 1px solid grey;
@@ -884,12 +904,6 @@ html {
     border: none;
     outline: none;
     width: 100%;
-}
-
-#resultsList {
-    padding: 20px 10px;
-    margin: 0 auto;
-    width: 510px;
 }
 
 #tabContainer {
@@ -970,10 +984,32 @@ html {
     color: #000000;
 }
 
-/* TEST */
-#results,
-#resultsSU {
-    font-weight: bold;
+.content_box h2 {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+}
+
+#resultsList li {
+    padding: 0.5em .5em;
+    margin: 0 auto;
+    width: 510px;
+    align-items: left;
+}
+
+.resultsList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontally */
+    text-align: center;
+    /* Center the text inside spans */
+    padding: 1em;
+}
+
+#resultsList {
+    list-style: none;
+    padding: 0;
 }
 
 .content ol {
@@ -989,16 +1025,8 @@ html {
     /* Adjust the gap between list items */
 }
 
-
-/* Style for the numbering */
-.content li::before {
-    content: counter(item) ". ";
-    counter-increment: item;
-    margin-right: 5px;
-}
-
 .username {
-    margin-right: 10px;
+    margin-right: 1em;
     /* Adjust the space between username and button */
 }
 
