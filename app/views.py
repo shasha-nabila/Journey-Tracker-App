@@ -450,8 +450,10 @@ def submit_selected_journey_map():
 @main_blueprint.route('/download/<filename>')
 @login_required
 def download_gpx_file(filename):
-    
-    file_path = os.path.join(ConfigClass.UPLOAD_FOLDER, filename)
+
+    pure_filename = os.path.basename(filename)
+    file_path = os.path.join(ConfigClass.UPLOAD_FOLDER, pure_filename )
+    print(file_path)
     if not os.path.isfile(file_path):
         return "File not found.", 404
     with open(file_path, 'rb') as f:
