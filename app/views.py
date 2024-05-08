@@ -194,6 +194,15 @@ def subscribe():
     email = request.form['email']
     plan = request.form['plan']
 
+    # Check if name and email are provided
+    if not name:
+        flash('Please enter a name.', 'danger')
+        return redirect(url_for('main.subscription'))
+    
+    if not email:
+        flash('Please enter an email address.', 'danger')
+        return redirect(url_for('main.subscription'))
+
     try:
         # Create a customer in Stripe
         customer = stripe.Customer.create(name=name, email=email)
@@ -339,7 +348,13 @@ def map():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-                
+        
+        if '.' in file.filename and file.filename.rsplit('.',1)[1].lower() in ConfigClass.ALLOWED_EXTENSIONS:
+            pass
+        else:
+            flash('Invalid file type selected, please select gpx file')
+            return redirect(request.url)
+        
         if  file and allowed_file(file.filename):
             gpx_file_path = save_uploaded_file(file, ConfigClass.UPLOAD_FOLDER)
             
@@ -352,21 +367,21 @@ def map():
 
             # Create CSV for points
             points_csv_file = 'points.csv'
-            create_and_append_csv(points_csv_file, ConfigClass.HEADER_INFO, [[point['name'], point['latitude'], point['longitude'], point['address']] for point in info])
+            create_and_append_csv(points_csv_file, ConfigClass.HEADER_INFO, [[point['name'], point['latitude'], point['longitude'], point['address']] for point in info],current_user.id)
             
             # Create CSV for distance
             distance_csv_file = 'distance.csv'
             distances = [calculate_distance(info[i], info[i+1]) for i in range(len(info)-1)]
-            create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances])
+            create_and_append_csv(distance_csv_file, ConfigClass.HEADER_DISTANCE, [[distance] for distance in distances],current_user.id)
 
             #upload to Journey class
             new_journey = upload_journey_database(distance_csv_file,current_user.id,)
 
             #upload to Filepath class
-            upload_filepath_database(new_journey, image_file_path, gpx_file_path)
+            upload_filepath_database(new_journey, image_file_path, gpx_file_path,current_user.id)
 
             #upload to Location class
-            upload_location_database(points_csv_file, new_journey)
+            upload_location_database(points_csv_file, new_journey,current_user.id)
               
             # Create and get map HTML
             map_html_content = create_map_html(gpx_file_path)
@@ -388,7 +403,10 @@ def records():
             flash('No active subscription found. Please subscribe to access the map.', 'danger')
             return redirect(url_for('main.membership'))
         
-        journeys = Journey.query.order_by(Journey.upload_time.desc()).limit(5).all()
+        journeys = Journey.query.filter_by(user_id=current_user.id).order_by(Journey.upload_time.desc()).limit(5).all()
+
+        db.session.commit()
+        
         return render_template('map_record.html', journeys=journeys)
     
     return redirect(request.url)
@@ -397,6 +415,11 @@ def records():
 def submit_selected_journey_map():
     
     selected_journeys = request.form.getlist('journey_ids')
+
+    if not selected_journeys:
+        flash('No journey selected. Please select journey')
+        return redirect(url_for('main.records'))
+    
     gpx_file_paths = []
 
     for journey_id in selected_journeys:
