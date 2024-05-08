@@ -1,7 +1,7 @@
 import pytest
 import random
 import string
-from app.models import User, StripeCustomer, StripeSubscription, Admin, Journey, Location, Filepath
+from app.models import User, StripeCustomer, StripeSubscription, Admin, Journey, Location, Filepath, Friendship
 from sqlalchemy.exc import IntegrityError, DataError, StatementError
 from datetime import datetime, timedelta
 
@@ -996,3 +996,61 @@ def test_filepath_special_characters(test_db, user, journey):
     assert saved_filepath is not None, "Filepath with special characters should be created."
     assert saved_filepath.image_file_path == special_char_image_path, "Image file path with special characters should match."
     assert saved_filepath.gpx_file_path == special_char_gpx_path, "GPX file path with special characters should match."
+
+def test_add_friend(test_db, user, create_user):
+    """
+    GIVEN two user instances
+    WHEN one user adds another as a friend
+    THEN check that both users are friends with each other
+    """
+    user2 = create_user('user2', 'user2@example.com')
+    
+    user.add_friend(user2)
+    assert user.is_friend_with(user2), "User should be friends with User2"
+    assert user2.is_friend_with(user), "User2 should be friends with User"
+
+def test_remove_friend(test_db, user, create_user):
+    """
+    GIVEN two user instances that are friends
+    WHEN one user removes the other from friends
+    THEN check that they are no longer friends
+    """
+    user2 = create_user('user2', 'user2@example.com')
+    
+    user.add_friend(user2)
+    user.remove_friend(user2)
+    
+    assert not user.is_friend_with(user2), "User should not be friends with User2 after removal"
+    assert not user2.is_friend_with(user), "User2 should not be friends with User after removal"
+
+def test_duplicate_friendship(test_db, user, create_user):
+    """
+    GIVEN two user instances
+    WHEN one user tries to add another user as a friend more than once
+    THEN check that no duplicate friendships are created
+    """
+    user2 = create_user('user2', 'user2@example.com')
+    
+    user.add_friend(user2)
+    user.add_friend(user2)  # Try to add again
+
+    friendship_count = Friendship.query.filter((Friendship.user_id == user.id) & (Friendship.friend_id == user2.id)).count()
+    assert friendship_count == 1, "There should only be one friendship record per pair"
+
+def test_remove_nonexistent_friendship(test_db, user, create_user):
+    """
+    GIVEN a user instance and another user who is not a friend
+    WHEN the user tries to remove a nonexistent friendship
+    THEN check that it does not raise an unexpected error and the state remains unchanged
+    """
+    user2 = create_user('user2', 'user2@example.com')  # Assume this user is not a friend yet
+    
+    # Attempt to remove non-friend should be handled gracefully
+    try:
+        user.remove_friend(user2)
+        no_error_raised = True
+    except Exception:
+        no_error_raised = False
+
+    assert no_error_raised, "Removing a non-friend should not raise an error"
+    assert not user.is_friend_with(user2), "User2 should still not be a friend after attempted removal"

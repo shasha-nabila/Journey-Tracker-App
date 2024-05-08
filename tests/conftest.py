@@ -45,11 +45,12 @@ def test_client(test_app):
 def user(test_db):
     """
     Given a database and a UUID generator,
-    When a User model instance with a unique email is created and saved,
-    Then provide a reusable User fixture with a unique email each time.
+    When a User model instance with a unique username and email is created and saved,
+    Then provide a reusable User fixture with a unique username and email each time.
     """
-    unique_email = f"test_{uuid.uuid4()}@example.com"
-    user = User(username='test_user', email=unique_email)
+    unique_username = f"user_{uuid.uuid4().hex}"  # Generate a unique username using UUID
+    unique_email = f"test_{uuid.uuid4()}@example.com"  # Generate a unique email
+    user = User(username=unique_username, email=unique_email)
     user.set_password('testpassword')
     test_db.session.add(user)
     test_db.session.commit()
@@ -66,3 +67,16 @@ def journey(test_db, user):
     test_db.session.add(journey)
     test_db.session.commit()
     return journey
+
+@pytest.fixture
+def create_user(test_db):
+    """Helper function to create a user."""
+    def _create_user(username, email):
+        unique_username = f"{username}_{uuid.uuid4().hex}"  # Append UUID to provided username for uniqueness
+        unique_email = f"test_{uuid.uuid4()}@example.com"  # Generate a unique email
+        user = User(username=unique_username, email=unique_email)
+        user.set_password('securepassword123')
+        test_db.session.add(user)
+        test_db.session.commit()
+        return user
+    return _create_user
