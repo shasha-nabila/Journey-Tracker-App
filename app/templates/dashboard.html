@@ -20,8 +20,7 @@
         <nav class="navbar navbar-custom navbar-expand-lg">
             <div class="container-fluid">
                 <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">
-                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
-                        style="max-width: 4vw;">
+                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo" style="max-width: 4vw;">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
@@ -47,7 +46,6 @@
             </div>
         </nav>
     </header>
-
 
     <div class="background">
         <div class="dashboard-header">
@@ -77,17 +75,32 @@
             </div>
             <div class="dashboard-section" id="section3">
                 <div class="section-title">
-                    <h2 class="title-word">FAVOURITE</h2>
-                    <h2 class="title-word">LOCATION</h2>
+                    <h2 class="title-word font-bold-italic">FAVOURITE</h2>
+                    <h2 class="title-word font-bold-italic">LOCATION</h2>
                 </div>
                 <div class="section-content">
                     <p>{{ favorite_location if favorite_location else 'No favourite location.' }}</p>
                 </div>
             </div>
         </section>
+
         <div class="dashboard">
             <img class="dashboard-gif" src="{{ url_for('static', filename='image/dog_dashboard.gif') }}" alt="Dog GIF">
         </div>
+        
+    <!-- Video Section -->
+<div class="video-container" style="padding: 20px; margin-top: 70px; display: flex; flex-direction: column; align-items: center; background-color: #014E86;">
+    <h3 class="video-title font-bold-italic" style="margin-bottom: 20px; color: white;">How To Video</h3>
+    <video width="50%" controls autoplay loop>
+        <source src="{{ url_for('static', filename='video/howTovideo.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+
+        
+
+      
     </div>
 
 </body>
