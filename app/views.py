@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, send_from_directory, Response
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, Response
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash # for security purpose when store pw in db
 from .forms import LoginForm, RegistrationForm
@@ -6,16 +6,12 @@ from .models import db, User, Admin, StripeCustomer, StripeSubscription, Filepat
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from datetime import datetime
-from werkzeug.utils import secure_filename
 from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html, find_active_subscription, parse_gpx_and_calculate_distance 
 from config import ConfigClass
 from sqlalchemy import func
 
 from flask import jsonify
 
-import pandas as pd
-import folium
-import gpxpy
 import stripe
 import os
 import csv

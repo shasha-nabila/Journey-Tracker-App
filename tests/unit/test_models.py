@@ -1,6 +1,8 @@
 import pytest
-from app.models import User, StripeCustomer, StripeSubscription, Admin
-from sqlalchemy.exc import IntegrityError, DataError
+import random
+import string
+from app.models import User, StripeCustomer, StripeSubscription, Admin, Journey, Location, Filepath, Friendship
+from sqlalchemy.exc import IntegrityError, DataError, StatementError
 from datetime import datetime, timedelta
 
 @pytest.mark.parametrize("model", [User, Admin])
@@ -687,3 +689,368 @@ def test_field_max_length(test_app, test_db, model, field, max_length):
             assert False, f"An unexpected exception type {type(e)} was raised with message: {e}"
 
         test_db.session.rollback()
+
+@pytest.mark.parametrize("total_distance", [0.0, 5.5, 100.3])
+def test_journey_creation(test_db, user, total_distance):
+    """
+    GIVEN a User model and a float for total_distance
+    WHEN a new Journey instance is created with valid total_distance and linked to a user
+    THEN check that the Journey is added to the session and committed to the database
+    """
+    upload_time = datetime.utcnow()
+    journey = Journey(user_id=user.id, total_distance=total_distance, upload_time=upload_time)
+    test_db.session.add(journey)
+    test_db.session.commit()
+
+    # Retrieve the specific journey to ensure it's saved and check fields
+    saved_journey = Journey.query.filter_by(user_id=user.id, total_distance=total_distance, upload_time=upload_time).first()
+    assert saved_journey is not None, "No journey found matching the criteria"
+    assert saved_journey.user_id == user.id
+    assert saved_journey.total_distance == total_distance
+    assert saved_journey.upload_time == upload_time
+
+def test_journey_without_user(test_db):
+    """
+    WHEN a Journey instance is created without a linked User
+    THEN the database should raise an IntegrityError
+    """
+    journey = Journey(total_distance=50.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+@pytest.mark.parametrize("locations_count", [0, 1, 5])
+def test_journey_with_locations(test_db, user, locations_count):
+    """
+    GIVEN a Journey model linked to a User
+    WHEN several Location instances are related to the Journey
+    THEN check that all Location instances are linked correctly
+    """
+    # Start clean session
+    test_db.session.rollback()
+    
+    journey = Journey(user_id=user.id, total_distance=20.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    test_db.session.commit()
+
+    for _ in range(locations_count):
+        location = Location(
+            journey_id=journey.id,
+            user_id=user.id,
+            init_latitude=0.0,
+            init_longitude=0.0,
+            goal_latitude=10.0,
+            goal_longitude=10.0,
+            departure="City A",
+            arrival="City B",
+            upload_time=datetime.utcnow()
+        )
+        test_db.session.add(location)
+
+    test_db.session.commit()
+
+    assert len(journey.locations) == locations_count
+
+@pytest.mark.parametrize("image_file_path, gpx_file_path", [
+    ('/path/to/image1.jpg', '/path/to/gpx1.gpx'),
+    ('/path/to/image2.jpg', '/path/to/gpx2.gpx')
+])
+
+def test_journey_with_filepath(test_db, user, image_file_path, gpx_file_path):
+    """
+    GIVEN a Journey model linked to a User and strings representing file paths
+    WHEN a Filepath instance is created and linked to the Journey
+    THEN check that the Filepath instance is linked correctly and the file paths are as expected
+    """
+    # Start clean session
+    test_db.session.rollback()
+
+    journey = Journey(user_id=user.id, total_distance=30.0, upload_time=datetime.utcnow())
+    test_db.session.add(journey)
+    test_db.session.commit()
+
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=image_file_path,
+        gpx_file_path=gpx_file_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the journey to check if filepath is linked correctly
+    loaded_journey = Journey.query.filter_by(id=journey.id).first()
+    test_db.session.refresh(loaded_journey)
+
+    # Since it's a list, get the first Filepath object (if any)
+    assert len(loaded_journey.filepath) > 0, "No Filepath linked to the journey"
+    filepath_instance = loaded_journey.filepath[0]
+
+    assert filepath_instance.image_file_path == image_file_path, "Image file path does not match the expected path"
+    assert filepath_instance.gpx_file_path == gpx_file_path, "GPX file path does not match the expected path"
+
+@pytest.mark.parametrize("init_lat,init_long,goal_lat,goal_long", [
+    (40.7128, -74.0060, 34.0522, -118.2437),  # Valid coordinates
+    (91.0, -74.0060, 34.0522, 361.0),         # Invalid latitude and longitude
+    (-91.0, -74.0060, 34.0522, -361.0),
+    (90.0, 180.0, -90.0, -180.0),             # Boundary conditions
+    (90.0, -180.0, -90.0, 180.0),
+    ("not_a_number", -74.0060, 34.0522, -118.2437),  # Non-numeric inputs
+    (40.7128, "not_a_number", 34.0522, -118.2437)
+])
+
+def test_create_location(test_app, test_db, user, journey, init_lat, init_long, goal_lat, goal_long):
+    """
+    GIVEN a test application context and various sets of latitude and longitude values
+    WHEN a Location instance is created and a database commit is attempted
+    THEN the test verifies that valid locations are saved and improper inputs raise appropriate exceptions.
+    """
+    with test_app.app_context():
+        upload_time = datetime.utcnow()
+        location = Location(
+            journey_id=journey.id,
+            user_id=user.id,
+            init_latitude=init_lat,
+            init_longitude=init_long,
+            goal_latitude=goal_lat,
+            goal_longitude=goal_long,
+            departure="Origin City",
+            arrival="Destination City",
+            upload_time=upload_time
+        )
+        test_db.session.add(location)
+        # Expect errors for invalid or non-numeric data
+        if isinstance(init_lat, str) or isinstance(init_long, str) or isinstance(goal_lat, str) or isinstance(goal_long, str):
+            with pytest.raises((DataError, StatementError)):
+                test_db.session.commit()
+            test_db.session.rollback()  # Rollback after catching expected errors
+        else:
+            # If no exception is expected, commit normally
+            try:
+                test_db.session.commit()
+                saved_location = Location.query.filter_by(journey_id=journey.id, user_id=user.id).first()
+                assert saved_location is not None, "Location should be saved in the database"
+            except Exception as e:
+                test_db.session.rollback()
+                assert False, f"Unexpected error occurred: {e}"
+
+def test_location_missing_fields(test_db, user, journey):
+    """
+    WHEN a Location instance is created missing required fields
+    THEN the database should raise an IntegrityError
+    """
+    location = Location(
+        journey_id=journey.id,
+        user_id=user.id,
+        # Missing latitude and longitude
+        departure="Origin City",
+        arrival="Destination City",
+        upload_time=datetime.utcnow()
+    )
+    test_db.session.add(location)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+def test_location_foreign_keys(test_db, user, journey):
+    """
+    GIVEN incorrect or missing foreign keys for a Location
+    WHEN trying to commit to the database
+    THEN expect an IntegrityError
+    """
+    # Start clean session
+    test_db.session.rollback()
+    
+    scenarios = [
+        {"journey_id": None, "user_id": user.id},  # Missing journey_id
+        {"journey_id": journey.id, "user_id": None}  # Missing user_id
+    ]
+
+    for scenario in scenarios:
+        location = Location(
+            journey_id=scenario["journey_id"],
+            user_id=scenario["user_id"],
+            init_latitude=40.7128,
+            init_longitude=-74.0060,
+            goal_latitude=34.0522,
+            goal_longitude=-118.2437,
+            departure="Origin City",
+            arrival="Destination City",
+            upload_time=datetime.utcnow()
+        )
+        test_db.session.add(location)
+        with pytest.raises(IntegrityError):
+            test_db.session.commit()
+
+        # Reset session to clear out the effects of the failed transaction
+        test_db.session.rollback()
+
+def test_create_filepath(test_db, journey, user):
+    """
+    GIVEN Journey and User models provided by the corresponding fixtures
+    WHEN a new Filepath instance is created with valid image and GPX file paths
+    THEN check that the Filepath instance is correctly stored in the database with all fields set as expected
+    """
+    image_path = '/path/to/image.jpg'
+    gpx_path = '/path/to/file.gpx'
+    # Create a new Filepath instance within the app context
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=image_path,
+        gpx_file_path=gpx_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the inserted filepath by the unique identifier to verify it's stored correctly
+    saved_filepath = Filepath.query.filter_by(image_file_path=image_path).first()
+    assert saved_filepath is not None, "Filepath instance should be created."
+    assert saved_filepath.image_file_path == image_path, f"Expected image file path {image_path}, but got {saved_filepath.image_file_path}"
+    assert saved_filepath.gpx_file_path == gpx_path, f"Expected GPX file path {gpx_path}, but got {saved_filepath.gpx_file_path}"
+    assert saved_filepath.journey_id == journey.id, f"Expected journey ID {journey.id}, but got {saved_filepath.journey_id}"
+    assert saved_filepath.user_id == user.id, f"Expected user ID {user.id}, but got {saved_filepath.user_id}"
+
+def test_filepath_without_user_or_journey(test_db):
+    """
+    WHEN a Filepath instance is created without a linked Journey or User
+    THEN the database should raise an IntegrityError
+    """
+    filepath = Filepath(
+        image_file_path='/path/to/image.jpg',
+        gpx_file_path='/path/to/file.gpx'
+    )
+    test_db.session.add(filepath)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+@pytest.mark.parametrize("missing_field", ['journey_id', 'user_id', 'image_file_path', 'gpx_file_path'])
+def test_filepath_missing_fields(test_db, user, journey, missing_field):
+    """
+    GIVEN a Filepath model with one missing required field
+    WHEN trying to add this incomplete Filepath to the database
+    THEN the database should raise an IntegrityError
+    """
+    # Start clean session
+    test_db.session.rollback()
+
+    filepath_data = {
+        'journey_id': journey.id,
+        'user_id': user.id,
+        'image_file_path': '/path/to/image.jpg',
+        'gpx_file_path': '/path/to/file.gpx'
+    }
+    filepath_data.pop(missing_field)  # Remove a required field
+    filepath = Filepath(**filepath_data)
+    test_db.session.add(filepath)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+def test_filepath_long_paths(test_db, user, journey):
+    """
+    GIVEN Journey and User models
+    WHEN a new Filepath instance is created with extremely long file paths
+    THEN check that the application can handle long paths without errors
+    """
+    # Start clean session
+    test_db.session.rollback()
+
+    # Generate a very long file path
+    long_image_path = '/path/' + ''.join(random.choices(string.ascii_letters + string.digits, k=255)) + '.jpg'
+    long_gpx_path = '/path/' + ''.join(random.choices(string.ascii_letters + string.digits, k=255)) + '.gpx'
+
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=long_image_path,
+        gpx_file_path=long_gpx_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the inserted filepath to verify it's stored correctly
+    saved_filepath = Filepath.query.filter_by(image_file_path=long_image_path).first()
+    assert saved_filepath is not None, "Filepath with long path should be created."
+    assert saved_filepath.image_file_path == long_image_path, "Long image file path should match."
+    assert saved_filepath.gpx_file_path == long_gpx_path, "Long GPX file path should match."
+
+def test_filepath_special_characters(test_db, user, journey):
+    """
+    GIVEN Journey and User models
+    WHEN a new Filepath instance is created with paths containing special characters
+    THEN check that the application handles paths with special characters correctly
+    """
+    special_char_image_path = '/path/to/special!@#$%^&*()_+{}:"><,?.jpg'
+    special_char_gpx_path = '/path/to/special!@#$%^&*()_+{}:"><,?.gpx'
+
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=special_char_image_path,
+        gpx_file_path=special_char_gpx_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the inserted filepath to verify it's stored correctly
+    saved_filepath = Filepath.query.filter_by(image_file_path=special_char_image_path).first()
+    assert saved_filepath is not None, "Filepath with special characters should be created."
+    assert saved_filepath.image_file_path == special_char_image_path, "Image file path with special characters should match."
+    assert saved_filepath.gpx_file_path == special_char_gpx_path, "GPX file path with special characters should match."
+
+def test_add_friend(test_db, user, create_user):
+    """
+    GIVEN two user instances
+    WHEN one user adds another as a friend
+    THEN check that both users are friends with each other
+    """
+    user2 = create_user('user2', 'user2@example.com')
+    
+    user.add_friend(user2)
+    assert user.is_friend_with(user2), "User should be friends with User2"
+    assert user2.is_friend_with(user), "User2 should be friends with User"
+
+def test_remove_friend(test_db, user, create_user):
+    """
+    GIVEN two user instances that are friends
+    WHEN one user removes the other from friends
+    THEN check that they are no longer friends
+    """
+    user2 = create_user('user2', 'user2@example.com')
+    
+    user.add_friend(user2)
+    user.remove_friend(user2)
+    
+    assert not user.is_friend_with(user2), "User should not be friends with User2 after removal"
+    assert not user2.is_friend_with(user), "User2 should not be friends with User after removal"
+
+def test_duplicate_friendship(test_db, user, create_user):
+    """
+    GIVEN two user instances
+    WHEN one user tries to add another user as a friend more than once
+    THEN check that no duplicate friendships are created
+    """
+    user2 = create_user('user2', 'user2@example.com')
+    
+    user.add_friend(user2)
+    user.add_friend(user2)  # Try to add again
+
+    friendship_count = Friendship.query.filter((Friendship.user_id == user.id) & (Friendship.friend_id == user2.id)).count()
+    assert friendship_count == 1, "There should only be one friendship record per pair"
+
+def test_remove_nonexistent_friendship(test_db, user, create_user):
+    """
+    GIVEN a user instance and another user who is not a friend
+    WHEN the user tries to remove a nonexistent friendship
+    THEN check that it does not raise an unexpected error and the state remains unchanged
+    """
+    user2 = create_user('user2', 'user2@example.com')  # Assume this user is not a friend yet
+    
+    # Attempt to remove non-friend should be handled gracefully
+    try:
+        user.remove_friend(user2)
+        no_error_raised = True
+    except Exception:
+        no_error_raised = False
+
+    assert no_error_raised, "Removing a non-friend should not raise an error"
+    assert not user.is_friend_with(user2), "User2 should still not be a friend after attempted removal"
