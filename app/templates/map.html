@@ -4,96 +4,130 @@
 
 {% block content %}
 <style>
-    .custom-file-input, .custom-submit {
+    .custom-file-input,
+    .custom-submit {
         visibility: hidden;
     }
-    .custom-file-label, .custom-submit-label {
+
+    .custom-file-label,
+    .custom-submit-label {
         background-color: #014E86;
         color: white;
         border: none;
-        padding: 10px 20px;
-        border-radius: 15px;
+        font-size: 1.3vw;
+        padding: 0.5vw 1vw;
+        border-radius: 10px;
         cursor: pointer;
         display: inline-block;
         margin: 0px 12px;
     }
-    .custom-file-label:hover, .custom-submit-label:hover {
+
+    #fileNameDisplay {
+        max-width: 30vw;
+    }
+
+    .custom-file-label:hover,
+    .custom-submit-label:hover {
         background-color: #013A6B;
     }
+
     .no-file {
         display: none;
     }
 
     .map-card-body {
-        padding: 40px; /* Adjust the padding to make the card body bigger */
+        padding: 3vw;
+        /* Adjust the padding to make the card body bigger */
+    }
+
+    .button-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        /* Adjust the space between buttons */
     }
 
     .drag-drop-area {
         border: 2px dashed #ccc;
         border-radius: 10px;
-        padding: 50px;
+        padding: 3vw;
         text-align: center;
         cursor: pointer;
-        margin-bottom: 40px; /* Add margin bottom */
     }
 
     .drag-drop-area.highlight {
-        background-color: #ffffff;
+        background-color: #f0f0f0;
     }
 
-    /* Add margin top to the submit button */
-    #submit {
-        margin-top: 20px;
+    .closeButton {
+        cursor: pointer;
+        position: absolute;
+        top: 0.5vw;
+        left: 1vw;
     }
+
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const fileInput = document.getElementById('file');
-        const fileLabel = document.getElementById('fileLabel');
-        const noFile = document.getElementById('noFile');
+        const fileNameDisplay = document.getElementById('fileNameDisplay'); // Assuming this is the div where the file name will be displayed
         const dragDropArea = document.getElementById('dragDropArea');
 
-        fileInput.onchange = function() {
-            if (fileInput.value) {
-                noFile.style.display = 'none';
+        fileInput.onchange = function () {
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name; // Display file name
             } else {
-                noFile.style.display = 'block';
+                fileNameDisplay.textContent = 'No file chosen';
             }
         };
 
         // Drag and Drop functionality
-        dragDropArea.addEventListener('dragover', function(e) {
+        dragDropArea.addEventListener('dragover', function (e) {
             e.preventDefault();
             dragDropArea.classList.add('highlight');
         });
 
-        dragDropArea.addEventListener('dragleave', function() {
+        dragDropArea.addEventListener('dragleave', function (e) {
             dragDropArea.classList.remove('highlight');
         });
 
-        dragDropArea.addEventListener('drop', function(e) {
+        dragDropArea.addEventListener('drop', function (e) {
             e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            fileInput.files = e.dataTransfer.files;
-            fileLabel.innerHTML = file.name;
-            noFile.style.display = 'none';
-            dragDropArea.classList.remove('highlight');
+            fileInput.files = e.dataTransfer.files; // Assign dropped files to file input
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name; // Update the file name display
+                dragDropArea.classList.remove('highlight');
+            }
         });
     });
+
+    // Go back button function
+    function goBack() {
+        window.history.back();
+    }
 </script>
 
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card map-card">
         <div class="card-body map-card-body">
+            <!-- Go back (close) button -->
+            <div class="closeButton" onclick="goBack()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" style="fill: red; stroke-width: 0; font-weight: bold;"/>
+                </svg>
+            </div>              
             <form method="POST" action="{{ url_for('main.map') }}" enctype="multipart/form-data">
                 <div id="dragDropArea" class="drag-drop-area">
                     <p>Drag & drop your GPX file here</p>
                 </div>
-                <label for="file" class="custom-file-label">or Choose GPX file</label>
+                <div id="fileNameDisplay" style="color: #014E86; font-size: 1.3vw; margin-bottom: 1vw;">No file chosen
+                </div>
+                <div class="button-container">
+                    <label for="file" class="custom-file-label">or Choose GPX file</label>
+                    <label for="submit" class="custom-submit-label">Upload</label>
+                </div>
                 <input type="file" id="file" name="file" style="display: none;">
-                <div id="noFile" class="no-file">No file chosen</div>
-                <label for="submit" class="custom-submit-label">Upload</label>
                 <input type="submit" id="submit" value="Upload" style="display: none;">
             </form>
         </div>

@@ -1,21 +1,15 @@
-{% if results %}
-    {% for result in results %}
-        <li>
-            <span class="username">{{ result.username }}</span>
-            <button class="isFriend" id="{{ result.username }}">Remove Friend</button>
-        </li>
-    {% endfor %}
-{% else %}
-    <p>No friends found</p>
-{% endif %}
-
-{% if resultsSU %}
-    {% for result in resultsSU %}
-        <li>
-            <span class="username">{{ result.username }}</span>
-            <button class="isUser">Add Friend</button>
-        </li>
-    {% endfor %}
-{% else %}
-    <p>No users found</p>
-{% endif %}
+<div class="resultsList">
+    <span style="font-weight: bold;">Search Results</span>
+    {% if results %}
+        <ol id="resultsList">
+            {% for result in results %}
+                <li>
+                    <span class="username">{{ result.username }}</span>
+                    <button class="isFriend" id="{{ result.username }}">Remove Friend</button>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <span>No search results came up</span>
+    {% endif %}
+</div>

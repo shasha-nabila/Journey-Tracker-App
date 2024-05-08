@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Membership Plans - My Flask App{% endblock %}
+{% block title %}Membership Plans{% endblock %}
 
 {% block content %}
 
@@ -10,11 +10,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membership Plans - My Flask App</title>
+    <title>Membership Plans</title>
     <!-- Include Google Font Quantico -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
@@ -23,7 +24,10 @@
     <header>
         <nav class="navbar navbar-custom navbar-expand-lg">
             <div class="container-fluid">
-                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">PuppyPilot</a>
+                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">
+                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
+                        style="max-width: 4vw;">
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +39,7 @@
                             <a class="nav-link" href="{{ url_for('main.records') }}">Map</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Friends</a>
+                            <a class="nav-link" href="{{ url_for('main.friends') }}">Friends</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
@@ -52,9 +56,11 @@
     <div class="background">
         <div class="membership-plans">
             <h1 class="font-bold-italic">Membership Plan</h1>
-            <p class="title font-bold-italic">Current Plan: <span class="current-plan font-bold-italic">{{ current_plan|capitalize if current_plan else "None" }}</span></p>
+            <p class="title font-bold-italic">Current Plan: <span class="current-plan font-bold-italic">{{
+                    current_plan|capitalize if current_plan else "None" }}</span></p>
             {% if current_plan %}
-            <p class="title font-bold-italic">Renewal Date: <span class="renewal-date font-bold-italic">{{ renewal_date.strftime('%d-%m-%Y') if renewal_date else "N/A" }}</span></p>
+            <p class="title font-bold-italic">Renewal Date: <span class="renewal-date font-bold-italic">{{
+                    renewal_date.strftime('%d-%m-%Y') if renewal_date else "N/A" }}</span></p>
             {% endif %}
             <div class="plan">
                 {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
@@ -62,7 +68,8 @@
                 <div class="card plan-option">
                     <div class="card-body">
                         <h2 class="card-title font-bold-italic">{{ plan_option|capitalize }}</h2>
-                        <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else
+                        <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly'
+                            else
                             "100" }}</p>
                         {% if current_plan == plan_option %}
                         <form action="{{ url_for('main.cancel_plan') }}" method="post">

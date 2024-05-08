@@ -14,7 +14,7 @@ header {
 }
 
 .font-bold-italic {
-    font-family: 'Quantico' , sans-serif;
+    font-family: 'Quantico', sans-serif;
     font-weight: 700;
     font-style: italic;
     font-size: 2.5rem;
@@ -22,12 +22,6 @@ header {
 
 .navbar {
     margin-top: 0;
-}
-
-.navbar-brand {
-    font-size: 24px !important;
-    font-weight: bold;
-    color: #014E86 !important;
 }
 
 .navbar-toggler-icon {
@@ -41,7 +35,6 @@ header {
 
 .nav-item a {
     text-decoration: none;
-    padding: 5px 10px;
     border-radius: 5px;
     color: #014E86;
 }
@@ -77,7 +70,6 @@ header {
 
 .navbar-custom .nav-item a {
     text-decoration: none;
-    padding: 5px 10px;
     border-radius: 5px;
     color: #ffffff;
 }
@@ -150,9 +142,10 @@ h1 {
 }
 
 .btn-custom-color:hover {
-    background-color: #014E86 !important;
+    background-color: #0e5587 !important;
     border-color: #ffffff !important;
     color: #ffffff !important;
+    font-weight: bold;
     /* Set text color to white on hover */
 }
 
@@ -377,8 +370,8 @@ h2 {
     background-color: #014E86;
     padding: 10px 20px;
     border-radius: 15px;
-    margin-top: 150px;
-    margin-bottom: 20px;
+    margin-top: 10vh;
+    margin-bottom: 5vh;
 }
 
 .membership-plans .plan {
@@ -437,8 +430,10 @@ h2 {
     margin-top: 15vh;
 }
 
-.current-plan, .renewal-date, .title {
-    color: #014E86 ;
+.current-plan,
+.renewal-date,
+.title {
+    color: #014E86;
     font-size: 24px;
 }
 
@@ -479,6 +474,7 @@ h2 {
 
 }
 
+
 /* Change plan */
 
 .confirm-plan-change {
@@ -486,11 +482,11 @@ h2 {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    max-width: 400px; /* Adjust the width as needed */
+    max-width: 400px;
+    /* Adjust the width as needed */
     color: #ffffff;
-    
-}
 
+}
 
 .confirm-plan-change p {
     color: #000000;
@@ -506,9 +502,8 @@ h2 {
 
 .confirm-plan-change form {
     margin-top: 20px;
-    
-}
 
+}
 
 .confirm-plan-change button {
     padding: 10px 20px;
@@ -540,7 +535,8 @@ html {
 
 .profile img {
     width: 130px;
-    height: 160px; /* Adjust the height as needed to maintain your desired aspect ratio */
+    height: 160px;
+    /* Adjust the height as needed to maintain your desired aspect ratio */
 }
 
 .py-6 {
@@ -604,8 +600,10 @@ html {
 .btn-yellow,
 .btn-yellow:hover {
     background-color: #FFA500 !important;
-    color: black !important; /* Optionally, change text color to ensure readability */
-    border-color: #FFA500 !important; /* Ensure border color matches background color */
+    color: black !important;
+    /* Optionally, change text color to ensure readability */
+    border-color: #FFA500 !important;
+    /* Ensure border color matches background color */
 }
 
 /* map_record */
@@ -624,6 +622,7 @@ html {
     border-radius: 15px;
     background-color: #014E86;
     justify-content: space-between;
+    min-width: 30vw;
 }
 
 .text-container {
@@ -647,13 +646,6 @@ html {
     /* Enhances readability on the blue background */
 }
 
-.journey-block img {
-    max-width: 80%;
-    /* Ensures the image is contained within the image container */
-    height: auto;
-    border-radius: 5px;
-}
-
 .download-link {
     margin-right: 10px;
     /* Space between the download link and the image */
@@ -672,7 +664,29 @@ html {
 
 }
 
+.routeTypeContainer {
+    display: flex;
+    justify-content: center;
+    /* Centers content horizontally */
+    flex-wrap: wrap;
+    /* Allows buttons to wrap on smaller screens */
+}
 
+.routeTypeContainer a {
+    flex: 1;
+    /* Distribute available space equally among all buttons */
+    border-radius: 50px;
+}
+
+.routeTypeContainer #myTracks {
+    margin-right: 10%;
+}
+
+.smallestButton {
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .75rem;
+}
 
 .button {
     background-color: #014E86;
@@ -707,49 +721,71 @@ html {
     /* Removes underline from links */
 }
 
-/*Api-map*/ 
+/*Api-map*/
 
 .custom-nav {
-    background-color: white; /* Making the nav bar white */
+    background-color: white;
+    /* Making the nav bar white */
 }
 
 .custom-nav ul {
     list-style-type: none;
     margin: 0;
-    padding: 40px;
-    text-align: center; /* Centering the list items horizontally */
+    padding-top: 10vh;
+    text-align: center;
+    /* Centering the list items horizontally */
 }
 
 .custom-nav ul li {
     display: inline;
-    margin-right: 20px; /* Adjust this as needed */
+    margin-right: 20px;
+}
+
+.custom-nav ul li a:hover {
+    background-color: #01315f;
+    /* Adding blue background color to the anchor (button) */
+    color: white;
+    /* Setting text color to white */
+    padding: 10px 20px;
+    /* Adding padding to make the button clickable */
+    text-decoration: none;
+    /* Removing underline from the anchor */
+    border-radius: 15px;
 }
 
 .custom-nav ul li a {
-    background-color: #014E86; /* Adding blue background color to the anchor (button) */
-    color: white; /* Setting text color to white */
-    padding: 10px 20px; /* Adding padding to make the button clickable */
-    text-decoration: none; /* Removing underline from the anchor */
+    background-color: #014E86;
+    /* Adding blue background color to the anchor (button) */
+    color: white;
+    /* Setting text color to white */
+    padding: 10px 20px;
+    /* Adding padding to make the button clickable */
+    text-decoration: none;
+    /* Removing underline from the anchor */
     border-radius: 15px;
 }
 
 .custom-map-container {
-    text-align: center; /* Centering the content inside the map container */
-    margin-top: 50px; /* Adjust this as needed */
-     /* Adding margin between map and distance */
+    text-align: center;
+    /* Centering the content inside the map container */
+    margin-top: 5vh;
+    /* Adding margin between map and distance */
 }
 
 .custom-map {
-    width: 65%; /* Adjust the width of the map */
-    height: auto; /* Let height adjust according to aspect ratio */
-    margin:  auto; /* Center the map horizontally */
-    margin-top: 40px;
-    margin-bottom: 40px;
+    width: 65%;
+    /* Adjust the width of the map */
+    height: auto;
+    /* Let height adjust according to aspect ratio */
+    margin: auto;
+    /* Center the map horizontally */
+    margin-top: 4vh;
 }
 
 .custom-distance {
-    font-size: 20px;
-    color: #014E86; /* Changing text color to black for the distance */
+    font-size: 2vw;
+    color: #014E86;
+    /* Changing text color to black for the distance */
 }
 
 /* Media Queries */
@@ -836,6 +872,7 @@ html {
 }
 
 /* Friends page */
+
 #barSearch {
     background-color: white;
     border: 1px solid grey;
@@ -858,12 +895,6 @@ html {
     border: none;
     outline: none;
     width: 100%;
-}
-
-#resultsList {
-    padding: 20px 10px;
-    margin: 0 auto;
-    width: 510px;
 }
 
 #tabContainer {
@@ -944,10 +975,32 @@ html {
     color: #000000;
 }
 
-/* TEST */
-#results,
-#resultsSU {
-    font-weight: bold;
+.content_box h2 {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+}
+
+#resultsList li {
+    padding: 0.5em .5em;
+    margin: 0 auto;
+    width: 510px;
+    align-items: left;
+}
+
+.resultsList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center horizontally */
+    text-align: center;
+    /* Center the text inside spans */
+    padding: 1em;
+}
+
+#resultsList {
+    list-style: none;
+    padding: 0;
 }
 
 .content ol {
@@ -963,16 +1016,8 @@ html {
     /* Adjust the gap between list items */
 }
 
-
-/* Style for the numbering */
-.content li::before {
-    content: counter(item) ". ";
-    counter-increment: item;
-    margin-right: 5px;
-}
-
 .username {
-    margin-right: 10px;
+    margin-right: 1em;
     /* Adjust the space between username and button */
 }
 
@@ -1004,4 +1049,8 @@ html {
 
 .isFriend:hover {
     background-color: #b30000;
+}
+
+.logo {
+    width: 60px;
 }

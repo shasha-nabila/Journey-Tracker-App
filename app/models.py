@@ -8,14 +8,15 @@ from sqlalchemy import ForeignKey
 
 class Friendship(db.Model):
     __tablename__ = 'friendship'
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'))
+    friend_id = db.Column(db.Integer, ForeignKey('user.id'))
 
     # Define relationships
     user = db.relationship('User', foreign_keys=[user_id])
     friend = db.relationship('User', foreign_keys=[friend_id])
 
-# user data model will extends the base for database models with user authentication
+# user data model extends the base for database models with user authentication
 class User(UserMixin, db.Model):
     __tablename__ = 'user'  # Explicitly setting the table name
     id = db.Column(db.Integer, primary_key=True)
@@ -29,7 +30,7 @@ class User(UserMixin, db.Model):
                           secondary='friendship',
                           primaryjoin=(Friendship.user_id == id),
                           secondaryjoin=(Friendship.friend_id == id),
-                          backref=db.backref('friend_of', lazy='dynamic'),
+                          backref=db.backref('friend_of', lazy='dynamic'), overlaps="friend",
                           lazy='dynamic')
 
     # method to set user pw (store the hased ver of the pw)
@@ -39,26 +40,6 @@ class User(UserMixin, db.Model):
     # method to check pw if matches the stored hash
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
-    # friends should be friends with each other
-    def add_friend(self, user):
-        if not self.is_friend_with(user):
-            friendship1 = Friendship(user_id=self.id, friend_id=user.id)
-            friendship2 = Friendship(user_id=user.id, friend_id=self.id)
-            db.session.add_all([friendship1, friendship2])
-            db.session.commit()
-
-    def remove_friend(self, user):
-        friendship1 = Friendship.query.filter_by(user_id=self.id, friend_id=user.id).first()
-        friendship2 = Friendship.query.filter_by(user_id=user.id, friend_id=self.id).first()
-        if friendship1:
-            db.session.delete(friendship1)
-        if friendship2:
-            db.session.delete(friendship2)
-        db.session.commit()
-
-    def is_friend_with(self, user):
-        return self.friends.filter_by(id=user.id).count() > 0
 
 # stripe data model
 class StripeCustomer(db.Model):

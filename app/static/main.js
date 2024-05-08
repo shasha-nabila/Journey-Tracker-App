@@ -53,3 +53,30 @@ jQuery(document).ready(function ($) {
     });
 
 });
+
+// Delete journey function
+function confirmDelete(journey_id) {
+    if (confirm("Are you sure you want to delete this journey?")) {
+        // Send a confirmation dialog to the user
+        fetch('/delete_journey/' + journey_id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Display success message or handle success scenario
+                console.log(data.message);
+                location.reload();
+            } else {
+                // Display error message or handle error scenario
+                console.error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}

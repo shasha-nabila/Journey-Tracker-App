@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash, redirect, url_for
+import gpxpy.gpx
 
 matplotlib.use('Agg') 
 
@@ -76,16 +77,20 @@ def allowed_file(filename):
 
 def parse_gpx(file_path):
     # open filename.gpx 
-    gpx_file = open(file_path, 'r')
-    gpx = gpxpy.parse(gpx_file)
-    # store latitude, longitude datas for routes
-    points = []
-    for track in gpx.tracks:
-        for segment in track.segments:
-            for point in segment.points:
-                points.append((point.latitude, point.longitude))
-    # return data to display route on map
-    return points
+    with open(file_path, 'r') as gpx_file:
+        gpx = gpxpy.parse(gpx_file)
+        points = []
+        for track in gpx.tracks:
+            for segment in track.segments:
+                for point in segment.points:
+                    points.append({
+                        'latitude': point.latitude,
+                        'longitude': point.longitude,
+                        'name': point.name if hasattr(point, 'name') else ''
+                    })
+    start_point = points[0] if points else None
+    end_point = points[-1] if points else None
+    return points, start_point, end_point
 
 def info_parse_gpx(file_path):
     # open gpx file
@@ -116,6 +121,7 @@ def create_and_append_csv(file_path, header, data, current_id):
             writer.writerow(header)
         
         combined_row = []
+        
         for row in data:
             combined_row.extend(row)  
         
@@ -125,54 +131,88 @@ def create_and_append_csv(file_path, header, data, current_id):
 
         writer.writerow(combined_row)
 
-# create map page with route, departure and arrival markers when user uploads first gpx file
-def create_map_html(coordinates): 
-    m = folium.Map(location=coordinates[0], zoom_start=17)
-    initial_coordinate = coordinates[0]
-    goal_coordinate = coordinates[-1]
-    initial_marker = folium.Marker(initial_coordinate, tooltip='Departure', icon=folium.Icon(color='green')).add_to(m)
-    goal_marker = folium.Marker(goal_coordinate, tooltip='Arrival', icon=folium.Icon(color='green')).add_to(m)
-    folium.PolyLine(coordinates).add_to(m)
-    # return create dynamic map html file 
+def create_map_html(file_path): 
+    coordinates, start_point, end_point = parse_gpx(file_path)
+    m = folium.Map(location=[start_point['latitude'], start_point['longitude']], zoom_start=15)
+    folium.Marker(
+        [start_point['latitude'], start_point['longitude']], 
+        popup=f"Start point", 
+        icon=folium.Icon(color='green')
+    ).add_to(m)
+    folium.Marker(
+        [end_point['latitude'], end_point['longitude']], 
+        popup=f"End point", 
+        icon=folium.Icon(color='red')
+    ).add_to(m)
+    folium.PolyLine([(point['latitude'], point['longitude']) for point in coordinates], color='blue').add_to(m)
+
+    # Fit the map to include all markers
+    m.fit_bounds([[
+        start_point['latitude'], start_point['longitude']],
+        [end_point['latitude'], end_point['longitude']]
+    ])
+
     return m._repr_html_()
 
+def create_multiple_route_map_html(gpx_file_paths):
 
-def create_multiple_route_map_html(gpx_file):
+    map_center = [53.8008, -1.5491]  # Center of Leeds, for example
+    map = folium.Map(location=map_center, zoom_start=13)
+    colors = ['blue', 'green', 'red', 'purple', 'orange']  # Define more colors as needed
 
-    map = folium.Map(Location =[0, 0], zoom_start = 2)
+    for index, path in enumerate(gpx_file_paths):
+        coordinates, start_point, end_point = parse_gpx(path)
+        route_color = colors[index % len(colors)]  # Cycle through colors
+        folium.PolyLine([(point['latitude'], point['longitude']) for point in coordinates], color=route_color).add_to(map)
+        folium.Marker(
+            [start_point['latitude'], start_point['longitude']], 
+            popup=f"Start point", 
+            icon=folium.Icon(color='green')
+        ).add_to(map)
+        folium.Marker(
+            [end_point['latitude'], end_point['longitude']], 
+            popup=f"End point", 
+            icon=folium.Icon(color='red')
+        ).add_to(map)
 
-    for gpx_file in gpx_file:
-        coordinates = parse_gpx(gpx_file)
-        if coordinates:
-            folium.PolyLine(coordinates).add_to(map)
-    
+    # Fit the map to include all markers
+    map.fit_bounds([[
+        start_point['latitude'], start_point['longitude']],
+        [end_point['latitude'], end_point['longitude']]
+    ])
     return map._repr_html_()
      
+def parse_gpx_and_calculate_distance(gpx_file_path):
 
-def calculate_distance(point1, point2):
-    coords_1 = (point1['latitude'], point1['longitude'])
-    coords_2 = (point2['latitude'], point2['longitude'])
-    return geodesic(coords_1, coords_2).meters
+    with open(gpx_file_path, 'r') as gpx_file:
+        gpx = gpxpy.parse(gpx_file)
 
-def upload_journey_database(csv_file_path, user_id):
+    total_distance = 0.0  
+
+    for track in gpx.tracks:
+        for segment in track.segments:
+ 
+            total_distance += segment.length_3d() 
+
+    return total_distance
+
+def upload_journey_database(csv_file_path, user_id, total_distance):
 
     with open(csv_file_path, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             if int(row['user_id']) == user_id:
-                print(row)
+   
                 existing_journey = Journey.query.filter_by(
-                    user_id = user_id,
-                    total_distance=float(row['distance']),
-                    upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                    upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
                 
                 ).first()
             # Check duplicated data
                 if not existing_journey:
                     new_journey = Journey(
                         user_id = user_id,
-                        total_distance=float(row['distance']),
-                        upload_time = datetime.strptime(row['upload_time'], '%Y-%m-%d %H:%M:%S')
+                        total_distance=total_distance,
+                        upload_time = datetime.strptime(row['upload_date'], '%Y-%m-%d %H:%M:%S')
                     )
                     db.session.add(new_journey)
         db.session.commit()
@@ -221,7 +261,7 @@ def create_route_image(coordinates, output_dir):
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     file_path = f"{output_dir}/{current_time}_route.png"
 
-    latitudes, longitudes = zip(*coordinates)
+    latitudes, longitudes = zip(*[(coord['latitude'], coord['longitude']) for coord in coordinates if 'latitude' in coord and 'longitude' in coord])
 
     plt.figure(figsize=(8, 6))
     plt.plot(longitudes, latitudes, color='white', linewidth=3)  

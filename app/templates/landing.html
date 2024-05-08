@@ -13,13 +13,17 @@
     <!-- Google Font Quantico -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
 </head>
 
 <!-- Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: rgb(255, 255, 255);">
     <div class="container">
-        <a class="navbar-brand" href="#homeSection">PuppyPilot</a>
+        <a class="navbar-brand" href="#homeSection">
+            <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
+                style="max-width: 4vw;">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
             aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -58,8 +62,13 @@
                 <hr>
             </div>
             <div class="col-md-8 col-lg-8">
-                <p class="lead">PuppyPilot is a dedicated app that enhances the dog-walking experience by allowing users to share and discover new walking tracks. Tailored for dog owners, PuppyPilot enables you to record the routes you take with your furry friend, visualized clearly on a map. Discover tracks other users have enjoyed, find inspiration for your next outing, and make each walk a new adventure. </p>
-                <p>Connect with friends, share your favorite routes, and explore the paths taken by the community. With PuppyPilot, every walk is an opportunity to discover new sights, sounds, and sniffs for you and your dog.</p>
+                <p class="lead">PuppyPilot is a dedicated app that enhances the dog-walking experience by allowing users
+                    to share and discover new walking tracks. Tailored for dog owners, PuppyPilot enables you to record
+                    the routes you take with your furry friend, visualized clearly on a map. Discover tracks other users
+                    have enjoyed, find inspiration for your next outing, and make each walk a new adventure. </p>
+                <p>Connect with friends, share your favorite routes, and explore the paths taken by the community. With
+                    PuppyPilot, every walk is an opportunity to discover new sights, sounds, and sniffs for you and your
+                    dog.</p>
                 <!-- Button to create account or login -->
                 <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-yellow">Join us</a>
             </div>
@@ -84,8 +93,8 @@
                 <div class="vision-box p-3">
                     <h2 class="font-bold-italic">VISION</h2>
                     <p class="border-box">
-                        To create a world where every dog walk is an adventure shared, 
-                        fostering a community of exploration, health, 
+                        To create a world where every dog walk is an adventure shared,
+                        fostering a community of exploration, health,
                         and joy for dogs and their owners
                     </p>
                 </div>
@@ -95,9 +104,10 @@
                 <div class="mission-box p-3">
                     <h2 class=" font-bold-italic">MISSION</h2>
                     <p class="border-box">
-                        Our mission is to enrich the lives of dogs and their owners 
-                        by providing an intutive app that makes discovering and shring safe, 
-                        exciting walking tracks efoortless, promoting an active lifestyle and a social community of like-minded pet lovers.
+                        Our mission is to enrich the lives of dogs and their owners
+                        by providing an intutive app that makes discovering and sharing safe,
+                        exciting walking tracks effortless, promoting an active lifestyle and a social community of
+                        like-minded pet lovers.
                     </p>
                 </div>
             </div>
@@ -116,63 +126,63 @@
             </div>
         </div>
     </div>
-    
-        <div class="row">
-            <!-- Team Member 1 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/ShashaPFP.jpg') }}" alt="Jimmy Kim"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Shasha Al Malek</h3>
-                    <p>CEO and Co-Founder</p>
-                </div>
-            </div>
-            <!-- Team Member 2 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/AminePFP.jpg') }}" alt="Priscilla Tingey"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Amine Melab</h3>
-                    <p>Graphic Designer</p>
-                </div>
-            </div>
-            <!-- Team Member 3 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/KadPFP.JPEG') }}" alt="Bernard Booth"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Chunghyun Lee</h3>
-                    <p>Web Programmer</p>
-                </div>
-            </div>
-            <!-- Team Member 4 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/SabrinaPFP.jpg') }}" alt="Celia Bird"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Sabrina Azhar</h3>
-                    <p>Web Programmer</p>
-                </div>
-            </div>
-            <!-- Team Member 5 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/AininaPFP.jpg') }}" alt="Celia Bird"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Ainina Azman</h3>
-                    <p>Web Developer</p>
-                </div>
-            </div>
-            <!-- Team Member 6 -->
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                <div class="profile text-center">
-                    <img src="{{ url_for('static', filename='image/nadhilahPFP.jpg') }}" alt="Celia Bird"
-                        class="img-fluid rounded-circle mb-3">
-                    <h3>Nadhilah Nazri</h3>
-                    <p>Software Tester</p>
-                </div>
+
+    <div class="row">
+        <!-- Team Member 1 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/ShashaPFP.jpg') }}" alt="Jimmy Kim"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Shasha Al Malek</h3>
+                <p>CEO and Co-Founder</p>
             </div>
         </div>
+        <!-- Team Member 2 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/AminePFP.jpg') }}" alt="Priscilla Tingey"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Amine Melab</h3>
+                <p>Graphic Designer</p>
+            </div>
+        </div>
+        <!-- Team Member 3 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/KadPFP.JPEG') }}" alt="Bernard Booth"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Chunghyun Lee</h3>
+                <p>Web Programmer</p>
+            </div>
+        </div>
+        <!-- Team Member 4 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/SabrinaPFP.jpg') }}" alt="Celia Bird"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Sabrina Azhar</h3>
+                <p>Web Programmer</p>
+            </div>
+        </div>
+        <!-- Team Member 5 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/AininaPFP.jpg') }}" alt="Celia Bird"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Ainina Azman</h3>
+                <p>Web Developer</p>
+            </div>
+        </div>
+        <!-- Team Member 6 -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="profile text-center">
+                <img src="{{ url_for('static', filename='image/nadhilahPFP.jpg') }}" alt="Celia Bird"
+                    class="img-fluid rounded-circle mb-3">
+                <h3>Nadhilah Nazri</h3>
+                <p>Software Tester</p>
+            </div>
+        </div>
+    </div>
     </div>
 </section>
 
@@ -197,10 +207,3 @@
 
 
 {% endblock %}
-
-
-
-
-
-
-
