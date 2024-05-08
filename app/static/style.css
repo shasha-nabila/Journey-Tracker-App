@@ -622,6 +622,7 @@ html {
     border-radius: 15px;
     background-color: #014E86;
     justify-content: space-between;
+    min-width: 30vw;
 }
 
 .text-container {
@@ -643,13 +644,6 @@ html {
     font-size: 14px;
     color: white;
     /* Enhances readability on the blue background */
-}
-
-.journey-block img {
-    max-width: 80%;
-    /* Ensures the image is contained within the image container */
-    height: auto;
-    border-radius: 5px;
 }
 
 .download-link {

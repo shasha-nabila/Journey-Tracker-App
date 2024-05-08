@@ -82,8 +82,6 @@
                         <div class="image-container">
                             <a href="{{ url_for('main.download_gpx_file', filename=filepath.gpx_file_path.split('/')[-1]) }}"
                                 download class="download-link"><i class="fa fa-download download-icon"></i></a>
-                            <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
-                                alt="Route Image">
                         </div>
                         {% endfor %}
                         {% if journey.user_id == current_user.id %}

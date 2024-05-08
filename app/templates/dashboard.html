@@ -75,6 +75,15 @@
                     <p>{{ total_distance_travelled_km }} KM</p>
                 </div>
             </div>
+            <div class="dashboard-section" id="section3">
+                <div class="section-title">
+                    <h2 class="title-word">FAVOURITE</h2>
+                    <h2 class="title-word">LOCATION</h2>
+                </div>
+                <div class="section-content">
+                    <p>{{ favorite_location if favorite_location else 'No favourite location.' }}</p>
+                </div>
+            </div>
         </section>
         <div class="dashboard">
             <img class="dashboard-gif" src="{{ url_for('static', filename='image/dog_dashboard.gif') }}" alt="Dog GIF">

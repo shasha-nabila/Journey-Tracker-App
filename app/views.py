@@ -9,6 +9,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from .utils import is_valid_password, allowed_file,parse_gpx, info_parse_gpx, create_and_append_csv, save_uploaded_file, create_map_html,create_route_image,upload_journey_database,upload_filepath_database,upload_location_database, create_multiple_route_map_html, find_active_subscription, parse_gpx_and_calculate_distance 
 from config import ConfigClass
+from sqlalchemy import func
 
 from flask import jsonify
 
@@ -125,7 +126,38 @@ def dashboard():
         flash('No active subscription found. Please subscribe to access the dashboard.', 'danger')
         return redirect(url_for('main.membership'))
 
-    return render_template('dashboard.html')
+    # Get the latest journey for the current user
+    latest_journey = Journey.query.filter_by(user_id=current_user.id).order_by(Journey.upload_time.desc()).first()
+    latest_location = None
+    all_journeys = Journey.query.filter_by(user_id=current_user.id).all()
+    total_distance_travelled_km = 0
+
+    if latest_journey:
+        # Get the latest location of the latest journey
+        latest_location = Location.query.filter_by(journey_id=latest_journey.id).order_by(Location.upload_time.desc()).first()
+        # Convert the total distance to kilometers if it's stored in meters
+
+    # Iterate over all journeys and sum up their total distances
+    for journey in all_journeys:
+        total_distance_travelled_km += journey.total_distance / 1000
+
+    # Query to find the favorite location (most visited arrival location)
+    favorite_location_query = db.session.query(
+        Location.arrival.label('location'),
+        func.count('*').label('visit_count')
+    ).join(Journey, Journey.id == Location.journey_id) \
+    .filter(Journey.user_id == current_user.id) \
+    .group_by(Location.arrival) \
+    .order_by(func.count('*').desc(), Location.upload_time.desc())
+
+    favorite_location = favorite_location_query.first()
+
+    return render_template('dashboard.html',
+                           active_subscription=active_subscription,
+                           latest_location=latest_location,
+                           total_distance_travelled_km=round(total_distance_travelled_km, 3),
+                           favorite_location=favorite_location.location if favorite_location else None)
+
 
 # route for logout
 @main_blueprint.route('/logout')
@@ -365,7 +397,7 @@ def map():
             upload_location_database(points_csv_file, new_journey,current_user.id)
               
             # Create and get map HTML
-            map_html_content = create_map_html(coordinates)
+            map_html_content = create_map_html(gpx_file_path)
         
             return render_template('map_api.html', map_html_content=map_html_content, distances = total_distance,)
 

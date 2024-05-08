@@ -54,8 +54,10 @@
 
             <!-- Select routes -->
             <div class="routeTypeContainer">
-                <a href="{{ url_for('main.records') }}" class="button btn btn-primary disabled" role="button" aria-disabled="true" id="myTracks">My Tracks</a>
-                <a href="{{ url_for('main.multiRecords') }}" class="button btn btn-primary" role="button" aria-disabled="false" id="me&Friends'Tracks">Me & Friends' Tracks</a>
+                <a href="{{ url_for('main.records') }}" class="button btn btn-primary disabled" role="button"
+                    aria-disabled="true" id="myTracks">My Tracks</a>
+                <a href="{{ url_for('main.multiRecords') }}" class="button btn btn-primary" role="button"
+                    aria-disabled="false" id="me&Friends'Tracks">Me & Friends' Tracks</a>
             </div>
 
             <div class="centered-button-container">
@@ -75,8 +77,6 @@
                         <div class="image-container">
                             <a href="{{ url_for('main.download_gpx_file', filename=filepath.gpx_file_path.split('/')[-1]) }}"
                                 download class="download-link"><i class="fa fa-download download-icon"></i></a>
-                            <img src="{{ url_for('static', filename=filepath.image_file_path.split('app/static/')[1]) }}"
-                                alt="Route Image">
                         </div>
                         {% endfor %}
                         <div class="smallestButton btn btn-danger btn-sm" onclick="confirmDelete('{{ journey.id }}')">
