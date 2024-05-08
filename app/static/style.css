@@ -417,7 +417,8 @@ h2 {
 }
 
 .membership-plans .plan-option button:hover {
-    background-color: #FFA500;
+    background-color: #fcb32c;
+    font-weight: bold;
 }
 
 .plan-card-title {
@@ -596,13 +597,21 @@ html {
     text-align: justify;
 }
 
-.btn-yellow,
-.btn-yellow:hover {
+.btn-yellow {
     background-color: #FFA500 !important;
     color: black !important;
     /* Optionally, change text color to ensure readability */
     border-color: #FFA500 !important;
     /* Ensure border color matches background color */
+}
+
+.btn-yellow:hover {
+    color: black !important;
+    /* Optionally, change text color to ensure readability */
+    border-color: #FFA500 !important;
+    /* Ensure border color matches background color */
+    background-color: #fcb32c !important;
+    font-weight: bold;
 }
 
 /* map_record */
