@@ -44,7 +44,9 @@ def test_client(test_app):
 @pytest.fixture(scope='module')
 def user(test_db):
     """
-    Creates a user fixture that can be used for tests requiring a User model, with a unique email each time.
+    Given a database and a UUID generator,
+    When a User model instance with a unique email is created and saved,
+    Then provide a reusable User fixture with a unique email each time.
     """
     unique_email = f"test_{uuid.uuid4()}@example.com"
     user = User(username='test_user', email=unique_email)
@@ -56,7 +58,9 @@ def user(test_db):
 @pytest.fixture(scope='module')
 def journey(test_db, user):
     """
-    Creates a Journey instance linked to the user fixture for tests requiring a Journey model.
+    Given a database and a user fixture,
+    When a Journey instance linked to the user is created and saved,
+    Then provide a reusable Journey fixture for tests.
     """
     journey = Journey(user_id=user.id, total_distance=100.0, upload_time=datetime.utcnow())
     test_db.session.add(journey)

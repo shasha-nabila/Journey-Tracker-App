@@ -1,4 +1,6 @@
 import pytest
+import random
+import string
 from app.models import User, StripeCustomer, StripeSubscription, Admin, Journey, Location, Filepath
 from sqlalchemy.exc import IntegrityError, DataError, StatementError
 from datetime import datetime, timedelta
@@ -881,3 +883,116 @@ def test_location_foreign_keys(test_db, user, journey):
 
         # Reset session to clear out the effects of the failed transaction
         test_db.session.rollback()
+
+def test_create_filepath(test_db, journey, user):
+    """
+    GIVEN Journey and User models provided by the corresponding fixtures
+    WHEN a new Filepath instance is created with valid image and GPX file paths
+    THEN check that the Filepath instance is correctly stored in the database with all fields set as expected
+    """
+    image_path = '/path/to/image.jpg'
+    gpx_path = '/path/to/file.gpx'
+    # Create a new Filepath instance within the app context
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=image_path,
+        gpx_file_path=gpx_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the inserted filepath by the unique identifier to verify it's stored correctly
+    saved_filepath = Filepath.query.filter_by(image_file_path=image_path).first()
+    assert saved_filepath is not None, "Filepath instance should be created."
+    assert saved_filepath.image_file_path == image_path, f"Expected image file path {image_path}, but got {saved_filepath.image_file_path}"
+    assert saved_filepath.gpx_file_path == gpx_path, f"Expected GPX file path {gpx_path}, but got {saved_filepath.gpx_file_path}"
+    assert saved_filepath.journey_id == journey.id, f"Expected journey ID {journey.id}, but got {saved_filepath.journey_id}"
+    assert saved_filepath.user_id == user.id, f"Expected user ID {user.id}, but got {saved_filepath.user_id}"
+
+def test_filepath_without_user_or_journey(test_db):
+    """
+    WHEN a Filepath instance is created without a linked Journey or User
+    THEN the database should raise an IntegrityError
+    """
+    filepath = Filepath(
+        image_file_path='/path/to/image.jpg',
+        gpx_file_path='/path/to/file.gpx'
+    )
+    test_db.session.add(filepath)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+@pytest.mark.parametrize("missing_field", ['journey_id', 'user_id', 'image_file_path', 'gpx_file_path'])
+def test_filepath_missing_fields(test_db, user, journey, missing_field):
+    """
+    GIVEN a Filepath model with one missing required field
+    WHEN trying to add this incomplete Filepath to the database
+    THEN the database should raise an IntegrityError
+    """
+    # Start clean session
+    test_db.session.rollback()
+
+    filepath_data = {
+        'journey_id': journey.id,
+        'user_id': user.id,
+        'image_file_path': '/path/to/image.jpg',
+        'gpx_file_path': '/path/to/file.gpx'
+    }
+    filepath_data.pop(missing_field)  # Remove a required field
+    filepath = Filepath(**filepath_data)
+    test_db.session.add(filepath)
+    with pytest.raises(IntegrityError):
+        test_db.session.commit()
+
+def test_filepath_long_paths(test_db, user, journey):
+    """
+    GIVEN Journey and User models
+    WHEN a new Filepath instance is created with extremely long file paths
+    THEN check that the application can handle long paths without errors
+    """
+    # Start clean session
+    test_db.session.rollback()
+
+    # Generate a very long file path
+    long_image_path = '/path/' + ''.join(random.choices(string.ascii_letters + string.digits, k=255)) + '.jpg'
+    long_gpx_path = '/path/' + ''.join(random.choices(string.ascii_letters + string.digits, k=255)) + '.gpx'
+
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=long_image_path,
+        gpx_file_path=long_gpx_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the inserted filepath to verify it's stored correctly
+    saved_filepath = Filepath.query.filter_by(image_file_path=long_image_path).first()
+    assert saved_filepath is not None, "Filepath with long path should be created."
+    assert saved_filepath.image_file_path == long_image_path, "Long image file path should match."
+    assert saved_filepath.gpx_file_path == long_gpx_path, "Long GPX file path should match."
+
+def test_filepath_special_characters(test_db, user, journey):
+    """
+    GIVEN Journey and User models
+    WHEN a new Filepath instance is created with paths containing special characters
+    THEN check that the application handles paths with special characters correctly
+    """
+    special_char_image_path = '/path/to/special!@#$%^&*()_+{}:"><,?.jpg'
+    special_char_gpx_path = '/path/to/special!@#$%^&*()_+{}:"><,?.gpx'
+
+    filepath = Filepath(
+        journey_id=journey.id,
+        user_id=user.id,
+        image_file_path=special_char_image_path,
+        gpx_file_path=special_char_gpx_path
+    )
+    test_db.session.add(filepath)
+    test_db.session.commit()
+
+    # Fetch the inserted filepath to verify it's stored correctly
+    saved_filepath = Filepath.query.filter_by(image_file_path=special_char_image_path).first()
+    assert saved_filepath is not None, "Filepath with special characters should be created."
+    assert saved_filepath.image_file_path == special_char_image_path, "Image file path with special characters should match."
+    assert saved_filepath.gpx_file_path == special_char_gpx_path, "GPX file path with special characters should match."
