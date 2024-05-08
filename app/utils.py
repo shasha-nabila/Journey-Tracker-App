@@ -152,7 +152,7 @@ def create_map_html(file_path):
 
     return m._repr_html_()
 
-def create_multiple_route_map_html(gpx_file):
+def create_multiple_route_map_html(gpx_file_paths):
 
     map_center = [53.8008, -1.5491]  # Center of Leeds, for example
     map = folium.Map(location=map_center, zoom_start=13)

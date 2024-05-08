@@ -124,29 +124,34 @@ def dashboard():
     # Get the latest journey for the current user
     latest_journey = Journey.query.filter_by(user_id=current_user.id).order_by(Journey.upload_time.desc()).first()
     latest_location = None
+    all_journeys = Journey.query.filter_by(user_id=current_user.id).all()
     total_distance_travelled_km = 0
 
     if latest_journey:
         # Get the latest location of the latest journey
         latest_location = Location.query.filter_by(journey_id=latest_journey.id).order_by(Location.upload_time.desc()).first()
         # Convert the total distance to kilometers if it's stored in meters
-        total_distance_travelled_km = round(latest_journey.total_distance / 1000, 3)
 
+    # Iterate over all journeys and sum up their total distances
+    for journey in all_journeys:
+        total_distance_travelled_km += journey.total_distance / 1000
+
+    # Query to find the favorite location (most visited arrival location)
     favorite_location_query = db.session.query(
-        Location.arrival,
-        func.count(Location.arrival).label('location_count')
+        Location.arrival.label('location'),
+        func.count('*').label('visit_count')
     ).join(Journey, Journey.id == Location.journey_id) \
     .filter(Journey.user_id == current_user.id) \
     .group_by(Location.arrival) \
-    .order_by(func.count(Location.arrival).desc())
+    .order_by(func.count('*').desc(), Location.upload_time.desc())
 
     favorite_location = favorite_location_query.first()
 
     return render_template('dashboard.html',
                            active_subscription=active_subscription,
                            latest_location=latest_location,
-                           total_distance_travelled_km=total_distance_travelled_km,
-                           favorite_location=favorite_location.arrival if favorite_location else None)
+                           total_distance_travelled_km=round(total_distance_travelled_km, 3),
+                           favorite_location=favorite_location.location if favorite_location else None)
 
 
 # route for logout
