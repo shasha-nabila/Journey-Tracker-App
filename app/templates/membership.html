@@ -11,49 +11,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Membership Plans</title>
+    <!-- Include Google Font Quantico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 
 <body>
-    <header>
-        {% include 'navbar.html' %}
-    </header>
 
-    <div class="membership-plans py-7">
-        <h1>Membership Plan</h1>
-        <p>Current Plan: {{ current_plan|capitalize if current_plan else "None" }}</p>
-        {% if current_plan %}
-        <p>Renewal Date: {{ renewal_date.strftime('%d-%m-%Y') if renewal_date else "N/A" }}</p>
-        {% endif %}
-        <div class="plan">
-            {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
-            {% for plan_option in plan_options %}
-            <div class="card plan-option">
-                <div class="card-body">
-                    <h2 class="card-title">{{ plan_option|capitalize }}</h2>
-                    <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly' else
-                        "100" }}</p>
-                    {% if current_plan == plan_option %}
-                    <form action="{{ url_for('main.cancel_plan') }}" method="post">
-                        <input type="hidden" name="plan" value="{{ plan_option }}">
-                        <button type="submit" class="btn btn-danger">Cancel</button>
-                    </form>
-                    {% else %}
-                    {% if not current_plan %}
-                    <form action="/subscription" method="get">
-                        <input type="hidden" name="plan" value="{{ plan_option }}">
-                        <button type="submit" class="btn btn-primary">Subscribe</button>
-                    </form>
-                    {% else %}
-                    <form action="{{ url_for('main.confirm_change_plan') }}" method="post">
-                        <input type="hidden" name="new_plan" value="{{ plan_option }}">
-                        <input type="hidden" name="current_plan" value="{{ current_plan }}">
-                        <button type="submit" class="btn btn-success">Change</button>
-                    </form>
-                    {% endif %}
-                    {% endif %}
+    <header>
+        <nav class="navbar navbar-custom navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">
+                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
+                        style="max-width: 4vw;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdownCustom">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.records') }}">Map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.membership') }}">Membership Plan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}">Log Out</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            {% endfor %}
+        </nav>
+    </header>
+
+    <div class="background">
+        <div class="membership-plans">
+            <h1 class="font-bold-italic">Membership Plan</h1>
+            <p class="title font-bold-italic">Current Plan: <span class="current-plan font-bold-italic">{{
+                    current_plan|capitalize if current_plan else "None" }}</span></p>
+            {% if current_plan %}
+            <p class="title font-bold-italic">Renewal Date: <span class="renewal-date font-bold-italic">{{
+                    renewal_date.strftime('%d-%m-%Y') if renewal_date else "N/A" }}</span></p>
+            {% endif %}
+            <div class="plan">
+                {% set plan_options = ['Weekly', 'Monthly', 'Yearly'] %}
+                {% for plan_option in plan_options %}
+                <div class="card plan-option">
+                    <div class="card-body">
+                        <h2 class="card-title font-bold-italic">{{ plan_option|capitalize }}</h2>
+                        <p class="card-text">£{{ "3" if plan_option == 'Weekly' else "10" if plan_option == 'Monthly'
+                            else
+                            "100" }}</p>
+                        {% if current_plan == plan_option %}
+                        <form action="{{ url_for('main.cancel_plan') }}" method="post">
+                            <input type="hidden" name="plan" value="{{ plan_option }}">
+                            <button type="submit" class="btn btn-danger">Cancel</button>
+                        </form>
+                        {% else %}
+                        {% if not current_plan %}
+                        <form action="/subscription" method="get">
+                            <input type="hidden" name="plan" value="{{ plan_option }}">
+                            <button type="submit" class="btn btn-primary">Subscribe</button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('main.confirm_change_plan') }}" method="post">
+                            <input type="hidden" name="new_plan" value="{{ plan_option }}">
+                            <input type="hidden" name="current_plan" value="{{ current_plan }}">
+                            <button type="submit" class="btn btn-success">Change</button>
+                        </form>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
