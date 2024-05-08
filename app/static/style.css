@@ -142,9 +142,10 @@ h1 {
 }
 
 .btn-custom-color:hover {
-    background-color: #014E86 !important;
+    background-color: #0e5587 !important;
     border-color: #ffffff !important;
     color: #ffffff !important;
+    font-weight: bold;
     /* Set text color to white on hover */
 }
 
@@ -678,7 +679,8 @@ html {
 }
 
 .routeTypeContainer a {
-    flex: 1; /* Distribute available space equally among all buttons */
+    flex: 1;
+    /* Distribute available space equally among all buttons */
     border-radius: 50px;
 }
 
@@ -687,7 +689,9 @@ html {
 }
 
 .smallestButton {
-    --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .75rem;
 }
 
 .button {
@@ -977,7 +981,7 @@ html {
     color: #000000;
 }
 
-.content_box h2{
+.content_box h2 {
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -993,8 +997,10 @@ html {
 .resultsList {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center horizontally */
-    text-align: center; /* Center the text inside spans */
+    align-items: center;
+    /* Center horizontally */
+    text-align: center;
+    /* Center the text inside spans */
     padding: 1em;
 }
 

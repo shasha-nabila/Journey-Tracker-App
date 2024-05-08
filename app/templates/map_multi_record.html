@@ -17,7 +17,10 @@
     <header>
         <nav class="navbar navbar-custom navbar-expand-lg">
             <div class="container-fluid">
-                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">PuppyPilot</a>
+                <a class="navbar-brand-custom" href="{{ url_for('main.dashboard') }}">
+                    <img src="{{ url_for('static', filename='image/logo.png') }}" alt="Logo" class="logo"
+                        style="max-width: 4vw;">
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarNavDropdownCustom" aria-controls="navbarNavDropdownCustom"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -51,8 +54,10 @@
 
             <!-- Select routes -->
             <div class="routeTypeContainer">
-                <a href="{{ url_for('main.records') }}" class="button btn btn-primary" role="button" aria-disabled="false" id="myTracks">My Tracks</a>
-                <a href="{{ url_for('main.multiRecords') }}" class="button btn btn-primary disabled" role="button" aria-disabled="true" id="me&Friends'Tracks">Me & Friends' Tracks</a>
+                <a href="{{ url_for('main.records') }}" class="button btn btn-primary" role="button"
+                    aria-disabled="false" id="myTracks">My Tracks</a>
+                <a href="{{ url_for('main.multiRecords') }}" class="button btn btn-primary disabled" role="button"
+                    aria-disabled="true" id="me&Friends'Tracks">Me & Friends' Tracks</a>
             </div>
 
             <div class="centered-button-container">
@@ -61,9 +66,9 @@
                     <div class="journey-block">
                         <div class="text-container">
                             {% if journey.user_id == current_user.id %}
-                                My track:
+                            My track:
                             {% else %}
-                                {{ username }}'s track:
+                            {{ username }}'s track:
                             {% endif %}
                             <input type="checkbox" name="journey_ids" value="{{ journey.id }}">
                             {% if journey.locations %}
@@ -82,9 +87,9 @@
                         </div>
                         {% endfor %}
                         {% if journey.user_id == current_user.id %}
-                            <div class="smallestButton btn btn-danger btn-sm" onclick="confirmDelete('{{ journey.id }}')">
-                                <i class="bi bi-trash3"></i>
-                            </div>
+                        <div class="smallestButton btn btn-danger btn-sm" onclick="confirmDelete('{{ journey.id }}')">
+                            <i class="bi bi-trash3"></i>
+                        </div>
                         {% endif %}
                     </div>
                     {% endfor %}

@@ -522,7 +522,7 @@ def friends():
         active_subscription = find_active_subscription(current_user)
 
         if active_subscription == 'No Subscription':
-            flash('No active subscription found. Please subscribe to access the map.', 'danger')
+            flash('No active subscription found. Please subscribe to access friends page.', 'danger')
             return redirect(url_for('main.membership'))
         
         # Query the friends of the logged-in user
