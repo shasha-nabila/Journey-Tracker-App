@@ -18,7 +18,7 @@ This repository was cloned from my university account, which was a group project
 - **Database:** SQLAlchemy
 - **Payment System:** Stripe API
 - **GPS Data Format:** GPX
-- **Map Visualisation:** Folium library
+- **Map Visualisation:** Folium library, Google Maps API
 - **Testings:** Pytest
 
 ## User View
