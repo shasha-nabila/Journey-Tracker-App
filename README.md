@@ -24,8 +24,10 @@ This repository was cloned from my university account, which was a group project
 ## User View
 
 ![image](https://github.com/user-attachments/assets/68102a30-b6be-40a4-ab2e-6e326ac3dada)
+![image](https://github.com/user-attachments/assets/1fe2a37d-eceb-459f-93c2-5aabcfc199be)
 ![image](https://github.com/user-attachments/assets/ea5eae27-afa3-4298-9883-b44ed33122da)
-![image](https://github.com/user-attachments/assets/d23582dc-fd00-4743-90eb-5c199f0678c9)
+![image](https://github.com/user-attachments/assets/17dea1a5-2948-444c-93cb-cf49fbe75dba)
+![image](https://github.com/user-attachments/assets/df3a13ab-3164-4df1-adc5-822269acc2e1)
 ![image](https://github.com/user-attachments/assets/8d54cae6-a885-4c47-9cf8-820f7602004a)
 ![image](https://github.com/user-attachments/assets/5f283f47-5efa-413b-923d-b6853b1b3184)
 ![image](https://github.com/user-attachments/assets/4ad0f217-89f5-4189-bf75-303b69007622)
